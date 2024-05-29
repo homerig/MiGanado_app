@@ -11,18 +11,38 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        tabBarInactiveTintColor: '#6E6E6E',
+        tabBarActiveTintColor: '#ffffff',
+        tabBarInactiveTintColor: '#605856',
         headerShown: false,
         tabBarShowLabel: false,
         tabBarStyle: {
-          backgroundColor: '#E0E0E0',
+          backgroundColor: '#EEEEEE',
           borderTopWidth: 0,
           elevation: 0,
-          height: 60,
+          height: 70,
         },
       }}
     >
+      <Tabs.Screen
+        name="estadisticas"
+        options={{
+          title: 'Estadísticas',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'chart' : 'chart'} color={color} focused={focused} />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="notificaciones"
+        options={{
+          title: 'Notificaciones',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'bell' : 'bell'} color={color} focused={focused} />
+          ),
+        }}
+      />
+
       <Tabs.Screen
         name="index"
         options={{
@@ -32,26 +52,10 @@ export default function TabLayout() {
           ),
         }}
       />
+      
+      
       <Tabs.Screen
-        name="explore"
-        options={{
-          title: 'Explore',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'chart' : 'chart'} color={color} focused={focused} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="notifications"
-        options={{
-          title: 'Notificaciones',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'bell' : 'bell'} color={color} focused={focused} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="library"
+        name="lotes"
         options={{
           title: 'Lotes',
           tabBarIcon: ({ color, focused }) => (
@@ -60,7 +64,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="profile"
+        name="perfil"
         options={{
           title: 'Perfil',
           tabBarIcon: ({ color, focused }) => (

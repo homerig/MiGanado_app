@@ -30,11 +30,22 @@ export function TabBarIcon({ name, color, focused }: TabBarIconProps) {
 const styles = StyleSheet.create({
   iconContainer: {
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'stretch',
   },
   focusedIconContainer: {
-    backgroundColor: '#4CAF50', // Cambia este color según tus necesidades
-    borderRadius: 25,
-    padding: 10,
+    marginBottom: 20,
+    backgroundColor: '#407157', // Cambia este color según tus necesidades
+    color: '#ffffff',
+    borderRadius: 99,
+    paddingVertical: 20,
+    paddingHorizontal: 13,
+    shadowColor: '#407157', // Color de la sombra
+    shadowOpacity: 1, // Opacidad de la sombra (valor entre 0 y 1)
+    shadowRadius: 6, // Radio de la sombra
+    shadowOffset: {
+      width: 0, // Desplazamiento horizontal
+      height: 0, // Desplazamiento vertical
+    },
+    elevation: 4, // Solo para Android
   },
 });
