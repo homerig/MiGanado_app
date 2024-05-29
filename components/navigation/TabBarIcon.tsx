@@ -1,9 +1,9 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faChartLine, faBell, faHome, faBook, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faChartLine, faBell, faHome, faMap, faUser } from '@fortawesome/free-solid-svg-icons';
 import { View, StyleSheet } from 'react-native';
 
-type IconName = 'chart' | 'bell' | 'home' | 'book' | 'user';
+type IconName = 'chart' | 'bell' | 'home' | 'map' | 'user';
 
 interface TabBarIconProps {
   name: IconName;
@@ -15,7 +15,7 @@ const iconMap: Record<IconName, any> = {
   chart: faChartLine,
   bell: faBell,
   home: faHome,
-  book: faBook,
+  map: faMap,
   user: faUser,
 };
 

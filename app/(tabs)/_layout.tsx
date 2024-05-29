@@ -1,25 +1,41 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
-
+import { View, Image, Text } from 'react-native';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
+
+const CustomHeader = () => {
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center', height: 95, padding: 12, gap: 10 }}>
+      <Text style={{ fontSize: 20, fontWeight: 'bold' }}>MiGanado</Text>
+      <Image
+        source={require('@/assets/images/MiGanado_logo.png')}
+        style={{ width: 30, height: 30, marginRight: 10 }}
+        resizeMode="contain"
+      />
+    </View>
+  );
+};
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
   return (
     <Tabs
+      initialRouteName="index"
       screenOptions={{
         tabBarActiveTintColor: '#ffffff',
         tabBarInactiveTintColor: '#605856',
-        headerShown: false,
+        headerShown: true,
+        header: () => <CustomHeader />,
         tabBarShowLabel: false,
         tabBarStyle: {
           backgroundColor: '#EEEEEE',
           borderTopWidth: 0,
           elevation: 0,
           height: 70,
+          paddingTop: 12
         },
       }}
     >
@@ -59,7 +75,7 @@ export default function TabLayout() {
         options={{
           title: 'Lotes',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'book' : 'book'} color={color} focused={focused} />
+            <TabBarIcon name={focused ? 'map' : 'map'} color={color} focused={focused} />
           ),
         }}
       />
