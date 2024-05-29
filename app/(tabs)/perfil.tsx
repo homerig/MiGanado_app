@@ -1,13 +1,21 @@
-import React from 'react';
 import { Image, StyleSheet, Platform } from 'react-native';
+
+import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 
 export default function HomeScreen() {
   return (
-    <ThemedView style={styles.container}>
+    <ParallaxScrollView
+      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
+      headerImage={
+        <Image
+          source={require('@/assets/images/partial-react-logo.png')}
+          style={styles.reactLogo}
+        />
+      }>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">¡Bienvenido, (Nombre)!</ThemedText>
+        <ThemedText type="title">Welcome!</ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">Step 1: Try it</ThemedText>
@@ -36,29 +44,25 @@ export default function HomeScreen() {
           <ThemedText type="defaultSemiBold">app-example</ThemedText>.
         </ThemedText>
       </ThemedView>
-    </ThemedView>
+    </ParallaxScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-  },
   titleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
-    marginTop: 16,
+    gap: 8,
   },
   stepContainer: {
-    marginBottom: 16,
+    gap: 8,
+    marginBottom: 8,
   },
   reactLogo: {
     height: 178,
     width: 290,
-    position: 'absolute',
     bottom: 0,
     left: 0,
+    position: 'absolute',
   },
 });

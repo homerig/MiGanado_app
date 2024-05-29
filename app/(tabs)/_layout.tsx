@@ -1,34 +1,90 @@
-import { Tabs } from 'expo-router';
 import React from 'react';
-
+import { Tabs } from 'expo-router';
+import { View, Image, Text } from 'react-native';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
+
+const CustomHeader = () => {
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center', height: 95, padding: 12, gap: 10 }}>
+      <Text style={{ fontSize: 20, fontWeight: 'bold' }}>MiGanado</Text>
+      <Image
+        source={require('@/assets/images/MiGanado_logo.png')}
+        style={{ width: 30, height: 30, marginRight: 10 }}
+        resizeMode="contain"
+      />
+    </View>
+  );
+};
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
   return (
     <Tabs
+      initialRouteName="index"
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-      }}>
+        tabBarActiveTintColor: '#ffffff',
+        tabBarInactiveTintColor: '#605856',
+        headerShown: true,
+        header: () => <CustomHeader />,
+        tabBarShowLabel: false,
+        tabBarStyle: {
+          backgroundColor: '#EEEEEE',
+          borderTopWidth: 0,
+          elevation: 0,
+          height: 70,
+          paddingTop: 12
+        },
+      }}
+    >
+      <Tabs.Screen
+        name="estadisticas"
+        options={{
+          title: 'Estadísticas',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'chart' : 'chart'} color={color} focused={focused} />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="notificaciones"
+        options={{
+          title: 'Notificaciones',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'bell' : 'bell'} color={color} focused={focused} />
+          ),
+        }}
+      />
+
       <Tabs.Screen
         name="index"
         options={{
           title: 'Home',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
+            <TabBarIcon name={focused ? 'home' : 'home'} color={color} focused={focused} />
+          ),
+        }}
+      />
+      
+      
+      <Tabs.Screen
+        name="lotes"
+        options={{
+          title: 'Lotes',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'map' : 'map'} color={color} focused={focused} />
           ),
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="perfil"
         options={{
-          title: 'Explore',
+          title: 'Perfil',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
+            <TabBarIcon name={focused ? 'user' : 'user'} color={color} focused={focused} />
           ),
         }}
       />
