@@ -3,66 +3,70 @@ import { Image, StyleSheet, Platform } from 'react-native';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faFilter, } from '@fortawesome/free-solid-svg-icons';
 
 export default function HomeScreen() {
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
+    <ThemedView style={styles.container}>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
+            <ThemedText type="title">Estadísticas</ThemedText>
+            <FontAwesomeIcon icon={faFilter} size={24} color="#605856" />
+          </ThemedView>
+      
+      <ThemedView style={styles.section}>
+        <ThemedView style={styles.sectionItem}>
+          <ThemedText type="default">Lote (X)</ThemedText>
+          <ThemedText type="title">(X) Crías</ThemedText>
+          <ThemedText type="subtitle">En el último mes</ThemedText>
+        </ThemedView>
+        <ThemedText style={styles.sectionHeader}>espacio</ThemedText>
       </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({ ios: 'cmd + d', android: 'cmd + m' })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+
+
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+  },
   titleContainer: {
+    width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    justifyContent: 'space-between',
+    padding: 20
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  section: {
+    // alignItems: 'center',
+    justifyContent: 'space-between',
+    margin: 16,
+    marginTop: 5,
+    gap: 16,
+    borderRadius: 10,
+    shadowColor: '#0000001A', // Color de la sombra
+    shadowOpacity: 1, // Opacidad de la sombra (valor entre 0 y 1)
+    shadowRadius: 10, // Radio de la sombra
+    shadowOffset: {
+      width: 0, // Desplazamiento horizontal
+      height: 0, // Desplazamiento vertical
+    },
+    elevation: 4
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  sectionItem:{
+    padding: 20,
+    borderRadius: 10,
+    flexDirection: 'column',
+    alignItems: 'center',
   },
+  sectionHeader:{
+    padding: 20,
+    backgroundColor: '#407157',
+    color: 'white',
+    width: '100%',
+
+  }
 });
