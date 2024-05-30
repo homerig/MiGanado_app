@@ -10,7 +10,10 @@ export default function HomeScreen() {
   return (
 
     
+
+    
     <ThemedView style={styles.container}>
+      
       
       <ThemedView style={styles.titleContainer}>
         <ThemedText style={styles.title}>¡Bienvenido, (Nombre)!</ThemedText>
