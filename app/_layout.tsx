@@ -14,6 +14,8 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     JostRegular : require('../assets/fonts/Jost-Regular.ttf'),
+    JostBold : require('../assets/fonts/Jost-Bold.ttf'),
+    JostSemiBold : require('../assets/fonts/Jost-SemiBold.ttf')
   });
 
   useEffect(() => {
