@@ -40,7 +40,7 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="estadisticas"
+        name="estadisticas"        
         options={{
           title: 'Estadísticas',
           tabBarIcon: ({ color, focused }) => (
