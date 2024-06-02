@@ -27,8 +27,8 @@ const AnimalForm = () => {
       <RNPickerSelect
         onValueChange={(value) => setTipo(value)}
         items={[
-          { label: 'Tipo 1', value: 'tipo1' },
-          { label: 'Tipo 2', value: 'tipo2' },
+          { label: 'Vaca', value: 'Vaca' },
+          { label: 'Toro', value: 'Toro' },
         ]}
         style={pickerSelectStyles}
         placeholder={{ label: "Seleccione tipo", value: null }}
@@ -53,7 +53,7 @@ const AnimalForm = () => {
 
       <Text style={styles.subTitle}>Historial Médico</Text>
 
-      <RNPickerSelect
+     /* <RNPickerSelect
         onValueChange={(value) => setSexo(value)}
         items={[
           { label: 'Macho', value: 'macho' },
@@ -62,6 +62,7 @@ const AnimalForm = () => {
         style={pickerSelectStyles}
         placeholder={{ label: "Sexo", value: null }}
       />
+      */
 
       <TextInput
         style={styles.input}
@@ -109,7 +110,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 30,
   },
   subTitle: {
     fontSize: 18,
