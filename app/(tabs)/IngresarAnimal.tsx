@@ -1,6 +1,4 @@
 
-npm install react-native-picker-select
-
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, CheckBox, StyleSheet, ScrollView } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
