@@ -124,6 +124,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 4,
     marginTop: 20,
+    width: 200,
   },
   grayButton: {
     backgroundColor: 'gray',
@@ -131,6 +132,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 4,
     marginTop: 10,
+    widht: 200,
   },
   buttonText: {
     color: '#fff',
