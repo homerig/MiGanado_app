@@ -3,6 +3,8 @@ import { Image, StyleSheet, Platform, Alert, TouchableOpacity, Text,View } from 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 
+
+
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faChartColumn, faClipboardCheck, faCoffee, faCow, faFileMedical, faFlask, faMapLocationDot, faSyringe, faUser, faUserDoctor } from '@fortawesome/free-solid-svg-icons';
 

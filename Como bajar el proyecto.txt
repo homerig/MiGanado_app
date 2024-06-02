@@ -1,0 +1,36 @@
+BUSCAR EN WINDOWS: Windows PowerShell y abrir en ejecutar como administrador
+
+Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+
+choco install -y nodejs-lts microsoft-openjdk17
+
+--------------------------------------------------------------------------------
+
+DESCARGAR GIT BASH y Agregar git al PATH
+
+open Git Bash here (en la carpeta que queres que se baje el proyecto)
+git clone https://github.com/homerig/MiGanado_app.git
+
+--------------------------------------------------------------------------------
+EN CMD
+cd MiGanado_app (ruta en donde bajaste la carpeta)
+npm install -g eas-cli 
+npm install expo
+
+HAY QUE CREARSE UNA CUENTA EN EXPO
+PONES ESA MISMA CUENTA EN EXPO DEL CELU Y EN EL CMD DE WINDOWS PONES
+
+npx expo start
+
+-----------------------------------------------------------------------
+PARA HACER UN PUSH DE GITHUB
+
+git init 
+git status - lo que esta en rojo es lo desactualizado
+git add .
+git commit -m "mensaje del commit(que estas actualizando)"
+git push origin <nombre de la branch>
+
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------

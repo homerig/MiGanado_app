@@ -68,8 +68,7 @@ export default function TabLayout() {
           ),
         }}
       />
-      
-      
+
       <Tabs.Screen
         name="lotes"
         options={{
@@ -79,6 +78,7 @@ export default function TabLayout() {
           ),
         }}
       />
+
       <Tabs.Screen
         name="perfil"
         options={{
