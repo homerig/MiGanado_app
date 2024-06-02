@@ -52,17 +52,7 @@ const AnimalForm = () => {
       />
 
       <Text style={styles.subTitle}>Historial Médico</Text>
-
-     /* <RNPickerSelect
-        onValueChange={(value) => setSexo(value)}
-        items={[
-          { label: 'Macho', value: 'macho' },
-          { label: 'Hembra', value: 'hembra' },
-        ]}
-        style={pickerSelectStyles}
-        placeholder={{ label: "Sexo", value: null }}
-      />
-      */
+      
 
       <TextInput
         style={styles.input}
@@ -93,6 +83,10 @@ const AnimalForm = () => {
         />
         <Text style={styles.label}>Preñada</Text>
       </View>
+
+      <TouchableOpacity style={styles.grayButton} onPress={() => console.log('Agregar Tratamiento')}>
+        <Text style={styles.buttonText}>Agregar Tratamiento</Text>
+      </TouchableOpacity>
 
       <TouchableOpacity style={styles.button} onPress={handleSave}>
         <Text style={styles.buttonText}>Guardar</Text>
