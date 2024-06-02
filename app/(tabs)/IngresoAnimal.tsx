@@ -30,8 +30,10 @@ const AnimalForm = () => {
           { label: 'Toro', value: 'Toro' },
         ]}
         style={pickerSelectStyles}
-        placeholder={{ label: "Seleccione tipo", value: null }}
+        placeholder={{ label: "Seleccione tipo", value: ' ' }}
       />
+
+<View style={{ marginBottom: 20 }} />
 
       <RNPickerSelect
         onValueChange={(value) => setLote(value)}
@@ -40,8 +42,10 @@ const AnimalForm = () => {
           { label: 'Lote 2', value: 'lote2' },
         ]}
         style={pickerSelectStyles}
-        placeholder={{ label: "Lote", value: null }}
+        placeholder={{ label: "Lote", value: ' ' }}
       />
+
+<View style={{ marginBottom: 20 }} />
 
       <TextInput
         style={styles.input}
@@ -60,12 +64,16 @@ const AnimalForm = () => {
         onChangeText={setPeso}
       />
 
+<View style={{ marginBottom: 20 }} />
+
       <TextInput
         style={styles.input}
         placeholder="Edad"
         value={edad}
         onChangeText={setEdad}
       />
+
+<View style={{ marginBottom: 20 }} />      
 
       <View style={styles.checkboxContainer}>
         <CheckBox
@@ -75,6 +83,8 @@ const AnimalForm = () => {
         <Text style={styles.label}>Recién nacido</Text>
       </View>
 
+      <View style={{ marginBottom: 20 }} />
+      
       <View style={styles.checkboxContainer}>
         <CheckBox
           value={preñada}
@@ -97,18 +107,18 @@ const AnimalForm = () => {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    padding: 16,
+    padding: 40,
     backgroundColor: '#fff',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 30,
+    marginBottom: 40,
   },
   subTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginVertical: 10,
+    marginVertical: 40,
   },
   input: {
     height: 40,
@@ -122,7 +132,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#4CAF50',
     padding: 10,
     alignItems: 'center',
-    borderRadius: 4,
+    borderRadius: 40,
     marginTop: 20,
     width: 200,
   },
@@ -130,9 +140,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'gray',
     padding: 10,
     alignItems: 'center',
-    borderRadius: 4,
+    borderRadius: 40,
     marginTop: 10,
-    widht: 200,
+    width: 200,
   },
   buttonText: {
     color: '#fff',
