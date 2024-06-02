@@ -7,7 +7,6 @@ const AnimalForm = () => {
   const [tipo, setTipo] = useState('');
   const [lote, setLote] = useState('');
   const [numeroCaravana, setNumeroCaravana] = useState('');
-  const [sexo, setSexo] = useState('');
   const [peso, setPeso] = useState('');
   const [edad, setEdad] = useState('');
   const [recienNacido, setRecienNacido] = useState(false);
@@ -16,7 +15,7 @@ const AnimalForm = () => {
   const handleSave = () => {
     // Logica para guardar los datos
     console.log({
-      tipo, lote, numeroCaravana, sexo, peso, edad, recienNacido, preñada
+      tipo, lote, numeroCaravana, peso, edad, recienNacido, preñada
     });
   };
 
@@ -84,11 +83,11 @@ const AnimalForm = () => {
         <Text style={styles.label}>Preñada</Text>
       </View>
 
-      <TouchableOpacity style={styles.grayButton} onPress={() => console.log('Agregar Tratamiento')}>
+      <TouchableOpacity style={styles.grayButton} onPress={handleSave}>
         <Text style={styles.buttonText}>Agregar Tratamiento</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={handleSave}>
+      <TouchableOpacity style={styles.greenButton} onPress={handleSave}>
         <Text style={styles.buttonText}>Guardar</Text>
       </TouchableOpacity>
     </ScrollView>
@@ -119,12 +118,19 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingLeft: 8,
   },
-  button: {
+  greenButton: {
     backgroundColor: '#4CAF50',
     padding: 10,
     alignItems: 'center',
     borderRadius: 4,
     marginTop: 20,
+  },
+  grayButton: {
+    backgroundColor: 'gray',
+    padding: 10,
+    alignItems: 'center',
+    borderRadius: 4,
+    marginTop: 10,
   },
   buttonText: {
     color: '#fff',
