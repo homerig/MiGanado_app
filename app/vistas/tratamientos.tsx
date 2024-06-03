@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, Modal, FlatList, StyleSheet, Text, Platform } from 'react-native';
+import { View, TextInput, TouchableOpacity, FlatList, StyleSheet, Text, Platform } from 'react-native';
 import { ThemedText } from '@/components/ThemedText'; // Asegúrate de que la ruta es correcta
 import { ThemedView } from '@/components/ThemedView'; // Asegúrate de que la ruta es correcta
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-export default function VaccinationScreen() {
+export default function TratamientosScreen() {
   const [medicationName, setMedicationName] = useState<string>('');
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [duration, setDuration] = useState<string>('');
   const [interval, setInterval] = useState<string>('');
-  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [isDatePickerVisible, setIsDatePickerVisible] = useState<boolean>(false);
   const [numeroCaravana, setNumeroCaravana] = useState('');
   const [Tratamiento, setTratamiento] = useState('');
@@ -130,32 +129,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   buttonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
-  },
-  modalContent: {
-    backgroundColor: '#fff',
-    padding: 20,
-    borderRadius: 10,
-    width: '80%',
-    alignItems: 'center',
-  },
-  modalItem: {
-    padding: 10,
-    color:  '#407157',
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-    width: '100%',
-    alignItems: 'center',
-  },
-  closeText: {
-    marginTop: 10,
     color: '#FFFFFF',
     fontSize: 16,
   },
