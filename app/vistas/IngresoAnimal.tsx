@@ -1,50 +1,49 @@
 import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, StyleSheet, Text, ScrollView } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import { View, TextInput, TouchableOpacity, Modal, FlatList, StyleSheet, Text } from 'react-native';
 import { ThemedText } from '@/components/ThemedText'; // Asegúrate de que la ruta es correcta
 import { ThemedView } from '@/components/ThemedView'; // Asegúrate de que la ruta es correcta
 
-export default function IngresoAnimalScreen() {
-  const [tipo, setTipo] = useState('');
-  const [lote, setLote] = useState('');
-  const [numeroCaravana, setNumeroCaravana] = useState('');
-  const [peso, setPeso] = useState('');
-  const [edad, setEdad] = useState('');
-  const [recienNacido, setRecienNacido] = useState(false);
-  const [preñada, setPreñada] = useState(false);
-  const [isChecked, setChecked] = useState(false);
+export default function IngresarAnimalScreen() {
+  const [selectedTipo, setSelectedTipo] = useState<string>('');
+  const [selectedLote, setSelectedLote] = useState<string>('');
+  const [numeroCaravana, setNumeroCaravana] = useState<string>('');
+  const [sexo, setSexo] = useState<string>('');
+  const [peso, setPeso] = useState<string>('');
+  const [edad, setEdad] = useState<string>('');
+  const [isPregnant, setIsPregnant] = useState<boolean>(false);
+  const [isNewborn, setIsNewborn] = useState<boolean>(false);
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [isTipoModalVisible, setIsTipoModalVisible] = useState<boolean>(false);
+  const [tipos] = useState<string[]>(['Vaca', 'Toro']); // Agrega más tipos según sea necesario
+  const [lotes] = useState<string[]>(['Lote 1', 'Lote 2']); // Agrega más lotes según sea necesario
 
-  const handleSave = () => {
-    // Aquí va la lógica para guardar los datos
-    console.log('Guardar datos');
+  const selectTipo = (tipo: string) => {
+    setSelectedTipo(tipo);
+    setIsTipoModalVisible(false);
+  };
+
+  const selectLote = (lote: string) => {
+    setSelectedLote(lote);
+    setIsModalVisible(false);
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Ingresar Animal</Text>
+    <ThemedView style={styles.container}>
+      <ThemedText style={styles.label}>Ingresar Animal</ThemedText>
 
-      <Text style={styles.label}>Tipo</Text>
-      <Picker
-        selectedValue={tipo}
-        style={styles.picker}
-        onValueChange={(itemValue) => setTipo(itemValue)}
+      <TouchableOpacity
+        style={styles.input}
+        onPress={() => setIsTipoModalVisible(true)}
       >
-        <Picker.Item label="Seleccione tipo" value="" />
-        <Picker.Item label="Vaca" value="Vaca" />
-        <Picker.Item label="Toro" value="Toro" />
-      </Picker>
+        <Text>{selectedTipo || 'Seleccione tipo'}</Text>
+      </TouchableOpacity>
 
-
-      <Text style={styles.label}>Lote</Text>
-      <Picker
-        selectedValue={lote}
-        style={styles.picker}
-        onValueChange={(itemValue) => setLote(itemValue)}
+      <TouchableOpacity
+        style={styles.input}
+        onPress={() => setIsModalVisible(true)}
       >
-        <Picker.Item label="Seleccione lote" value="" />
-        <Picker.Item label="Lote 1" value="lote1" />
-        <Picker.Item label="Lote 2" value="lote2" />
-      </Picker>
+        <Text>{selectedLote || 'Seleccione Lote'}</Text>
+      </TouchableOpacity>
 
       <TextInput
         style={styles.input}
@@ -53,7 +52,14 @@ export default function IngresoAnimalScreen() {
         onChangeText={setNumeroCaravana}
       />
 
-      <Text style={styles.subTitle}>Historial Médico</Text>
+      <ThemedText style={styles.subLabel}>Historial Médico</ThemedText>
+
+      <TextInput
+        style={styles.input}
+        placeholder="Sexo"
+        value={sexo}
+        onChangeText={setSexo}
+      />
 
       <TextInput
         style={styles.input}
@@ -70,98 +76,178 @@ export default function IngresoAnimalScreen() {
       />
 
       <View style={styles.checkboxContainer}>
+        <Text style={styles.checkboxLabel}>Recién nacido</Text>
         <TouchableOpacity
           style={styles.checkbox}
-          onPress={() => setChecked(!isChecked)}
+          onPress={() => setIsNewborn(!isNewborn)}
         >
-          <View style={styles.box}>
-            {isChecked && <Text style={styles.checkmark}>✓</Text>}
-          </View>
+          {isNewborn && <Text style={styles.checkmark}>✓</Text>}
         </TouchableOpacity>
-        <ThemedText style={styles.label}>Recién nacido</ThemedText>
       </View>
 
       <View style={styles.checkboxContainer}>
+        <Text style={styles.checkboxLabel}>Preñada</Text>
         <TouchableOpacity
           style={styles.checkbox}
-          onPress={() => setChecked(!isChecked)}
+          onPress={() => setIsPregnant(!isPregnant)}
         >
-          <View style={styles.box}>
-            {isChecked && <Text style={styles.checkmark}>✓</Text>}
-          </View>
+          {isPregnant && <Text style={styles.checkmark}>✓</Text>}
         </TouchableOpacity>
-        <ThemedText style={styles.label}>Preñada</ThemedText>
       </View>
-      <TouchableOpacity style={styles.grayButton} onPress={handleSave}>
-        <Text style={styles.buttonText}>Agregar Tratamiento</Text>
+
+      <TouchableOpacity
+        style={styles.grayButton}
+        onPress={() => {
+          // Lógica para agregar tratamiento
+          console.log('Agregar Tratamiento');
+        }}
+      >
+        <ThemedText style={styles.grayButtonText}>Agregar Tratamiento</ThemedText>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.greenButton} onPress={handleSave}>
-        <Text style={styles.buttonText}>Guardar</Text>
+      <TouchableOpacity
+        style={styles.greenButton}
+        onPress={() => {
+          // Lógica para guardar el animal
+          console.log({
+            selectedTipo,
+            selectedLote,
+            numeroCaravana,
+            sexo,
+            peso,
+            edad,
+            isNewborn,
+            isPregnant,
+          });
+        }}
+      >
+        <ThemedText style={styles.greenButtonText}>Guardar</ThemedText>
       </TouchableOpacity>
-    </ScrollView>
+
+      <Modal
+        visible={isTipoModalVisible}
+        animationType="slide"
+        transparent={true}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <FlatList
+              data={tipos}
+              keyExtractor={(item) => item}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={styles.modalItem}
+                  onPress={() => selectTipo(item)}
+                >
+                  <Text>{item}</Text>
+                </TouchableOpacity>
+              )}
+            />
+            <TouchableOpacity onPress={() => setIsTipoModalVisible(false)}>
+              <Text style={styles.closeText}>Cerrar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        visible={isModalVisible}
+        animationType="slide"
+        transparent={true}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <FlatList
+              data={lotes}
+              keyExtractor={(item) => item}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={styles.modalItem}
+                  onPress={() => selectLote(item)}
+                >
+                  <Text>{item}</Text>
+                </TouchableOpacity>
+              )}
+            />
+            <TouchableOpacity onPress={() => setIsModalVisible(false)}>
+              <Text style={styles.closeText}>Cerrar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    </ThemedView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
-    padding: 40,
-    backgroundColor: '#fff',
+    flex: 1,
+    padding: 20,
+    justifyContent: 'center',
   },
-  title: {
+  label: {
     fontSize: 24,
+    padding: 2,
     fontWeight: 'bold',
-    marginBottom: 40,
+    marginBottom: 20,
+    textAlign: 'center',
   },
-  subTitle: {
+  subLabel: {
     fontSize: 18,
+    padding: 2,
     fontWeight: 'bold',
-    marginVertical: 40,
+    marginBottom: 10,
+    textAlign: 'left',
   },
   input: {
-    height: 40,
-    borderColor: 'gray',
+    height: 50,
+    borderColor: '#CCCCCC',
     borderWidth: 1,
-    borderRadius: 4,
-    marginBottom: 10,
-    paddingLeft: 8,
-  },
-  greenButton: {
-    backgroundColor: '#4CAF50',
-    padding: 10,
-    alignItems: 'center',
-    borderRadius: 40,
-    marginTop: 20,
-    width: 200,
+    borderRadius: 20,
+    marginBottom: 16,
+    paddingHorizontal: 10,
+    justifyContent: 'center',
+    backgroundColor: '#F1F1F1',
   },
   grayButton: {
-    backgroundColor: 'gray',
-    padding: 10,
+    backgroundColor: '#A9A9A9',
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderRadius: 20,
     alignItems: 'center',
-    borderRadius: 40,
-    marginTop: 10,
-    width: 200,
+    marginTop: 20,
   },
-  buttonText: {
-    color: '#fff',
+  grayButtonText: {
+    color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: 'bold',
+  },
+  greenButton: {
+    backgroundColor: '#407157',
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderRadius: 20,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  greenButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
   },
   checkboxContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 16,
+  },
+  checkboxLabel: {
+    marginRight: 10,
   },
   checkbox: {
-    marginRight: 8,
-  },
-  box: {
-    width: 24,
-    height: 24,
+    width: 20,
+    height: 20,
+    borderRadius: 5,
     borderWidth: 1,
     borderColor: '#CCCCCC',
-    borderRadius: 4,
+    backgroundColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -169,12 +255,30 @@ const styles = StyleSheet.create({
     color: '#407157',
     fontSize: 18,
   },
-  label: {
-    marginLeft: 8,
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
-  picker: {
-    height: 50,
+  modalContent: {
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 10,
+    width: '80%',
+    alignItems: 'center',
+  },
+  modalItem: {
+    padding: 10,
+    color: '#407157',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
     width: '100%',
-    marginBottom: 20,
+    alignItems: 'center',
+  },
+  closeText: {
+    marginTop: 10,
+    color: '#407157',
+    fontSize: 16,
   },
 });
