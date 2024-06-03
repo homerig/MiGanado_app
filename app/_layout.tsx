@@ -32,6 +32,12 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="vistas/buscar_animal" options={{ headerShown: false }} />
+        <Stack.Screen name="vistas/IngresoAnimal" options={{ headerShown: false }} />
+        <Stack.Screen name="vistas/sangrado" options={{ headerShown: false }} />
+        <Stack.Screen name="vistas/tacto" options={{ headerShown: false }} />
+        <Stack.Screen name="vistas/vacunacion" options={{ headerShown: false }} />
+        <Stack.Screen name="vistas/ver_animal" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />
       </Stack>
     </ThemeProvider>
