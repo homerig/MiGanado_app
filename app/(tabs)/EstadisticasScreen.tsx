@@ -4,7 +4,7 @@ import { StyleSheet, ScrollView } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 
-export default function estadisticas() {
+const StatisticsCard = ({ title, value, subTitle }: { title: string, value: string, subTitle: string }) => {
   return (
     <ThemedView style={styles.card}>
       <ThemedText style={styles.title}>{title}</ThemedText>

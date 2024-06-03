@@ -66,6 +66,7 @@ export default function NotificacionScreen() {
           />
           <ThemedText type="subtitle">Sin notificaciones</ThemedText>
         </ThemedView>
+<<<<<<< HEAD
       ) : (
         <FlatList
           data={notifications}
@@ -74,6 +75,10 @@ export default function NotificacionScreen() {
           contentContainerStyle={styles.list}
         />
       )}
+=======
+      </ThemedView>
+      
+>>>>>>> ecb52bc (cambios santi)
     </ThemedView>
   );
 }
@@ -115,11 +120,5 @@ const styles = StyleSheet.create({
   image: { // Añadí estilo para la imagen
     width: '80%',
     height: '80%',
-  },
-  notificationRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 8,
   },
 });
