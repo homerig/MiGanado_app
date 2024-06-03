@@ -68,21 +68,28 @@ const AnimalForm = () => {
       />
 
       <View style={styles.checkboxContainer}>
-        <CheckBox
-          value={recienNacido}
-          onValueChange={setRecienNacido}
-        />
-        <Text style={styles.label}>Recién nacido</Text>
+        <TouchableOpacity
+          style={styles.checkbox}
+          onPress={() => setChecked(!isChecked)}
+        >
+          <View style={styles.box}>
+            {isChecked && <Text style={styles.checkmark}>✓</Text>}
+          </View>
+        </TouchableOpacity>
+        <ThemedText style={styles.label}>Recién nacido</ThemedText>
       </View>
 
       <View style={styles.checkboxContainer}>
-        <CheckBox
-          value={preñada}
-          onValueChange={setPreñada}
-        />
-        <Text style={styles.label}>Preñada</Text>
+        <TouchableOpacity
+          style={styles.checkbox}
+          onPress={() => setChecked(!isChecked)}
+        >
+          <View style={styles.box}>
+            {isChecked && <Text style={styles.checkmark}>✓</Text>}
+          </View>
+        </TouchableOpacity>
+        <ThemedText style={styles.label}>Preñada</ThemedText>
       </View>
-
       <TouchableOpacity style={styles.grayButton} onPress={handleSave}>
         <Text style={styles.buttonText}>Agregar Tratamiento</Text>
       </TouchableOpacity>
