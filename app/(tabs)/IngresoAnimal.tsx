@@ -1,8 +1,10 @@
-import { ThemedText } from '@/components/ThemedText';
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, CheckBox, StyleSheet, ScrollView, Picker} from 'react-native';
+import { View, TextInput, TouchableOpacity, StyleSheet, Text, ScrollView } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
+import { ThemedText } from '@/components/ThemedText'; // Asegúrate de que la ruta es correcta
+import { ThemedView } from '@/components/ThemedView'; // Asegúrate de que la ruta es correcta
 
-const AnimalForm = () => {
+export default function IngresoAnimalScreen() {
   const [tipo, setTipo] = useState('');
   const [lote, setLote] = useState('');
   const [numeroCaravana, setNumeroCaravana] = useState('');
@@ -10,11 +12,11 @@ const AnimalForm = () => {
   const [edad, setEdad] = useState('');
   const [recienNacido, setRecienNacido] = useState(false);
   const [preñada, setPreñada] = useState(false);
+  const [isChecked, setChecked] = useState(false);
 
   const handleSave = () => {
-    console.log({
-      tipo, lote, numeroCaravana, peso, edad, recienNacido, preñada
-    });
+    // Aquí va la lógica para guardar los datos
+    console.log('Guardar datos');
   };
 
   return (
@@ -100,8 +102,6 @@ const AnimalForm = () => {
     </ScrollView>
   );
 };
-
-export default AnimalForm;
 
 const styles = StyleSheet.create({
   container: {
