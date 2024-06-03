@@ -1,14 +1,36 @@
 from rest_framework import viewsets
 from rest_framework.response import Response
-from rest_framework.renderers import JSONRenderer
-from .models import Ganado  # Importa tu modelo de datos
+from .models import Usuario, Lote, Animal, HistorialMedico, Tratamiento, Sangrado, Notificacion, ConfigNotificaciones
+from .serializers import UsuarioSerializer, LoteSerializer, AnimalSerializer, HistorialMedicoSerializer, TratamientoSerializer, SangradoSerializer, NotificacionSerializer, ConfigNotificacionesSerializer
 
-class GanadoViewSet(viewsets.ViewSet):
-    renderer_classes = [JSONRenderer]
+class UsuarioViewSet(viewsets.ModelViewSet):
+    queryset = Usuario.objects.all()
+    serializer_class = UsuarioSerializer
 
-    def list(self, request):
-        # Obtiene los datos de la base de datos o de otra fuente
-        queryset = Ganado.objects.all()  # Suponiendo que Ganado es tu modelo de datos
-        data = [{'id': item.id, 'name': item.name} for item in queryset]  # Serializa los datos a JSON
+class LoteViewSet(viewsets.ModelViewSet):
+    queryset = Lote.objects.all()
+    serializer_class = LoteSerializer
 
-        return Response(data)
+class AnimalViewSet(viewsets.ModelViewSet):
+    queryset = Animal.objects.all()
+    serializer_class = AnimalSerializer
+
+class HistorialMedicoViewSet(viewsets.ModelViewSet):
+    queryset = HistorialMedico.objects.all()
+    serializer_class = HistorialMedicoSerializer
+
+class TratamientoViewSet(viewsets.ModelViewSet):
+    queryset = Tratamiento.objects.all()
+    serializer_class = TratamientoSerializer
+
+class SangradoViewSet(viewsets.ModelViewSet):
+    queryset = Sangrado.objects.all()
+    serializer_class = SangradoSerializer
+
+class NotificacionViewSet(viewsets.ModelViewSet):
+    queryset = Notificacion.objects.all()
+    serializer_class = NotificacionSerializer
+
+class ConfigNotificacionesViewSet(viewsets.ModelViewSet):
+    queryset = ConfigNotificaciones.objects.all()
+    serializer_class = ConfigNotificacionesSerializer
