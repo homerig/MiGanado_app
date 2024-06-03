@@ -8,6 +8,8 @@ export default function NotificationSettings() {
   const [treatmentNotifications, setTreatmentNotifications] = useState(true);
   const [contactNotifications, setContactNotifications] = useState(true);
   const [vaccinationNotifications, setVaccinationNotifications] = useState(false);
+  const [bleedingNotifications, setBleedingNotifications] = useState(false);
+  const [statisticsNotifications, setStatisticsNotifications] = useState(false);
 
   return (
     <ThemedView style={styles.container}>
@@ -33,6 +35,20 @@ export default function NotificationSettings() {
         <Switch
           value={vaccinationNotifications}
           onValueChange={setVaccinationNotifications}
+        />
+      </View>
+      <View style={styles.notificationRow}>
+        <ThemedText type="default">Aviso de sangrado</ThemedText>
+        <Switch
+          value={bleedingNotifications}
+          onValueChange={setBleedingNotifications}
+        />
+      </View>
+      <View style={styles.notificationRow}>
+        <ThemedText type="default">Aviso de estadísticas</ThemedText>
+        <Switch
+          value={statisticsNotifications}
+          onValueChange={setStatisticsNotifications}
         />
       </View>
     </ThemedView>
