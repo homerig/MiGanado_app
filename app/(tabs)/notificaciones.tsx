@@ -4,10 +4,11 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faGear } from '@fortawesome/free-solid-svg-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
 
 import { UserContext } from '../../api/UserContext'; 
 import { getUserNotificaciones } from '../../api/api'; 
+import { RootStackParamList } from '../../types/navigation';
 
 const NotificationItem = ({ item }) => (
   <View style={styles.notificationItem}>
@@ -17,7 +18,7 @@ const NotificationItem = ({ item }) => (
 );
 
 export default function NotificacionScreen() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const { userId } = useContext(UserContext);
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -61,6 +62,7 @@ export default function NotificacionScreen() {
           <Image
             source={require('@/assets/images/sinNotificaciones.png')}
             resizeMode="contain"
+            style={styles.image} // Añadí estilo para la imagen
           />
           <ThemedText type="subtitle">Sin notificaciones</ThemedText>
         </ThemedView>
@@ -68,7 +70,7 @@ export default function NotificacionScreen() {
         <FlatList
           data={notifications}
           renderItem={({ item }) => <NotificationItem item={item} />}
-          keyExtractor={(item, index) => index.toString()} // Usar el índice como key
+          keyExtractor={(item, index) => index.toString()}
           contentContainerStyle={styles.list}
         />
       )}
@@ -91,7 +93,7 @@ const styles = StyleSheet.create({
   },
   notificationContainer: {
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center', // Cambié justifyContent a 'center'
     marginBottom: 16,
     paddingVertical: '40%',
     gap: 30,
@@ -109,5 +111,15 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 5,
     elevation: 5,
+  },
+  image: { // Añadí estilo para la imagen
+    width: '80%',
+    height: '80%',
+  },
+  notificationRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 8,
   },
 });

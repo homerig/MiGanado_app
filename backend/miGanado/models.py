@@ -1,11 +1,8 @@
 from django.db import models
 
-<<<<<<< HEAD
 from django.db import models
 from django.contrib.auth.models import User
 
-=======
->>>>>>> 0f1eca48200becedacc784f013e93fa1d747876f
 class Usuario(models.Model):
     TIPO_CHOICES = [
         ('cliente', 'Cliente'),
@@ -74,15 +71,9 @@ class Notificacion(models.Model):
         ('sangrado', 'Sangrado'),
         ('estadisticas', 'Estadísticas'),
     ]
-<<<<<<< HEAD
 
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)  # Añade la relación de usuario
     IdTipo = models.CharField(max_length=20, choices=TIPO_CHOICES)
-=======
-    
-    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='notificaciones', default=1)  # Cambia 'default=1' al ID correcto
-    tipo = models.CharField(max_length=20, choices=TIPO_CHOICES)
->>>>>>> 0f1eca48200becedacc784f013e93fa1d747876f
     mensaje = models.CharField(max_length=255)
     fecha = models.DateTimeField(auto_now_add=True)  # auto_now_add para la fecha de creación
 
@@ -96,10 +87,7 @@ class ConfigNotificaciones(models.Model):
     recibir_notificaciones_tacto = models.BooleanField(default=False)
     recibir_notificaciones_sangrado = models.BooleanField(default=False)
     recibir_notificaciones_estadisticas = models.BooleanField(default=False)
-<<<<<<< HEAD
 
     def __str__(self):
         return f"Preferencias de notificación para {self.usuario_config.username}"
 
-=======
->>>>>>> 0f1eca48200becedacc784f013e93fa1d747876f
