@@ -68,8 +68,7 @@ export default function TabLayout() {
             <TabBarIcon name={focused ? 'home' : 'home'} color={color} focused={focused} />
           ),
         }}
-      />
-                  
+      />            
       <Tabs.Screen
         name="lotes"
         options={{
@@ -87,7 +86,7 @@ export default function TabLayout() {
             <TabBarIcon name={focused ? 'user' : 'user'} color={color} focused={focused} />
           ),
         }}
-      />
+      />      
     </Tabs>
   );
 }
