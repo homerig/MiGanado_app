@@ -16,7 +16,6 @@ export default function IngresoAnimalScreen() {
   const [isChecked, setChecked] = useState(false);
 
   const handleSave = () => {
-    // Aquí va la lógica para guardar los datos
     console.log('Guardar datos');
   };
 
@@ -93,6 +92,7 @@ export default function IngresoAnimalScreen() {
         </TouchableOpacity>
         <ThemedText style={styles.label}>Preñada</ThemedText>
       </View>
+      
       <TouchableOpacity style={styles.grayButton} onPress={handleSave}>
         <Text style={styles.buttonText}>Agregar Tratamiento</Text>
       </TouchableOpacity>
