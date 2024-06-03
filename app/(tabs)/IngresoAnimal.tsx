@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity, StyleSheet, Text, ScrollView } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
@@ -72,7 +73,7 @@ export default function IngresoAnimalScreen() {
       <View style={styles.checkboxContainer}>
         <TouchableOpacity
           style={styles.checkbox}
-          onPress={() => setChecked(!isChecked)}
+          onPress={() => setRecienNacido(!recienNacido)}
         >
           <View style={styles.box}>
             {isChecked && <Text style={styles.checkmark}>✓</Text>}
@@ -84,7 +85,7 @@ export default function IngresoAnimalScreen() {
       <View style={styles.checkboxContainer}>
         <TouchableOpacity
           style={styles.checkbox}
-          onPress={() => setChecked(!isChecked)}
+          onPress={() => setPreñada(!preñada)}
         >
           <View style={styles.box}>
             {isChecked && <Text style={styles.checkmark}>✓</Text>}
@@ -152,6 +153,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 10,
+  },
+  checkbox: {
+    marginRight: 8,
+  },
+  box: {
+    width: 24,
+    height: 24,
+    borderWidth: 1,
+    borderColor: '#CCCCCC',
+    borderRadius: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  checkmark: {
+    color: '#407157',
+    fontSize: 18,
   },
   label: {
     marginLeft: 8,
