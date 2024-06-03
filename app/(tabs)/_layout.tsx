@@ -5,6 +5,7 @@ import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
+
 const CustomHeader = () => {
   return (
     <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center', height: 95, padding: 12, gap: 10 }}>
