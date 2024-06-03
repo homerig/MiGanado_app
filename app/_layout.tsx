@@ -42,6 +42,8 @@ export default function RootLayout() {
         <Stack.Screen name="vistas/tacto" options={{ headerShown: false }} />
         <Stack.Screen name="vistas/vacunacion" options={{ headerShown: false }} />
         <Stack.Screen name="vistas/ver_animal" options={{ headerShown: false }} />
+        <Stack.Screen name="vistas/ConfiguracionNotificaciones" options={{ headerShown: false }} />
+
         <Stack.Screen name="+not-found" />
       </Stack>
     </ThemeProvider>
