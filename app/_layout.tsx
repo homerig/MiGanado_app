@@ -31,6 +31,10 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
+      <Stack.Screen name="vistas/LoginScreen" options={{ headerShown: false }} />
+      <Stack.Screen name="vistas/singup" options={{ headerShown: false }} />
+      <Stack.Screen name="vistas/ingresarvia" options={{ headerShown: false }} />
+
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="vistas/buscar_animal" options={{ headerShown: false }} />
         <Stack.Screen name="vistas/IngresoAnimal" options={{ headerShown: false }} />
