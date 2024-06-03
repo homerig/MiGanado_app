@@ -1,14 +1,8 @@
 from rest_framework import viewsets
 from rest_framework.response import Response
-from rest_framework.renderers import JSONRenderer
-from .models import Ganado  # Importa tu modelo de datos
+from .models import Ganado
+from .serializers import GanadoSerializer  # Importa tu serializador
 
-class GanadoViewSet(viewsets.ViewSet):
-    renderer_classes = [JSONRenderer]
-
-    def list(self, request):
-        # Obtiene los datos de la base de datos o de otra fuente
-        queryset = Ganado.objects.all()  # Suponiendo que Ganado es tu modelo de datos
-        data = [{'id': item.id, 'name': item.name} for item in queryset]  # Serializa los datos a JSON
-
-        return Response(data)
+class GanadoViewSet(viewsets.ModelViewSet):
+    queryset = Ganado.objects.all()  # Especifica el queryset para la vista
+    serializer_class = GanadoSerializer  # Especifica el serializador para la vista
