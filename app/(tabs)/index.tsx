@@ -84,7 +84,7 @@ export default function HomeScreen() {
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.button}onPress={() => Alert.alert('Botón personalizado presionado')}> 
-            <Link href = '/Tacto'>
+            <Link href = '/tacto'>
               <View style={styles.buttonContent}>
                 <FontAwesomeIcon icon={faUserDoctor} size={32} color="#FFFFFF" style={styles.icon}/>
                 <Text style={styles.buttonText}>Tacto</Text>

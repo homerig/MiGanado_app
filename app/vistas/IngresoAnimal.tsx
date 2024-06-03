@@ -153,6 +153,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 10,
   },
+  checkbox: {
+    marginRight: 8,
+  },
+  box: {
+    width: 24,
+    height: 24,
+    borderWidth: 1,
+    borderColor: '#CCCCCC',
+    borderRadius: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  checkmark: {
+    color: '#407157',
+    fontSize: 18,
+  },
   label: {
     marginLeft: 8,
   },
