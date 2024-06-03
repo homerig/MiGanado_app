@@ -1,15 +1,19 @@
 import React,{useState} from 'react';
-import { Image, StyleSheet, Platform, Alert, TouchableOpacity, Text,View, ScrollView } from 'react-native';
+import { Pressable, StyleSheet, Platform, Alert, TouchableOpacity, Text,View, ScrollView } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-
+import { useNavigation } from 'expo-router';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faChartColumn, faClipboardCheck, faCow, faFileMedical, faFlask, faMapLocationDot, faSyringe, faUser, faUserDoctor } from '@fortawesome/free-solid-svg-icons';
 import { Calendar } from 'react-native-calendars';
+import { Link } from 'expo-router';
+
+
 
 
 export default function HomeScreen() {  
 
+  const navigation = useNavigation();
   const today = new Date().toISOString().split('T')[0];
   const [selectedDate] = useState(today);     
 
@@ -79,27 +83,35 @@ export default function HomeScreen() {
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button}onPress={() => Alert.alert('Botón personalizado presionado')}>          
-            <View style={styles.buttonContent}>
-              <FontAwesomeIcon icon={faUserDoctor} size={32} color="#FFFFFF" style={styles.icon} />
-              <Text style={styles.buttonText}>Tacto</Text>
-            </View>
+          <TouchableOpacity style={styles.button}onPress={() => Alert.alert('Botón personalizado presionado')}> 
+            <Link href = '/Tacto'>
+              <View style={styles.buttonContent}>
+                <FontAwesomeIcon icon={faUserDoctor} size={32} color="#FFFFFF" style={styles.icon}/>
+                <Text style={styles.buttonText}>Tacto</Text>
+              </View>
+            </Link>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button}onPress={() => Alert.alert('Botón personalizado presionado')}>                  
-            <View style={styles.buttonContent}>
-              <FontAwesomeIcon icon={faFileMedical} size={32} color="#FFFFFF" style={styles.icon} />
-              <Text style={styles.buttonText}>Tratamiento</Text>
-            </View>
+          <TouchableOpacity style={styles.button}onPress={() => Alert.alert('Botón personalizado presionado')}>  
+            <Link href = '/tratamientos'>                
+              <View style={styles.buttonContent}>
+                <FontAwesomeIcon icon={faFileMedical} size={32} color="#FFFFFF" style={styles.icon} />
+                <Text style={styles.buttonText}>Tratamiento</Text>
+              </View>
+            </Link>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button} onPress={() => {}}>         
-            <View style={styles.buttonContent}>
-              <FontAwesomeIcon icon={faChartColumn} size={32} color="#FFFFFF" style={styles.icon} />
-              <Text style={styles.buttonText}>Estadistica</Text>
-            </View>
+          
+          <TouchableOpacity style={styles.button}>
+            <Link href = '/estadisticas'>
+              <View style={styles.buttonContent}>
+                <FontAwesomeIcon icon={faChartColumn} size={32} color="#FFFFFF" style={styles.icon} />
+                <Text style={styles.buttonText}>Estadistica</Text>                
+              </View>
+            </Link>
           </TouchableOpacity>
-        
+          
+
         </View>
 
       </ThemedView>
@@ -111,6 +123,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+  },
+  link:{
+    backgroundColor: '#390040',
   },
   calendarContainer:{
     width: '100%', // Ajusta el tamaño del contenedor del calendario
