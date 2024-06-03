@@ -1,7 +1,8 @@
 
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, CheckBox, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
+import CheckBox from '@react-native-community/checkbox';
 
 const AnimalForm = () => {
   const [tipo, setTipo] = useState('');

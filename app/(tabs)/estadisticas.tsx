@@ -6,7 +6,7 @@ import { ThemedView } from '@/components/ThemedView';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faFilter, } from '@fortawesome/free-solid-svg-icons';
 
-export default function Estadisticas() {
+export default function HomeScreen() {
   return (
     <ThemedView style={styles.container}>
       <ThemedView style={styles.titleContainer}>
