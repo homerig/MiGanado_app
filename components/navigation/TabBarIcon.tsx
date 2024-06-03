@@ -21,8 +21,11 @@ const iconMap: Record<IconName, any> = {
 
 export function TabBarIcon({ name, color, focused }: TabBarIconProps) {
   return (
-    <View style={[styles.iconContainer, focused && styles.focusedIconContainer]}>
-      <FontAwesomeIcon icon={iconMap[name]} size={28} color={color} />
+    <View style={[ styles.iconContainer, focused && styles.focusContainer]}>
+      <View style={focused && styles.focusedIconContainer}>
+        <FontAwesomeIcon icon={iconMap[name]} size={28} color={color} />
+      </View>
+      
     </View>
   );
 }
@@ -33,19 +36,18 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
   },
   focusedIconContainer: {
-    marginBottom: 20,
+    marginBottom: 0,
     backgroundColor: '#407157', // Cambia este color según tus necesidades
     color: '#ffffff',
     borderRadius: 99,
-    paddingVertical: 20,
-    paddingHorizontal: 13,
-    shadowColor: '#407157', // Color de la sombra
-    shadowOpacity: 1, // Opacidad de la sombra (valor entre 0 y 1)
-    shadowRadius: 6, // Radio de la sombra
-    shadowOffset: {
-      width: 0, // Desplazamiento horizontal
-      height: 0, // Desplazamiento vertical
-    },
-    elevation: 4, // Solo para Android
+    paddingVertical: 15,
+    paddingHorizontal: 15,
   },
+  focusContainer:{
+    backgroundColor: '#40715766',
+    borderRadius: 99,
+    marginBottom: 25,
+    paddingVertical: 28,
+    paddingHorizontal: 7,
+  }
 });
