@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   checkmark: {
-    color: '#4CAF50',
+    color: '#407157',
     fontSize: 18,
   },
   label: {
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   button: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#407157',
     paddingVertical: 8,
     paddingHorizontal: 10,
     borderRadius: 20,

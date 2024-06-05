@@ -3,33 +3,25 @@ import { View, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/ThemedText'; // Asegúrate de que la ruta es correcta
 import { ThemedView } from '@/components/ThemedView'; // Asegúrate de que la ruta es correcta
 
-export default function VacunacionScreen() {
+export default function BuscarAnimalScreen() {
   return (
     <ThemedView style={styles.container}>
-      <ThemedText style={styles.title}>Vacunación</ThemedText>
+      <ThemedText style={styles.title}>Buscar Animal</ThemedText>
       <TextInput
         style={styles.input}
         placeholder="Seleccione Lote"
       />
       <TextInput
         style={styles.input}
-        placeholder="Nombre de la Vacuna"
+        placeholder="Seleccione Tipo"
       />
       <TextInput
         style={styles.input}
-        placeholder="Fecha de inicio"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Durante / Duración"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Cada"
+        placeholder="Número de caravana"
       />
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button}>
-          <ThemedText style={styles.buttonText}>Agregar al calendario</ThemedText>
+          <ThemedText style={styles.buttonText}>Buscar</ThemedText>
         </TouchableOpacity>
       </View>
     </ThemedView>
@@ -62,15 +54,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   button: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#407157',
     paddingVertical: 8,
     paddingHorizontal: 10,
     borderRadius: 20,
     alignItems: 'center',
-    width: '70%',
+    width: '50%',
   },
   buttonText: {
     color: '#FFFFFF',
     fontSize: 16,
   },
 });
+
+
