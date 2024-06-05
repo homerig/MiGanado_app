@@ -93,7 +93,7 @@ export default function HomeScreen() {
               </View>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button}onPress={() => Alert.alert('Falta vista tratamientos')}>                  
+          <TouchableOpacity style={styles.button}onPress={()=>navigation.navigate('vistas/tratamientos')}>                  
               <View style={styles.buttonContent}>
                 <FontAwesomeIcon icon={faFileMedical} size={32} color="#FFFFFF" style={styles.icon} />
                 <Text style={styles.buttonText}>Tratamiento</Text>
