@@ -6,10 +6,6 @@ import { useNavigation } from 'expo-router';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faChartColumn, faClipboardCheck, faCow, faFileMedical, faFlask, faMapLocationDot, faSyringe, faUser, faUserDoctor } from '@fortawesome/free-solid-svg-icons';
 import { Calendar } from 'react-native-calendars';
-import { Link } from 'expo-router';
-
-
-
 
 export default function HomeScreen() {  
 
@@ -50,6 +46,7 @@ export default function HomeScreen() {
               <FontAwesomeIcon icon={faCow} size={32} color="#FFFFFF" style={styles.icon} />
               <Text style={styles.buttonText}>Mis Animales</Text>
             </View>
+            
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('vistas/IngresoAnimal')}>          
@@ -60,6 +57,7 @@ export default function HomeScreen() {
                 <Text style={styles.splitTextBottom}>Animales</Text>
               </View>
             </View>
+          
           </TouchableOpacity>
               
           <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('vistas/sangrado')}>          
@@ -69,14 +67,11 @@ export default function HomeScreen() {
             </View>          
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button}>      
-            <Link href = '/lotes'>
+          <TouchableOpacity style={styles.button} onPress={()=> navigation.navigate('lotes')}>                  
               <View style={styles.buttonContent}>
                 <FontAwesomeIcon icon={faMapLocationDot} size={32} color="#FFFFFF" style={styles.icon} />
                 <Text style={styles.buttonText}>Lotes</Text>
-              </View>
-            </Link>    
-            
+              </View>                           
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('vistas/vacunacion')}>          
@@ -101,13 +96,11 @@ export default function HomeScreen() {
           </TouchableOpacity>
 
           
-          <TouchableOpacity style={styles.button}>
-            <Link href = '/estadisticas'>
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('estadisticas')}>            
               <View style={styles.buttonContent}>
                 <FontAwesomeIcon icon={faChartColumn} size={32} color="#FFFFFF" style={styles.icon} />
                 <Text style={styles.buttonText}>Estadistica</Text>                
-              </View>
-            </Link>
+              </View>            
           </TouchableOpacity>
           
 
