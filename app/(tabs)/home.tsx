@@ -45,14 +45,14 @@ export default function HomeScreen() {
 
         <View style={styles.buttonContainer}>
 
-          <TouchableOpacity style={styles.button}onPress={() => Alert.alert('Botón personalizado presionado')}>
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('vistas/buscar_animal')}>
             <View style={styles.buttonContent}>
               <FontAwesomeIcon icon={faCow} size={32} color="#FFFFFF" style={styles.icon} />
               <Text style={styles.buttonText}>Mis Animales</Text>
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button}onPress={() => Alert.alert('Botón personalizado presionado')}>          
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('vistas/IngresoAnimal')}>          
             <View style={styles.buttonContent}>
               <FontAwesomeIcon icon={faClipboardCheck} size={32} color="#FFFFFF" style={styles.icon} />
               <View style={styles.splitTextContainer}>
@@ -62,43 +62,42 @@ export default function HomeScreen() {
             </View>
           </TouchableOpacity>
               
-          <TouchableOpacity style={styles.button}onPress={() => Alert.alert('Botón personalizado presionado')}>          
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('vistas/sangrado')}>          
             <View style={styles.buttonContent}>
               <FontAwesomeIcon icon={faFlask} size={32} color="#FFFFFF" style={styles.icon} />
               <Text style={styles.buttonText}>Sangrado</Text>
             </View>          
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button}onPress={() => Alert.alert('Botón personalizado presionado')}>          
-            <View style={styles.buttonContent}>
-              <FontAwesomeIcon icon={faMapLocationDot} size={32} color="#FFFFFF" style={styles.icon} />
-              <Text style={styles.buttonText}>Lotes</Text>
-            </View>
+          <TouchableOpacity style={styles.button}>      
+            <Link href = '/lotes'>
+              <View style={styles.buttonContent}>
+                <FontAwesomeIcon icon={faMapLocationDot} size={32} color="#FFFFFF" style={styles.icon} />
+                <Text style={styles.buttonText}>Lotes</Text>
+              </View>
+            </Link>    
+            
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button}onPress={() => Alert.alert('Botón personalizado presionado')}>          
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('vistas/vacunacion')}>          
             <View style={styles.buttonContent}>
               <FontAwesomeIcon icon={faSyringe} size={32} color="#FFFFFF" style={styles.icon} />
               <Text style={styles.buttonText}>Vacunacion</Text>
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button}onPress={() => Alert.alert('Botón personalizado presionado')}> 
-            <Link href = '/Tacto'>
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('vistas/tacto')}> 
               <View style={styles.buttonContent}>
                 <FontAwesomeIcon icon={faUserDoctor} size={32} color="#FFFFFF" style={styles.icon}/>
                 <Text style={styles.buttonText}>Tacto</Text>
               </View>
-            </Link>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button}onPress={() => Alert.alert('Botón personalizado presionado')}>  
-            <Link href = '/tratamientos'>                
+          <TouchableOpacity style={styles.button}onPress={() => navigation.navigate('vistas/tratamientos')}>                  
               <View style={styles.buttonContent}>
                 <FontAwesomeIcon icon={faFileMedical} size={32} color="#FFFFFF" style={styles.icon} />
                 <Text style={styles.buttonText}>Tratamiento</Text>
               </View>
-            </Link>
           </TouchableOpacity>
 
           
