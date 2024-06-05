@@ -5,6 +5,7 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  Image,
 } from 'react-native';
 
 const SignUpScreen = () => {
@@ -13,6 +14,7 @@ const SignUpScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
+  const [logoSize, setLogoSize] = useState(100);
 
   const handleSignUp = () => {
     console.log('Nombre:', name);
@@ -69,6 +71,7 @@ const SignUpScreen = () => {
         onPress={handleSignUp}>
         <Text style={styles.registerButtonText}>REGISTRARSE</Text>
       </TouchableOpacity>
+    <Image source={require('../../assets/images/logoblanco.png')} style={{ width: logoSize, height: logoSize, marginTop: 100 }} />
     </View>
   );
 };
@@ -107,6 +110,11 @@ const styles = StyleSheet.create({
   registerButtonText: {
     color: '#fff',
     fontSize: 14,
+  },
+  icon: {
+    width: 80,
+    height: 24,
+    marginRight: 10,
   },
 });
 

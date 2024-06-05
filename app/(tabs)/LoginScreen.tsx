@@ -6,22 +6,21 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  Image,
 } from 'react-native';
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
+  const [password, setPassword] = useState('')
   const handleLogin = () => {
     console.log('Email:', email);
     console.log('Password:', password);
+  
   };
 
   return (
     <View style={styles.container}>
-      <View style={styles.logoContainer}>
-
-      </View>
+      <Image source={require('../../assets/images/logo.png')} style={styles.logo} />
       <TextInput
         style={styles.input}
         placeholder="Correo electrónico"
@@ -48,6 +47,7 @@ const LoginScreen = () => {
       <TouchableOpacity style={styles.registerButton}>
         <Text style={styles.registerButtonText}>Registrarse</Text>
       </TouchableOpacity>
+      <Text style={styles.miganadoText}>MiGanado</Text>
     </View>
   );
 };
@@ -57,16 +57,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#407157', // Cambio de color de fondo a verde del botón
+    backgroundColor: '#407157',
     padding: 16,
   },
-  logoContainer: {
-    marginBottom: 90,
-  },
-  logoText: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    color: '#fff', // Color del texto blanco
+  logo: {
+    width: 150,
+    height: 150,
+    marginBottom: 50,
   },
   input: {
     width: '90%',
@@ -82,31 +79,36 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginVertical: 10,
     textDecorationLine: 'underline',
-    backgroundColor: '#407157', // Cambio de color del texto a blanco
+    backgroundColor: '#407157',
   },
   loginButton: {
     width: '50%',
     padding: 15,
     marginVertical: 10,
-    backgroundColor: '#fff', // Color de fondo blanco
+    backgroundColor: '#fff',
     borderRadius: 70,
     alignItems: 'center',
   },
   loginButtonText: {
-    color: '#407157', // Cambio de color del texto a verde del botón
-    fontSize: 16, // Tamaño de texto más pequeño
+    color: '#407157',
+    fontSize: 16,
   },
   registerButton: {
     width: '50%',
     padding: 15,
-    marginVertical: 90,
-    backgroundColor: '#fff', // Color de fondo blanco
+    marginVertical: 50,
+    backgroundColor: '#fff',
     borderRadius: 70,
     alignItems: 'center',
   },
   registerButtonText: {
-    color: '#407157', // Cambio de color del texto a verde del botón
-    fontSize: 16, // Tamaño de texto más pequeño
+    color: '#407157',
+    fontSize: 16,
+  },
+  miganadoText: {
+    color: '#fff',
+    fontSize: 25,
+    marginTop: 10,
   },
 });
 

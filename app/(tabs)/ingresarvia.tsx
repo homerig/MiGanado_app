@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,8 @@ import {
 } from 'react-native';
 
 const IngresarViaScreen = () => {
+  const [logoSize, setLogoSize] = useState(90); // Tamaño inicial del logo
+
   return (
     <View style={styles.container}>
       <View style={styles.logoContainer}>
@@ -33,8 +35,10 @@ const IngresarViaScreen = () => {
       </TouchableOpacity>
       <Text style={styles.orText}>o</Text>
       <TouchableOpacity style={styles.loginButton}>
-        <Text style={styles.loginButtonText}>Iniciar Sesión</Text>
+        <Text style={styles.loginButtonText}>Registarme</Text>
       </TouchableOpacity>
+      <Image source={require('../../assets/images/logo.png')} style={{ width: logoSize, height: logoSize, marginTop: 100 }} />
+      <Text style={styles.miganadoText}>MiGanado</Text>
     </View>
   );
 };
@@ -95,6 +99,11 @@ const styles = StyleSheet.create({
     color: '#407157',
     fontSize: 16,
   },
+  miganadoText: {
+  color: '#fff',
+  fontSize: 25,
+  marginTop: 10,
+},
 });
 
 export default IngresarViaScreen;
