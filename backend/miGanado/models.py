@@ -13,9 +13,9 @@ class Usuario(models.Model):
     correoElectronico = models.EmailField()
     contrasenia = models.CharField(max_length=100)
     idTipo = models.CharField(max_length=20, choices=TIPO_CHOICES)
-    lotes = models.ManyToManyField('Lote')
-    notificaciones = models.ManyToManyField('Notificacion')
-    configNotificaciones = models.OneToOneField('ConfigNotificaciones', on_delete=models.CASCADE)
+    configNotificaciones = models.OneToOneField('ConfigNotificaciones', on_delete=models.CASCADE, null=True, blank=True)
+    lotes = models.ManyToManyField('Lote', blank=True)
+    notificaciones = models.ManyToManyField('Notificacion', blank=True)
 
 class Lote(models.Model):
     numero = models.IntegerField()
@@ -71,9 +71,10 @@ class Notificacion(models.Model):
     fecha = models.DateTimeField()
 
 class ConfigNotificaciones(models.Model):
-    usuario = models.OneToOneField('Usuario', on_delete=models.CASCADE)
+    usuario_config = models.OneToOneField('Usuario', on_delete=models.CASCADE)
     recibir_notificaciones_lote = models.BooleanField(default=False)
     recibir_notificaciones_tratamiento = models.BooleanField(default=False)
     recibir_notificaciones_tacto = models.BooleanField(default=False)
     recibir_notificaciones_sangrado = models.BooleanField(default=False)
     recibir_notificaciones_estadisticas = models.BooleanField(default=False)
+

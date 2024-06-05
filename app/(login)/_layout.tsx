@@ -24,24 +24,19 @@ export default function TabLayout() {
 
   return (
     <Tabs
-      initialRouteName="home"
+      initialRouteName="index"
       screenOptions={{
         tabBarActiveTintColor: '#ffffff',
         tabBarInactiveTintColor: '#605856',
-        headerShown: true,
-        header: () => <CustomHeader />,
+        headerShown: false,
         tabBarShowLabel: false,
         tabBarStyle: {
-          backgroundColor: '#EEEEEE',
-          borderTopWidth: 0,
-          elevation: 0,
-          height: 80,
-          paddingTop: 12
+          display: 'none',
         },
       }}
     >
       <Tabs.Screen
-        name="estadisticas"        
+        name="index"        
         options={{
           title: 'Estadísticas',
           tabBarIcon: ({ color, focused }) => (
@@ -51,43 +46,24 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
-        name="notificaciones"
+        name="singup"        
         options={{
-          title: 'Notificaciones',
+          title: 'Estadísticas',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'bell' : 'bell'} color={color} focused={focused} />
+            <TabBarIcon name={focused ? 'chart' : 'chart'} color={color} focused={focused} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="ingresarvia"        
+        options={{
+          title: 'Estadísticas',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'chart' : 'chart'} color={color} focused={focused} />
           ),
         }}
       />
 
-      <Tabs.Screen
-        name="home"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'home' : 'home'} color={color} focused={focused} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="lotes"
-        options={{
-          title: 'Lotes',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'map' : 'map'} color={color} focused={focused} />
-          ),
-        }}
-      />
-
-      <Tabs.Screen
-        name="perfil"
-        options={{
-          title: 'Perfil',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'user' : 'user'} color={color} focused={focused} />
-          ),
-        }}
-      />
     </Tabs>
   );
 }
