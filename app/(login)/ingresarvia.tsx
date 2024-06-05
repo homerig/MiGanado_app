@@ -6,8 +6,11 @@ import {
   StyleSheet,
   Image,
 } from 'react-native';
+import { useNavigation } from 'expo-router';
+
 
 const IngresarViaScreen = () => {
+  const navigation = useNavigation();
   return (
     <View style={styles.container}>
       <View style={styles.logoContainer}>
@@ -32,8 +35,8 @@ const IngresarViaScreen = () => {
         </View>
       </TouchableOpacity>
       <Text style={styles.orText}>o</Text>
-      <TouchableOpacity style={styles.loginButton}>
-        <Text style={styles.loginButtonText}>Iniciar Sesión</Text>
+      <TouchableOpacity style={styles.loginButton} onPress={() => navigation.navigate('singup')}>
+        <Text style={styles.loginButtonText}>Registrarse Manualmente</Text>
       </TouchableOpacity>
     </View>
   );

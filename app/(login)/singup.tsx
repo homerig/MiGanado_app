@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigation } from 'expo-router';
 import {
   View,
   Text,
@@ -6,6 +7,7 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
+import { registerUser } from '../../api/api';
 
 const SignUpScreen = () => {
   const [name, setName] = useState('');
@@ -13,13 +15,40 @@ const SignUpScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
+  const navigation = useNavigation();
 
-  const handleSignUp = () => {
-    console.log('Nombre:', name);
-    console.log('Campo:', campo);
-    console.log('Email:', email);
-    console.log('Password:', password);
-    console.log('Repeat Password:', repeatPassword);
+  const handleSignUp = async () => {
+    if (!name || !campo || !email || !password || !repeatPassword) {
+      alert('Por favor, complete todos los campos');
+      return;
+    }
+
+    if (password !== repeatPassword) {
+      alert('Las contraseñas no coinciden');
+      return;
+    }
+
+    const userData = {
+      nombre: name,
+      nombreCampo: campo,
+      correoElectronico: email,
+      contrasenia: password,
+      idTipo: 'cliente',  // Ajusta según sea necesario
+    };
+
+    try {
+      const registeredUser = await registerUser(userData);
+      console.log('Usuario registrado:', registeredUser);
+      navigation.navigate('(tabs)'); // Navegar después del registro exitoso
+    } catch (error) {
+      if (error.response) {
+        console.error('Error al registrar el usuario:', error.response.data);
+        alert(`Error al registrar el usuario: ${JSON.stringify(error.response.data)}`);
+      } else {
+        console.error('Error al registrar el usuario:', error.message);
+        alert('Error al registrar el usuario');
+      }
+    }
   };
 
   return (

@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import { useNavigation } from 'expo-router';
+import { loginUser } from '../../api/api'; // Importa la función loginUser
+
 import {
   View,
   Text,
@@ -11,10 +14,18 @@ import {
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigation = useNavigation();
 
-  const handleLogin = () => {
-    console.log('Email:', email);
-    console.log('Password:', password);
+  const handleLogin = async () => {
+    try {
+      const userData = await loginUser(email, password); // Llama a la función loginUser con email y password
+      console.log('Inicio de sesión exitoso:', userData);
+      navigation.navigate('(tabs)');
+      // Aquí puedes navegar a la siguiente pantalla o realizar otras acciones después del inicio de sesión exitoso
+    } catch (error) {
+      console.error('Error al iniciar sesión:', error.message);
+      Alert.alert('Error', 'Inicio de sesión fallido');
+    }
   };
 
   return (
@@ -45,7 +56,7 @@ const LoginScreen = () => {
       <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
         <Text style={styles.loginButtonText}>Iniciar Sesión</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.registerButton}>
+      <TouchableOpacity style={styles.registerButton} onPress={() => navigation.navigate('ingresarvia')}>
         <Text style={styles.registerButtonText}>Registrarse</Text>
       </TouchableOpacity>
     </View>
@@ -57,7 +68,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#407157', // Cambio de color de fondo a verde del botón
+    backgroundColor: '#407157',
     padding: 16,
   },
   logoContainer: {
