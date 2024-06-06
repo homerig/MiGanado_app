@@ -1,22 +1,22 @@
 import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, FlatList, StyleSheet, Text, Platform } from 'react-native';
+import { View, TextInput, TouchableOpacity, StyleSheet, Text, Platform } from 'react-native';
 import { ThemedText } from '@/components/ThemedText'; // Asegúrate de que la ruta es correcta
 import { ThemedView } from '@/components/ThemedView'; // Asegúrate de que la ruta es correcta
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 export default function TratamientosScreen() {
-  const [medicationName, setMedicationName] = useState<string>('');
-  const [startDate, setStartDate] = useState<Date | null>(null);
-  const [duration, setDuration] = useState<string>('');
-  const [interval, setInterval] = useState<string>('');
+  const [numeroCaravana, setNumeroCaravana] = useState<string>('');
+  const [tratamiento, setTratamiento] = useState<string>('');
+  const [medicacion, setMedicacion] = useState<string>('');
+  const [fechaInicio, setFechaInicio] = useState<Date | null>(null);
+  const [duracion, setDuracion] = useState<string>('');
+  const [cada, setCada] = useState<string>('');
   const [isDatePickerVisible, setIsDatePickerVisible] = useState<boolean>(false);
-  const [numeroCaravana, setNumeroCaravana] = useState('');
-  const [Tratamiento, setTratamiento] = useState('');
 
   const handleDateChange = (event: any, selectedDate?: Date) => {
     setIsDatePickerVisible(false);
     if (selectedDate) {
-      setStartDate(selectedDate);
+      setFechaInicio(selectedDate);
     }
   };
 
@@ -31,31 +31,38 @@ export default function TratamientosScreen() {
   return (
     <ThemedView style={styles.container}>
       <ThemedText style={styles.label}>Tratamientos</ThemedText>
-      
+
       <TextInput
         style={styles.input}
-        placeholder="Numero de caravana"
+        placeholder="Números de caravana"
         value={numeroCaravana}
         onChangeText={setNumeroCaravana}
       />
 
       <TextInput
         style={styles.input}
-        placeholder="Medicacion"
-        value={medicationName}
-        onChangeText={setMedicationName}
+        placeholder="Tratamiento"
+        value={tratamiento}
+        onChangeText={setTratamiento}
+      />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Medicación"
+        value={medicacion}
+        onChangeText={setMedicacion}
       />
 
       <TouchableOpacity
         style={styles.input}
         onPress={() => setIsDatePickerVisible(true)}
       >
-        <Text>{formatDate(startDate)}</Text>
+        <Text>{formatDate(fechaInicio)}</Text>
       </TouchableOpacity>
 
       {isDatePickerVisible && (
         <DateTimePicker
-          value={startDate || new Date()}
+          value={fechaInicio || new Date()}
           mode="date"
           display="default"
           onChange={handleDateChange}
@@ -64,16 +71,16 @@ export default function TratamientosScreen() {
 
       <TextInput
         style={styles.input}
-        placeholder="Durante / Duración"
-        value={duration}
-        onChangeText={setDuration}
+        placeholder="Durante/Duración"
+        value={duracion}
+        onChangeText={setDuracion}
       />
 
       <TextInput
         style={styles.input}
-        placeholder="Cada"
-        value={interval}
-        onChangeText={setInterval}
+        placeholder="Cada.."
+        value={cada}
+        onChangeText={setCada}
       />
 
       <TouchableOpacity
@@ -82,19 +89,17 @@ export default function TratamientosScreen() {
           // Lógica para agregar al calendario
           console.log({
             numeroCaravana,
-            medicationName,
-            startDate: startDate ? formatDate(startDate) : '',
-            duration,
-            interval
+            tratamiento,
+            medicacion,
+            fechaInicio: fechaInicio ? formatDate(fechaInicio) : '',
+            duracion,
+            cada,
           });
         }}
       >
         <ThemedText style={styles.buttonText}>Agregar al calendario</ThemedText>
       </TouchableOpacity>
-       
     </ThemedView>
-
-    
   );
 }
 
@@ -119,6 +124,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     paddingHorizontal: 10,
     justifyContent: 'center',
+    backgroundColor: '#F1F1F1',
   },
   button: {
     backgroundColor: '#407157',

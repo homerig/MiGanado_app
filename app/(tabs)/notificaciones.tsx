@@ -1,17 +1,28 @@
 import React from 'react';
-import { StyleSheet, Image } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faGear } from '@fortawesome/free-solid-svg-icons';
+import { Pressable, StyleSheet, Platform, Alert, Image, TouchableOpacity, View, ScrollView } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { faChartColumn, faClipboardCheck, faCow, faFileMedical, faFlask, faMapLocationDot, faSyringe, faUser, faUserDoctor } from '@fortawesome/free-solid-svg-icons';
+import { Calendar } from 'react-native-calendars';
+import { Link } from 'expo-router';
 
 export default function HomeScreen() {
+  const navigation = useNavigation();
+
   return (
     <ThemedView style={styles.container}>
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Notificaciones</ThemedText>
-        <FontAwesomeIcon icon={faGear} size={24} color="#605856" />
+
+        <TouchableOpacity onPress={() => navigation.navigate('vistas/ConfiguracionNotificaciones')}>
+          <FontAwesomeIcon icon={faGear} size={24} color="#605856" />
+        </TouchableOpacity>
+        
       </ThemedView>
+      
       <ThemedView style={styles.notificationContainer}>
         <Image
           source={require('@/assets/images/sinNotificaciones.png')}
@@ -35,13 +46,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 16,
-    padding: 20
+    padding: 20,
   },
   notificationContainer: {
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 16,
     paddingVertical: '40%',
-    gap: 30
+    gap: 30,
   },
 });

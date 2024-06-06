@@ -1,6 +1,6 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
-import { View, Image, Text } from 'react-native';
+import { View, Image, Text} from 'react-native';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { ThemedText } from '@/components/ThemedText';
 import { Colors } from '@/constants/Colors';
@@ -19,12 +19,13 @@ const CustomHeader = () => {
   );
 };
 
+
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
   return (
     <Tabs
-      initialRouteName="index"
+      initialRouteName="home"
       screenOptions={{
         tabBarActiveTintColor: '#ffffff',
         tabBarInactiveTintColor: '#605856',
@@ -61,7 +62,7 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
-        name="index"
+        name="home"
         options={{
           title: 'Home',
           tabBarIcon: ({ color, focused }) => (
@@ -69,7 +70,6 @@ export default function TabLayout() {
           ),
         }}
       />
-                  
       <Tabs.Screen
         name="lotes"
         options={{
@@ -79,6 +79,7 @@ export default function TabLayout() {
           ),
         }}
       />
+
       <Tabs.Screen
         name="perfil"
         options={{
@@ -87,7 +88,7 @@ export default function TabLayout() {
             <TabBarIcon name={focused ? 'user' : 'user'} color={color} focused={focused} />
           ),
         }}
-      />
+      />      
     </Tabs>
   );
 }

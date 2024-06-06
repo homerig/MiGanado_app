@@ -31,6 +31,7 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
+        <Stack.Screen name="(login)" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="vistas/buscar_animal" options={{ headerShown: false }} />
         <Stack.Screen name="vistas/IngresoAnimal" options={{ headerShown: false }} />
@@ -38,6 +39,9 @@ export default function RootLayout() {
         <Stack.Screen name="vistas/tacto" options={{ headerShown: false }} />
         <Stack.Screen name="vistas/vacunacion" options={{ headerShown: false }} />
         <Stack.Screen name="vistas/ver_animal" options={{ headerShown: false }} />
+        <Stack.Screen name="vistas/tratamientos" options={{ headerShown: false }} />
+        <Stack.Screen name="vistas/ConfiguracionNotificaciones" options={{ headerShown: false }} />
+
         <Stack.Screen name="+not-found" />
       </Stack>
     </ThemeProvider>
