@@ -40,7 +40,7 @@ export default function TabTwoScreen() {
         renderItem={({ item }) => <ListItem item={item} />}
         keyExtractor={item => item.id}
         contentContainerStyle={styles.list}
-      />
+      />  
     </View>
   );
 };
@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     fontFamily: 'JostRegular',
   },
   icons: {
-    flexDirection: 'row',
+    flexDirection: 'row',                 
   },
   iconButton: {
     marginLeft: 10,
