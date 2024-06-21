@@ -5,8 +5,9 @@ import { ThemedView } from '@/components/ThemedView';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faGear } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation } from '@react-navigation/native';
-import { UserContext } from '../../api/UserContext'; // Asegúrate de que la ruta sea correcta
-import { getUserNotificaciones } from '../../api/api'; // Importar la función de obtención de notificaciones
+
+import { UserContext } from '../../api/UserContext'; 
+import { getUserNotificaciones } from '../../api/api'; 
 
 const NotificationItem = ({ item }) => (
   <View style={styles.notificationItem}>
@@ -15,7 +16,7 @@ const NotificationItem = ({ item }) => (
   </View>
 );
 
-export default function HomeScreen() {
+export default function NotificacionScreen() {
   const navigation = useNavigation();
   const { userId } = useContext(UserContext);
   const [notifications, setNotifications] = useState([]);
