@@ -1,50 +1,85 @@
-# Welcome to your Expo app 👋
+# Instalación y uso Backend 
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
-
-## Get started
-
-1. Install dependencies
-
+## Índice
+1. [Instalación](https://github.com/homerig/MiGanado_app/edit/main/README.md#pasos-para-instalaci%C3%B3n-django).
+2. [Agregado de datos IP](https://github.com/homerig/MiGanado_app/edit/main/README.md#pasos-para-instalaci%C3%B3n-django).
+3. [Iniciar App](https://github.com/homerig/MiGanado_app/edit/main/README.md#iniciar-aplicaci%C3%B3n).
+4. [Ver datos y tablas agregadas](https://github.com/homerig/MiGanado_app/edit/main/README.md#ver-datos-y-tablas-agregadas).
+5. [Si cambias el modelo de clases en models.py](https://github.com/homerig/MiGanado_app/edit/main/README.md#si-cambias-el-modelo-de-clases-en-modelspy).
+   
+___________________________________________________________________________________________
+### Pasos para instalación DJANGO
+1. Descargar [Python](https://www.python.org/). Asegurate de marcar la opción que diga: `Add Python to PATH`
+2. Abrir **CMD** y poner el siguiente comando reemplazando la palabra **RUTA** por la ruta donde hayas instalado el proyecto de MiGanado:
+   
    ```bash
-   npm install
-   ```
+   cd RUTA/backend
+   pip install django
+   pip install django djangorestframework
+   pip install django-cors-headers
+    ```
+### Agrega tus datos de ip para luego poder utilizar
+1. Hallar **IP**:
+   - poner en **CMD**:
+    ```bash
+    ipconfig
+     ```
+   - tenes que ver la variable que diga:
+     
+   Adaptador de Ethernet Ethernet o Adaptador de LAN inalámbrica Wi-Fi
 
-2. Start the app
-
+   Dirección **IPv4**. . . . . . . . . . . . . . : **192.168.X.XX** (las x son los numeros que cambian según la IP)
+3. En api.js en baseURL poner `http://(tu IP):8000/miGanado`
+   debería quedar algo así:
+   
    ```bash
-    npx expo start
+   const baseURL = 'http://192.168.X.XX:8000/miGanado';
    ```
+4. En `MiGanado_app\backend\mi_ganado_backend\settings.py` agregar tu **IP** en:
+   ```bash
+   CORS_ALLOWED_ORIGINS = [
+       "http://localhost:8081",
+       "http://192.168.X.XX:8081", 
+       (agregar aca) 
+   ]
+    ```
+___________________________________________________________________________________________
+### Iniciar Aplicación
+1. iniciar **Django** (2 opciones):
+   - En el CMD:
 
-In the output, you'll find options to open the app in a
+    ```bash
+   cd  Ruta\backend
+   python manage.py runserver 0.0.0.0:8000
+   ```
+   - Desde Visual Studio:
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+    ```bash
+   cd backend
+   python manage.py runserver 0.0.0.0:8000
+   ``` 
+3. Para **salir y cerrar django** presionar: `CTRL + FIN + PAUSA (boton re pag)`
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+### Ver datos y tablas agregadas
+- si queres ver todas las **tablas**: `http://localhost:8000/miGanado/`
 
-## Get a fresh project
+- si queres ver **datos** de una tabla en específico: `http://localhost:8000/miGanado/usuarios/`
 
-When you're ready, run:
+###  Si cambias el modelo de clases en models.py
+1. Tocar guardar
+2. Luego poner:
+   
+   - En el CMD:
 
-```bash
-npm run reset-project
-```
+    ```bash
+   cd  Ruta\backend
+   python manage.py makemigrations
+   python manage.py migrate
+   ```
+   - Desde Visual Studio:
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+    ```bash
+   cd backend
+   python manage.py makemigrations
+   python manage.py migrate
+   ``` 
