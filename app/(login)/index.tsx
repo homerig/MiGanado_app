@@ -1,10 +1,16 @@
 import React, { useState, useContext } from 'react';
-import { useNavigation } from '@react-navigation/native';
-import { loginUser } from '../../api/api'; // Importa la función loginUser
-import { ThemedText } from '@/components/ThemedText';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { ThemedText } from '@/components/ThemedText';
+
+//Iconos
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faTimesCircle } from '@fortawesome/free-solid-svg-icons'; //agregar aca mas iconos
+
+//Funciones a usar de api
+import { loginUser } from '../../api/api'; 
+
+//Para el dato del id del usuario
 import { UserContext } from '../../api/UserContext'; 
 
 const ErrorIcon = ({ onPress }) => (

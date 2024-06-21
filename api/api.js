@@ -33,4 +33,33 @@ const loginUser = async (email, password) => {
 };
 
 
-export { baseURL, registerUser, loginUser };
+const getUserLotes = async (userId) => {
+  try {
+    const response = await axios.get(`${baseURL}/usuarios/${userId}/`);
+    return response.data.lotes;
+  } catch (error) {
+    if (error.response) {
+      console.error('Error al obtener los lotes del usuario:', error.response.data);
+    } else {
+      console.error('Error al obtener los lotes del usuario:', error.message);
+    }
+    throw error;
+  }
+};
+
+const getUserNotificaciones = async (userId) => {
+  try {
+    const response = await axios.get(`${baseURL}/usuarios/${userId}/`); 
+    return response.data.notificaciones;
+  } catch (error) {
+    if (error.response) {
+      console.error('Error al obtener los lotes del usuario:', error.response.data);
+    } else {
+      console.error('Error al obtener los lotes del usuario:', error.message);
+    }
+    throw error;
+  }
+};
+
+
+export { baseURL, registerUser, loginUser, getUserLotes, getUserNotificaciones};
