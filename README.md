@@ -1,11 +1,11 @@
 # Instalación y uso Backend 
 
 ## Índice
-1. [Instalación](https://github.com/homerig/MiGanado_app/edit/main/README.md#pasos-para-instalaci%C3%B3n-django).
-2. [Agregado de datos IP](https://github.com/homerig/MiGanado_app/edit/main/README.md#pasos-para-instalaci%C3%B3n-django).
-3. [Iniciar App](https://github.com/homerig/MiGanado_app/edit/main/README.md#iniciar-aplicaci%C3%B3n).
-4. [Ver datos y tablas agregadas](https://github.com/homerig/MiGanado_app/edit/main/README.md#ver-datos-y-tablas-agregadas).
-5. [Si cambias el modelo de clases en models.py](https://github.com/homerig/MiGanado_app/edit/main/README.md#si-cambias-el-modelo-de-clases-en-modelspy).
+1. [Instalación](https://github.com/homerig/MiGanado_app/blob/main/README.md#pasos-para-instalaci%C3%B3n-django).
+2. [Agregado de datos IP](https://github.com/homerig/MiGanado_app/blob/main/README.md#pasos-para-instalaci%C3%B3n-django).
+3. [Iniciar App](https://github.com/homerig/MiGanado_app/blob/main/README.md#iniciar-aplicaci%C3%B3n).
+4. [Ver datos y tablas agregadas](https://github.com/homerig/MiGanado_app/blob/main/README.md#ver-datos-y-tablas-agregadas).
+5. [Si cambias el modelo de clases en models.py](https://github.com/homerig/MiGanado_app/blob/main/README.md#si-cambias-el-modelo-de-clases-en-modelspy).
    
 ___________________________________________________________________________________________
 ### Pasos para instalación DJANGO
