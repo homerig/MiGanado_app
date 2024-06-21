@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseURL = 'http://192.168.0.182:8000/miGanado'; // Ajusta la URL a la de tu servidor
+const baseURL = 'http://192.168.0.71:8000/miGanado'; // Ajusta la URL a la de tu servidor
 
 const registerUser = async (userData) => {
   try {
@@ -22,7 +22,9 @@ const loginUser = async (email, password) => {
     return response.data;
   } catch (error) {
     if (error.response) {
-      console.error('Error al iniciar sesión:', error.response.data);
+      console.error('Error al iniciar sesión - Respuesta del servidor:', error.response.data);
+    } else if (error.request) {
+      console.error('Error al iniciar sesión - No se recibió respuesta:', error.request);
     } else {
       console.error('Error al iniciar sesión:', error.message);
     }
@@ -30,4 +32,5 @@ const loginUser = async (email, password) => {
   }
 };
 
-export { registerUser, loginUser };
+
+export { baseURL, registerUser, loginUser };
