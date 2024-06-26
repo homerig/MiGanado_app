@@ -107,10 +107,10 @@ const SignUpScreen = () => {
     if (formIsValid) {
       const userData = {
         nombre: name,
-        nombreCampo: campo,
-        correoElectronico: email,
+        nombre_campo: campo,
+        correo_electronico: email,
         contrasenia: password,
-        idTipo: 'cliente',  // Ajusta según sea necesario
+        tipo: 'cliente',  // Ajusta según sea necesario
       };
 
       try {

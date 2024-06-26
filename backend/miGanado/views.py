@@ -14,7 +14,7 @@ class LoginView(APIView):
 
         try:
             # Buscar un usuario con el correo electrónico proporcionado
-            usuario = Usuario.objects.get(correoElectronico=email)
+            usuario = Usuario.objects.get(correo_electronico=email)
             
             # Verificar si la contraseña coincide
             if usuario.contrasenia == password:
