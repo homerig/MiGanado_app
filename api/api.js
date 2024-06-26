@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseURL = 'http://192.168.0.182:8000/miGanado'; // Ajusta la URL a la de tu servidor
+const baseURL = 'http://192.168.0.87:8000/MiGanado_app'; // Ajusta la URL a la de tu servidor
 
 const registerUser = async (userData) => {
   try {
