@@ -1,31 +1,37 @@
-import React,{useState} from 'react';
-import { Pressable, StyleSheet, Platform, Alert, TouchableOpacity, Text,View, ScrollView } from 'react-native';
+import React, { useContext, useEffect } from 'react';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { useNavigation } from 'expo-router';
+import { useNavigation } from '@react-navigation/native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faChartColumn, faClipboardCheck, faCow, faFileMedical, faFlask, faMapLocationDot, faSyringe, faUser, faUserDoctor } from '@fortawesome/free-solid-svg-icons';
+import { faChartColumn, faClipboardCheck, faCow, faFileMedical, faFlask, faMapLocationDot, faSyringe, faUserDoctor } from '@fortawesome/free-solid-svg-icons';
 import { Calendar } from 'react-native-calendars';
+import { loginUser } from '../../api/api'; 
+import { UserContext } from '../../api/UserContext'; 
 
-export default function HomeScreen() {  
-
+export default function HomeScreen() {
   const navigation = useNavigation();
   const today = new Date().toISOString().split('T')[0];
-  const [selectedDate] = useState(today);     
+  const { userId, userName, fetchUserName } = useContext(UserContext);
 
-  return (       
-    <ScrollView>   
+  useEffect(() => {
+    if (userId) {
+      fetchUserName(userId);
+    }
+  }, [userId]);
+
+  return (
+    <ScrollView>
       <ThemedView style={styles.container}>
-                    
         <ThemedView style={styles.titleContainer}>
-          <ThemedText style={styles.title}>¡Bienvenido, (Nombre)!</ThemedText>
+          <ThemedText style={styles.title}>¡Bienvenido, {userName}!</ThemedText>
         </ThemedView>
 
         <ThemedView style={styles.calendarContainer}>
           <Calendar
-            style={styles.calendar}            
+            style={styles.calendar}
             markedDates={{
-              [selectedDate]: { selected: true, selectedColor: '#B43A3A' },
+              [today]: { selected: true, selectedColor: '#B43A3A' },
             }}
             theme={{
               selectedDayBackgroundColor: '#407157',
@@ -40,16 +46,14 @@ export default function HomeScreen() {
         </ThemedView>
 
         <View style={styles.buttonContainer}>
-
           <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('vistas/buscar_animal')}>
             <View style={styles.buttonContent}>
               <FontAwesomeIcon icon={faCow} size={32} color="#FFFFFF" style={styles.icon} />
               <Text style={styles.buttonText}>Mis Animales</Text>
             </View>
-            
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('vistas/IngresoAnimal')}>          
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('vistas/IngresoAnimal')}>
             <View style={styles.buttonContent}>
               <FontAwesomeIcon icon={faClipboardCheck} size={32} color="#FFFFFF" style={styles.icon} />
               <View style={styles.splitTextContainer}>
@@ -57,57 +61,52 @@ export default function HomeScreen() {
                 <Text style={styles.splitTextBottom}>Animales</Text>
               </View>
             </View>
-          
           </TouchableOpacity>
-              
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('vistas/sangrado')}>          
+
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('vistas/sangrado')}>
             <View style={styles.buttonContent}>
               <FontAwesomeIcon icon={faFlask} size={32} color="#FFFFFF" style={styles.icon} />
               <Text style={styles.buttonText}>Sangrado</Text>
-            </View>          
+            </View>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button} onPress={()=> navigation.navigate('lotes')}>                  
-              <View style={styles.buttonContent}>
-                <FontAwesomeIcon icon={faMapLocationDot} size={32} color="#FFFFFF" style={styles.icon} />
-                <Text style={styles.buttonText}>Lotes</Text>
-              </View>                           
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('lotes')}>
+            <View style={styles.buttonContent}>
+              <FontAwesomeIcon icon={faMapLocationDot} size={32} color="#FFFFFF" style={styles.icon} />
+              <Text style={styles.buttonText}>Lotes</Text>
+            </View>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('vistas/vacunacion')}>          
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('vistas/vacunacion')}>
             <View style={styles.buttonContent}>
               <FontAwesomeIcon icon={faSyringe} size={32} color="#FFFFFF" style={styles.icon} />
               <Text style={styles.buttonText}>Vacunacion</Text>
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('vistas/tacto')}> 
-              <View style={styles.buttonContent}>
-                <FontAwesomeIcon icon={faUserDoctor} size={32} color="#FFFFFF" style={styles.icon}/>
-                <Text style={styles.buttonText}>Tacto</Text>
-              </View>
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('vistas/tacto')}>
+            <View style={styles.buttonContent}>
+              <FontAwesomeIcon icon={faUserDoctor} size={32} color="#FFFFFF" style={styles.icon} />
+              <Text style={styles.buttonText}>Tacto</Text>
+            </View>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button}onPress={() => navigation.navigate('vistas/tratamientos')}>                  
-              <View style={styles.buttonContent}>
-                <FontAwesomeIcon icon={faFileMedical} size={32} color="#FFFFFF" style={styles.icon} />
-                <Text style={styles.buttonText}>Tratamiento</Text>
-              </View>
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('vistas/tratamientos')}>
+            <View style={styles.buttonContent}>
+              <FontAwesomeIcon icon={faFileMedical} size={32} color="#FFFFFF" style={styles.icon} />
+              <Text style={styles.buttonText}>Tratamiento</Text>
+            </View>
           </TouchableOpacity>
 
-          
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('estadisticas')}>            
-              <View style={styles.buttonContent}>
-                <FontAwesomeIcon icon={faChartColumn} size={32} color="#FFFFFF" style={styles.icon} />
-                <Text style={styles.buttonText}>Estadistica</Text>                
-              </View>            
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('estadisticas')}>
+            <View style={styles.buttonContent}>
+              <FontAwesomeIcon icon={faChartColumn} size={32} color="#FFFFFF" style={styles.icon} />
+              <Text style={styles.buttonText}>Estadistica</Text>
+            </View>
           </TouchableOpacity>
-          
-
         </View>
-
       </ThemedView>
-    </ScrollView>    
+    </ScrollView>
   );
 }
 
@@ -116,12 +115,11 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
   },
-  link:{
+  link: {
     backgroundColor: '#390040',
   },
-  calendarContainer:{
+  calendarContainer: {
     width: '100%', // Ajusta el tamaño del contenedor del calendario
-    //aspectRatio: 1, // Mantén la proporción cuadrada
     backgroundColor: '#fff', // Fondo blanco para el calendario
     borderRadius: 15, // Bordes redondeados
     shadowColor: '#000',
@@ -135,13 +133,13 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   eventsContainer: {
-    width : '100%', 
-    padding: 16,   
+    width: '100%',
+    padding: 16,
     marginBottom: 5,
   },
   eventsTitle: {
-    marginLeft : 10,
-    width :'100%',
+    marginLeft: 10,
+    width: '100%',
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 8,
@@ -156,7 +154,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     marginBottom: 16,
   },
-  title: {    
+  title: {
     fontSize: 20,
     fontWeight: 'bold',
   },
@@ -176,10 +174,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  buttonContent:{
-    flexDirection:'row',
-    alignItems:'center',
-    width:'100%'
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
   },
   buttonText: {
     color: '#fff',
@@ -187,7 +185,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   icon: {
-    marginRight:10, // Espacio a la derecha del icono
+    marginRight: 10, // Espacio a la derecha del icono
   },
   splitTextContainer: {
     marginLeft: 10,

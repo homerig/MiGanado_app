@@ -19,7 +19,7 @@ class LoginView(APIView):
             # Verificar si la contraseña coincide
             if usuario.contrasenia == password:
                 # Contraseña válida, devolver un mensaje de inicio de sesión exitoso
-                return Response({'message': 'Inicio de sesión exitoso'}, status=status.HTTP_200_OK)
+                return Response({'id': usuario.id, 'message': 'Inicio de sesión exitoso'}, status=status.HTTP_200_OK)
             else:
                 # Contraseña incorrecta
                 return Response({'message': 'Credenciales inválidas'}, status=status.HTTP_401_UNAUTHORIZED)

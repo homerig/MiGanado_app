@@ -1,4 +1,5 @@
 import React from 'react';
+import { ThemedText } from '@/components/ThemedText';
 import {
   View,
   Text,
@@ -13,9 +14,7 @@ const IngresarViaScreen = () => {
   const navigation = useNavigation();
   return (
     <View style={styles.container}>
-      <View style={styles.logoContainer}>
-        <Text style={styles.logoText}>Ingresar Vía</Text>
-      </View>
+      <ThemedText type="title" style={styles.title}>Ingresar Vía</ThemedText>
       <TouchableOpacity style={styles.socialButton}>
         <Image source={require('../../assets/images/google.jpeg')} style={styles.icon} />
         <View style={styles.textContainer}>
@@ -38,6 +37,10 @@ const IngresarViaScreen = () => {
       <TouchableOpacity style={styles.loginButton} onPress={() => navigation.navigate('singup')}>
         <Text style={styles.loginButtonText}>Registrarse Manualmente</Text>
       </TouchableOpacity>
+      <View style={styles.logoContainer}>
+        <Image source={require('../../assets/images/logo.png')} style={styles.logo} />
+        <ThemedText type="title" style={styles.logoText}>MiGanado</ThemedText>
+      </View>
     </View>
   );
 };
@@ -45,18 +48,27 @@ const IngresarViaScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#407157',
     padding: 16,
+    paddingTop: 200,
   },
-  logoContainer: {
-    marginBottom: 40,
+  title: {
+    color: '#fff',
+    marginBottom: 15,
+  },
+  logoContainer:{
+    position: 'absolute',
+    bottom: '10%',
+    alignItems: 'center',
+  },
+  logo: {
+    width: 90,
+    height: 90,
+    marginBottom: 15,
   },
   logoText: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    color: '#fff',
+    color: '#fff', // Color del texto blanco
   },
   socialButton: {
     flexDirection: 'row',
