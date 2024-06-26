@@ -18,11 +18,16 @@ class Usuario(models.Model):
     notificaciones = models.ManyToManyField('Notificacion', blank=True)
 
 class Lote(models.Model):
+    TIPO_CHOICES = [
+        ('toro','Toro'),
+        ('vaca','Vaca')
+    ]
+    
     numero = models.IntegerField()
     capacidad = models.IntegerField()
     capacidadMax = models.IntegerField()
-    idTipoAnimal = models.IntegerField()
-    Animales = models.ManyToManyField('Animal')
+    idTipoAnimal = models.CharField(max_length=20, choices=TIPO_CHOICES)
+    Animales = models.ManyToManyField('Animal', blank=True)
 
 class Animal(models.Model):
     numeroCaravana = models.CharField(max_length=100)
