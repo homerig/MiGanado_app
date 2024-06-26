@@ -1,94 +1,103 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, Image } from 'react-native';
+import React from 'react';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faAngleRight, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 
-export default function LoginScreen() {
+const data = [
+  { id: '1', name: 'LOTE 1', count: '100/100' },
+  { id: '2', name: 'LOTE 2', count: '32/100' },
+  { id: '3', name: 'LOTE 3', count: '52/100' },
+  { id: '4', name: 'LOTE 4', count: '43/100' },
+];
+
+const ListItem = ({ item }) => (
+  <TouchableOpacity style={styles.itemContainer}>
+    <Text style={styles.itemName}>{item.name}</Text>
+    <View>
+      <Text style={styles.itemCount}>{item.count}</Text>
+      <Text style={styles.itemCount}>Animales</Text>
+    </View>
+    <FontAwesomeIcon icon={faAngleRight} size={20} color="#000000" style={styles.icon} />
+  </TouchableOpacity>
+);
+
+export default function TabTwoScreen() {
   return (
     <View style={styles.container}>
-      <View style={styles.logoContainer}>
-        <Image source={require('@/assets/images/logo.png')} style={styles.logo} />
+      <View style={styles.header}>
+        <Text style={styles.title}>Mis lotes</Text>
+        <View style={styles.icons}>
+          <TouchableOpacity style={styles.iconButton}>
+            <FontAwesomeIcon icon={faPlus} size={24} color="#000000" style={styles.icon} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.iconButton}>
+            <FontAwesomeIcon icon={faTrash} size={24} color="#000000" style={styles.icon} />
+          </TouchableOpacity>
+        </View>
       </View>
-      <TextInput
-        style={styles.input}
-        placeholder="Correo electrónico"
-        placeholderTextColor="#FFF"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Contraseña"
-        placeholderTextColor="#FFF"
-        secureTextEntry
-      />
-      <TouchableOpacity>
-        <Text style={styles.forgotPassword}>¿Has olvidado tu contraseña?</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>Iniciar Sesión</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.registerButton}>
-        <Text style={styles.registerButtonText}>Registrarse</Text>
-      </TouchableOpacity>
-      <Text style={styles.footerText}>MiGanado</Text>
+      <FlatList
+        data={data}
+        renderItem={({ item }) => <ListItem item={item} />}
+        keyExtractor={item => item.id}
+        contentContainerStyle={styles.list}
+      />  
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#355e3b',
+    backgroundColor: '#f8f8f8',
+    paddingTop: 50,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    justifyContent: 'center',
+    paddingHorizontal: 20,
+    paddingBottom: 10,
   },
-  logoContainer: {
-    marginBottom: 40,
+  title: {
+    marginLeft: 20,
+    fontSize: 24,
+    fontWeight: 'bold',
+    fontFamily: 'JostRegular',
   },
-  logo: {
-    width: 100,
-    height: 100,
+  icons: {
+    flexDirection: 'row',                 
   },
-  input: {
-    width: '80%',
-    height: 40,
-    backgroundColor: '#527351',
-    borderRadius: 20,
-    paddingHorizontal: 10,
-    color: '#FFF',
-    marginBottom: 10,
+  iconButton: {
+    marginLeft: 10,
   },
-  forgotPassword: {
-    color: '#FFF',
-    marginBottom: 20,
-    textDecorationLine: 'underline',
+  icon: {
+    marginRight:10, // Espacio a la derecha del icono
   },
-  button: {
-    width: '80%',
-    height: 40,
-    backgroundColor: '#527351',
-    borderRadius: 20,
+  list: {
+    paddingHorizontal: 20,
+  },
+  itemContainer: {
+    backgroundColor: '#fff',
+    padding: 40,    
+    marginTop: 40,
+    borderRadius: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 5,
   },
-  buttonText: {
-    color: '#FFF',
+  itemName: {
     fontSize: 16,
+    fontWeight: 'bold',
+    fontFamily:'JostBold',
   },
-  registerButton: {
-    width: '80%',
-    height: 40,
-    backgroundColor: '#D0D0D0',
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 20,
-  },
-  registerButtonText: {
-    color: '#355e3b',
-    fontSize: 16,
-  },
-  footerText: {
-    color: '#FFF',
-    fontSize: 18,
-    marginTop: 20,
+  itemCount: {
+    fontSize: 14,
+    color: '#666',
+    fontFamily:'JostRegular',
   },
 });
