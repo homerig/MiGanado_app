@@ -49,7 +49,7 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8081",
-    "http://192.168.0.10:8081",  
+    "http://192.168.0.72:8081",  
 ]
 
 ROOT_URLCONF = 'mi_ganado_backend.urls'
