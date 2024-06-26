@@ -1,72 +1,78 @@
-import { Image, StyleSheet, Platform } from 'react-native';
-
-import ParallaxScrollView from '@/components/ParallaxScrollView';
+// EstadisticasScreen.js
+import React from 'react';
+import { StyleSheet, ScrollView } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faFilter, } from '@fortawesome/free-solid-svg-icons';
 
-export default function HomeScreen() {
+const StatisticsCard = ({ title, value, subTitle }: { title: string, value: string, subTitle: string }) => {
   return (
-    <ThemedView style={styles.container}>
-      <ThemedView style={styles.titleContainer}>
-            <ThemedText type="title">Estadísticas</ThemedText>
-            <FontAwesomeIcon icon={faFilter} size={24} color="#605856" />
-          </ThemedView>
-      
-      <ThemedView style={styles.section}>
-        <ThemedView style={styles.sectionItem}>
-          <ThemedText type="default">Lote (X)</ThemedText>
-          <ThemedText type="title">(X) Crías</ThemedText>
-          <ThemedText type="subtitle">En el último mes</ThemedText>
-        </ThemedView>
-        <ThemedText style={styles.sectionHeader}>espacio</ThemedText>
-      </ThemedView>
-
-
+    <ThemedView style={styles.card}>
+      <ThemedText style={styles.title}>{title}</ThemedText>
+      <ThemedText style={styles.value}>{value}</ThemedText>
+      <ThemedText style={styles.subTitle}>{subTitle}</ThemedText>
     </ThemedView>
   );
-}
+};
+
+const EstadisticasScreen = () => {
+  return (
+    <ScrollView style={styles.container}>
+      <ThemedView style={styles.header}>
+        <ThemedText style={styles.headerTitle}>Estadísticas</ThemedText>
+        <ThemedText style={styles.lote}>Lote X</ThemedText>
+      </ThemedView>
+      
+      <StatisticsCard title="60 crías" value="En el último mes" subTitle="Tasa de Natalidad" />
+      <StatisticsCard title="30 decesos" value="En el último mes" subTitle="Tasa de Mortalidad" />
+      <StatisticsCard title="60 crías" value="El último mes" subTitle="Tasa de Preñez" />
+    </ScrollView>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#f4f4f4',
+  },
+  header: {
+    backgroundColor: '#ffffff',
     padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
   },
-  titleContainer: {
-    width: '100%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 20
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
   },
-  section: {
-    // alignItems: 'center',
-    justifyContent: 'space-between',
-    margin: 16,
-    marginTop: 5,
-    gap: 16,
+  lote: {
+    fontSize: 16,
+    color: '#888',
+  },
+  card: {
+    backgroundColor: '#ffffff',
+    padding: 20,
+    margin: 10,
     borderRadius: 10,
-    shadowColor: '#0000001A', // Color de la sombra
-    shadowOpacity: 1, // Opacidad de la sombra (valor entre 0 y 1)
-    shadowRadius: 10, // Radio de la sombra
-    shadowOffset: {
-      width: 0, // Desplazamiento horizontal
-      height: 0, // Desplazamiento vertical
-    },
-    elevation: 4
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 5,
   },
-  sectionItem:{
-    padding: 20,
-    borderRadius: 10,
-    flexDirection: 'column',
-    alignItems: 'center',
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
   },
-  sectionHeader:{
-    padding: 20,
-    backgroundColor: '#407157',
-    color: 'white',
-    width: '100%',
-
-  }
+  value: {
+    fontSize: 16,
+    color: '#888',
+    marginTop: 10,
+  },
+  subTitle: {
+    fontSize: 14,
+    color: '#00a680',
+    marginTop: 10,
+  },
 });
+
+export default EstadisticasScreen;

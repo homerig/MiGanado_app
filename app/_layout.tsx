@@ -4,7 +4,7 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
-
+import { UserProvider } from '../api/UserContext'; 
 import { useColorScheme } from '@/hooks/useColorScheme';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -29,11 +29,24 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-    </ThemeProvider>
+    <UserProvider>
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <Stack>
+          <Stack.Screen name="(login)" options={{ headerShown: false }} />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="vistas/buscar_animal" options={{ headerShown: false }} />
+          <Stack.Screen name="vistas/IngresoAnimal" options={{ headerShown: false }} />
+          <Stack.Screen name="vistas/sangrado" options={{ headerShown: false }} />
+          <Stack.Screen name="vistas/tacto" options={{ headerShown: false }} />
+          <Stack.Screen name="vistas/vacunacion" options={{ headerShown: false }} />
+          <Stack.Screen name="vistas/ver_animal" options={{ headerShown: false }} />
+          <Stack.Screen name="vistas/tratamientos" options={{ headerShown: false }} />
+          <Stack.Screen name="vistas/ConfiguracionNotificaciones" options={{ headerShown: false }} />
+
+          <Stack.Screen name="+not-found" />
+        </Stack>
+      </ThemeProvider>
+    </UserProvider>
+    
   );
 }

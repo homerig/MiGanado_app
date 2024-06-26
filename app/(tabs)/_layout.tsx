@@ -1,6 +1,6 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
-import { View, Image, Text } from 'react-native';
+import { View, Image, Text} from 'react-native';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { ThemedText } from '@/components/ThemedText';
 import { Colors } from '@/constants/Colors';
@@ -19,12 +19,13 @@ const CustomHeader = () => {
   );
 };
 
+
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
   return (
     <Tabs
-      initialRouteName="index"
+      initialRouteName="home"
       screenOptions={{
         tabBarActiveTintColor: '#ffffff',
         tabBarInactiveTintColor: '#605856',
@@ -41,7 +42,7 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="estadisticas"
+        name="estadisticas"        
         options={{
           title: 'Estadísticas',
           tabBarIcon: ({ color, focused }) => (
@@ -61,7 +62,7 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
-        name="index"
+        name="home"
         options={{
           title: 'Home',
           tabBarIcon: ({ color, focused }) => (
@@ -69,8 +70,6 @@ export default function TabLayout() {
           ),
         }}
       />
-      
-      
       <Tabs.Screen
         name="lotes"
         options={{
@@ -81,6 +80,7 @@ export default function TabLayout() {
         }}
       />
 
+<<<<<<< HEAD
 <Tabs.Screen
         name="sangrado"
         options={{
@@ -130,6 +130,8 @@ export default function TabLayout() {
         }}
       />
 
+=======
+>>>>>>> 5718a7cc44ffff56964d32af10893ba4634910db
       <Tabs.Screen
         name="perfil"
         options={{
@@ -138,7 +140,7 @@ export default function TabLayout() {
             <TabBarIcon name={focused ? 'user' : 'user'} color={color} focused={focused} />
           ),
         }}
-      />
+      />      
     </Tabs>
   );
 }
