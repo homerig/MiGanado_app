@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseURL = 'http://192.168.0.182:8000/miGanado'; // Ajusta la URL a la de tu servidor
+const baseURL = 'http://192.168.0.10:8000/miGanado'; // Ajusta la URL a la de tu servidor
 
 const registerUser = async (userData) => {
   try {
@@ -61,5 +61,20 @@ const getUserNotificaciones = async (userId) => {
   }
 };
 
+const createSangrado = async (sangradoData) => {
+  try {
+    const response = await axios.post(`${baseURL}/sangrados/`, sangradoData);
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error('Error al guardar los datos de sangrado:', error.response.data);
+    } else {
+      console.error('Error al guardar los datos de sangrado:', error.message);
+    }
+    throw error;
+  }
+};
 
-export { baseURL, registerUser, loginUser, getUserLotes, getUserNotificaciones};
+
+
+export { baseURL, registerUser, loginUser, getUserLotes, getUserNotificaciones,createSangrado};

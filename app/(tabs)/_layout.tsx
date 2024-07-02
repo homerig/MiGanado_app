@@ -80,7 +80,6 @@ export default function TabLayout() {
         }}
       />
 
-<<<<<<< HEAD
 <Tabs.Screen
         name="sangrado"
         options={{
@@ -130,8 +129,6 @@ export default function TabLayout() {
         }}
       />
 
-=======
->>>>>>> 5718a7cc44ffff56964d32af10893ba4634910db
       <Tabs.Screen
         name="perfil"
         options={{
