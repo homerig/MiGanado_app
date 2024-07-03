@@ -14,12 +14,12 @@ class LoginView(APIView):
 
         try:
             # Buscar un usuario con el correo electrónico proporcionado
-            usuario = Usuario.objects.get(correoElectronico=email)
+            usuario = Usuario.objects.get(correo_electronico=email)
             
             # Verificar si la contraseña coincide
             if usuario.contrasenia == password:
                 # Contraseña válida, devolver un mensaje de inicio de sesión exitoso
-                return Response({'message': 'Inicio de sesión exitoso'}, status=status.HTTP_200_OK)
+                return Response({'id': usuario.id, 'message': 'Inicio de sesión exitoso'}, status=status.HTTP_200_OK)
             else:
                 # Contraseña incorrecta
                 return Response({'message': 'Credenciales inválidas'}, status=status.HTTP_401_UNAUTHORIZED)
@@ -30,6 +30,21 @@ class LoginView(APIView):
 class UsuarioViewSet(viewsets.ModelViewSet):
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
+
+class CrearLoteView(APIView):
+    def post(self, request, *args, **kwargs):
+        # Verifica la cantidad de lotes existentes
+        cantidad_lotes = Lote.objects.count()
+        
+        if cantidad_lotes >= 4:
+            return Response({'error': 'No se puede crear más de 4 lotes'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Si hay menos de 4 lotes, crea un nuevo lote
+        serializer = LoteSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LoteViewSet(viewsets.ModelViewSet):
     queryset = Lote.objects.all()
