@@ -19,6 +19,7 @@ const CustomHeader = () => {
   );
 };
 
+
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
@@ -79,6 +80,55 @@ export default function TabLayout() {
         }}
       />
 
+<Tabs.Screen
+        name="sangrado"
+        options={{
+          title: 'sangrado',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'map' : 'map'} color={color} focused={focused} />
+          ),
+        }}
+      />
+
+
+<Tabs.Screen
+        name="Ver Animal"
+        options={{
+          title: 'Ver Animal',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'map' : 'map'} color={color} focused={focused} />
+          ),
+        }}
+      />
+
+<Tabs.Screen
+        name="Tacto"
+        options={{
+          title: 'Tacto',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'map' : 'map'} color={color} focused={focused} />
+          ),
+        }}
+      />
+<Tabs.Screen
+        name="Buscar animal"
+        options={{
+          title: 'Buscar Animal',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'map' : 'map'} color={color} focused={focused} />
+          ),
+        }}
+      />
+<Tabs.Screen
+        name="Vacunacion"
+        options={{
+          title: 'Vacunacion',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'map' : 'map'} color={color} focused={focused} />
+          ),
+        }}
+      />
+
       <Tabs.Screen
         name="perfil"
         options={{
@@ -87,7 +137,7 @@ export default function TabLayout() {
             <TabBarIcon name={focused ? 'user' : 'user'} color={color} focused={focused} />
           ),
         }}
-      />
+      />      
     </Tabs>
   );
 }

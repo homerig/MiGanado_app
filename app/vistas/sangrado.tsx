@@ -1,29 +1,60 @@
-import React from 'react';
-import { View, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState, useContext } from 'react';
+import { View, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { UserContext } from '../../api/UserContext';
+import { createSangrado } from '../../api/api'; // Importar la función de API
 
 export default function SangradoScreen() {
+  const [lote, setLote] = useState('');
+  const [numeroCaravana, setNumeroCaravana] = useState('');
+  const [numeroTuboEnsayo, setNumeroTuboEnsayo] = useState('');
+  const { userId } = useContext(UserContext);
+  const navigation = useNavigation();
+
+  const handleSave = async (navigateAfterSave = false) => {
+    try {
+      const sangrado = await createSangrado({ lote, numeroCaravana, numeroTuboEnsayo, userId });
+      console.log("sangradi registrado", sangrado);
+      if (navigateAfterSave) {
+        navigation.navigate('(tabs)');
+      } else {
+        setLote('');
+        setNumeroCaravana('');
+        setNumeroTuboEnsayo('');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'No se pudo guardar el sangrado.');
+    }
+  };
+
   return (
     <ThemedView style={styles.container}>
       <ThemedText style={styles.title}>Sangrado</ThemedText>
       <TextInput
         style={styles.input}
         placeholder="Seleccione Lote"
+        value={lote}
+        onChangeText={setLote}
       />
       <TextInput
         style={styles.input}
         placeholder="Número de caravana"
+        value={numeroCaravana}
+        onChangeText={setNumeroCaravana}
       />
       <TextInput
         style={styles.input}
         placeholder="Número del tubo de ensayo"
+        value={numeroTuboEnsayo}
+        onChangeText={setNumeroTuboEnsayo}
       />
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => handleSave(false)}>
           <ThemedText style={styles.buttonText}>Siguiente</ThemedText>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => handleSave(true)}>
           <ThemedText style={styles.buttonText}>Finalizar</ThemedText>
         </TouchableOpacity>
       </View>
@@ -42,8 +73,8 @@ const styles = StyleSheet.create({
     padding: 5,
     fontWeight: 'bold',
     marginBottom: 10,
-    textAlign: 'left', // Alinear el texto a la izquierda
-    marginHorizontal: -2, // Añadir margen horizontal para asegurar que no se corte
+    textAlign: 'left',
+    marginHorizontal: -2,
   },
   input: {
     height: 50,
@@ -59,7 +90,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   button: {
-    backgroundColor: '#407157',
+    backgroundColor: '#4CAF50',
     paddingVertical: 8,
     paddingHorizontal: 10,
     borderRadius: 20,
