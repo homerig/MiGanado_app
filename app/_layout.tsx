@@ -13,7 +13,9 @@ SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    JostRegular : require('../assets/fonts/Jost-Regular.ttf'),
+    JostBold : require('../assets/fonts/Jost-Bold.ttf'),
+    JostSemiBold : require('../assets/fonts/Jost-SemiBold.ttf')
   });
 
   useEffect(() => {
@@ -29,7 +31,17 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
+        <Stack.Screen name="(login)" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="vistas/buscar_animal" options={{ headerShown: false }} />
+        <Stack.Screen name="vistas/IngresoAnimal" options={{ headerShown: false }} />
+        <Stack.Screen name="vistas/sangrado" options={{ headerShown: false }} />
+        <Stack.Screen name="vistas/tacto" options={{ headerShown: false }} />
+        <Stack.Screen name="vistas/vacunacion" options={{ headerShown: false }} />
+        <Stack.Screen name="vistas/ver_animal" options={{ headerShown: false }} />
+        <Stack.Screen name="vistas/tratamientos" options={{ headerShown: false }} />
+        <Stack.Screen name="vistas/ConfiguracionNotificaciones" options={{ headerShown: false }} />
+
         <Stack.Screen name="+not-found" />
       </Stack>
     </ThemeProvider>
