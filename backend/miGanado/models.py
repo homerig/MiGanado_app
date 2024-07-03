@@ -27,13 +27,10 @@ class Lote(models.Model):
 class Animal(models.Model):
     numeroCaravana = models.CharField(max_length=100)
     raza = models.CharField(max_length=100)
-    HistorialMedico = models.ForeignKey('HistorialMedico', on_delete=models.CASCADE)
-
-class HistorialMedico(models.Model):
-    peso = models.FloatField()
-    fechaNacimiento = models.DateField()
+    peso = models.FloatField(null=True, blank=True)
+    fechaNacimiento = models.DateField(null=True, blank=True)
     fechaFallecimiento = models.DateField(null=True, blank=True)
-    preniada = models.BooleanField()
+    preniada = models.BooleanField(null=True, blank=True)
     tratamientos = models.ManyToManyField('Tratamiento')
     sangrado = models.ManyToManyField('Sangrado')
 

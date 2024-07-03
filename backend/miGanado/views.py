@@ -4,8 +4,8 @@ from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework import status
 from django.contrib.auth import authenticate
-from .models import Usuario, Lote, Animal, HistorialMedico, Tratamiento, Sangrado, Notificacion, ConfigNotificaciones
-from .serializers import UsuarioSerializer, LoteSerializer, AnimalSerializer, HistorialMedicoSerializer, TratamientoSerializer, SangradoSerializer, NotificacionSerializer, ConfigNotificacionesSerializer
+from .models import Usuario, Lote, Animal, Tratamiento, Sangrado, Notificacion, ConfigNotificaciones
+from .serializers import UsuarioSerializer, LoteSerializer, AnimalSerializer, TratamientoSerializer, SangradoSerializer, NotificacionSerializer, ConfigNotificacionesSerializer
 
 class LoginView(APIView):
     def post(self, request, *args, **kwargs):
@@ -38,10 +38,6 @@ class LoteViewSet(viewsets.ModelViewSet):
 class AnimalViewSet(viewsets.ModelViewSet):
     queryset = Animal.objects.all()
     serializer_class = AnimalSerializer
-
-class HistorialMedicoViewSet(viewsets.ModelViewSet):
-    queryset = HistorialMedico.objects.all()
-    serializer_class = HistorialMedicoSerializer
 
 class TratamientoViewSet(viewsets.ModelViewSet):
     queryset = Tratamiento.objects.all()
