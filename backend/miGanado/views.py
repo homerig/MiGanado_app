@@ -54,7 +54,21 @@ class SangradoViewSet(viewsets.ModelViewSet):
 class NotificacionViewSet(viewsets.ModelViewSet):
     queryset = Notificacion.objects.all()
     serializer_class = NotificacionSerializer
+    permission_classes = [AllowAny] 
+
+    def get_queryset(self):
+        return self.queryset.filter(usuario=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(usuario=self.request.user)
 
 class ConfigNotificacionesViewSet(viewsets.ModelViewSet):
     queryset = ConfigNotificaciones.objects.all()
     serializer_class = ConfigNotificacionesSerializer
+    permission_classes = [AllowAny] 
+
+    def get_queryset(self):
+        return self.queryset.filter(usuario_config=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(usuario_config=self.request.user)
