@@ -55,7 +55,7 @@ class Sangrado(models.Model):
     numero_lote = models.IntegerField()
     numero_animal = models.IntegerField()
     numero_tubo = models.IntegerField()
-    fecha = models.DateField()
+
 
 class Notificacion(models.Model):
     TIPO_CHOICES = [
