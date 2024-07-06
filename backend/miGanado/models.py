@@ -44,7 +44,6 @@ class Tratamiento(models.Model):
         ('vacunacion', 'Vacunación'),
     ]
     
-    historial_medico = models.ForeignKey(HistorialMedico, on_delete=models.CASCADE, related_name='tratamientos_asociados', default=1)
     nombre = models.CharField(max_length=100)
     medicacion = models.CharField(max_length=100)
     fecha_inicio = models.DateField()
@@ -53,7 +52,6 @@ class Tratamiento(models.Model):
     tipo = models.CharField(max_length=20, choices=TIPO_CHOICES)
 
 class Sangrado(models.Model):    
-    historial_medico = models.ForeignKey(HistorialMedico, on_delete=models.CASCADE, related_name='sangrados_asociados', default=1)
     numero_lote = models.IntegerField()
     numero_animal = models.IntegerField()
     numero_tubo = models.IntegerField()
