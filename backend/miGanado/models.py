@@ -21,23 +21,22 @@ class Lote(models.Model):
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='lotes', default=1)
     numero = models.IntegerField()
     capacidad = models.IntegerField()
+
     capacidad_max = models.IntegerField()
     tipo_animal = models.CharField(max_length=20, choices=TIPO_CHOICES, default='toro')
     animales = models.ManyToManyField('Animal', blank=True, related_name='lotes_asociados', default=1)
 
-class HistorialMedico(models.Model):
-    peso = models.FloatField()
-    fecha_nacimiento = models.DateField()
-    fecha_fallecimiento = models.DateField(null=True, blank=True)
-    preniada = models.BooleanField()
-    tratamientos = models.ManyToManyField('Tratamiento', blank=True, related_name='historiales_medicos', default=1)
-    sangrados = models.ManyToManyField('Sangrado', blank=True, related_name='historiales_medicos', default=1)
 
 class Animal(models.Model):
     lote = models.ForeignKey(Lote, on_delete=models.CASCADE, related_name='animales_asociados', default=1)
-    numero_caravana = models.CharField(max_length=100)
+    numeroCaravana = models.CharField(max_length=100)
     raza = models.CharField(max_length=100)
-    historial_medico = models.OneToOneField(HistorialMedico, on_delete=models.CASCADE, related_name='animal_asociado', default=1)
+    peso = models.FloatField(null=True, blank=True)
+    fechaNacimiento = models.DateField(null=True, blank=True)
+    fechaFallecimiento = models.DateField(null=True, blank=True)
+    preniada = models.BooleanField(null=True, blank=True)
+    tratamientos = models.ManyToManyField('Tratamiento')
+    sangrado = models.ManyToManyField('Sangrado')
 
 class Tratamiento(models.Model):
     TIPO_CHOICES = [
