@@ -1,10 +1,42 @@
-import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, StyleSheet, Text } from 'react-native';
+import React, { useState, useContext } from 'react';
+import { View, TextInput, TouchableOpacity, StyleSheet, Text, Alert } from 'react-native';
 import { ThemedText } from '@/components/ThemedText'; // Asegúrate de que la ruta es correcta
 import { ThemedView } from '@/components/ThemedView'; // Asegúrate de que la ruta es correcta
+import { useNavigation } from '@react-navigation/native';
+import { UserContext } from '../../api/UserContext';
+import { createTacto } from '../../api/api';
 
 export default function TactoScreen() {
-  const [isChecked, setChecked] = useState(false);
+  const [numero_lote, setNumeroLote] = useState('');
+  const [numero_animal, setNumeroCaravana] = useState('');
+  const [prenada, setPrenada] = useState(false);
+  const { userId } = useContext(UserContext);
+  const navigation = useNavigation();
+  
+  const handleFinalizar = async () => {
+    try {
+      await handlesig(); // Llama a handlesig para registrar el tacto
+      navigation.navigate('(tabs)'); // Navega a la pantalla principal después de finalizar
+    } catch (error) {
+      console.error('Error al finalizar:', error.message);
+      Alert.alert('Error', 'No se pudo completar la acción.');
+    }
+  };
+
+  const handlesig = async () => {
+    try {
+      const tacto = await createTacto({ numero_lote, numero_animal, prenada, userId });
+      console.log("Tacto registrado:", tacto);
+      // Limpiar los campos después de guardar exitosamente
+      setNumeroLote('');
+      setNumeroCaravana('');
+      setPrenada(false);
+      Alert.alert('Éxito', 'Tacto registrado correctamente.');
+    } catch (error) {
+      console.error('Error al registrar el tacto:', error.message);
+      Alert.alert('Error', 'No se pudo guardar el tacto.');
+    }
+  };
 
   return (
     <ThemedView style={styles.container}>
@@ -12,27 +44,31 @@ export default function TactoScreen() {
       <TextInput
         style={styles.input}
         placeholder="Seleccione Lote"
+        value={numero_lote}
+        onChangeText={setNumeroLote}
       />
       <TextInput
         style={styles.input}
         placeholder="Número de caravana"
+        value={numero_animal}
+        onChangeText={setNumeroCaravana}
       />
       <View style={styles.checkboxContainer}>
         <TouchableOpacity
           style={styles.checkbox}
-          onPress={() => setChecked(!isChecked)}
+          onPress={() => setPrenada(!prenada)}
         >
           <View style={styles.box}>
-            {isChecked && <Text style={styles.checkmark}>✓</Text>}
+            {prenada && <Text style={styles.checkmark}>✓</Text>}
           </View>
         </TouchableOpacity>
         <ThemedText style={styles.label}>Preñada</ThemedText>
       </View>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={handlesig}>
           <ThemedText style={styles.buttonText}>Siguiente</ThemedText>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={handleFinalizar}>
           <ThemedText style={styles.buttonText}>Finalizar</ThemedText>
         </TouchableOpacity>
       </View>

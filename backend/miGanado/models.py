@@ -64,6 +64,14 @@ class Sangrado(models.Model):
     numero_tubo = models.IntegerField()
     fecha = models.DateField()
     userId = models.IntegerField()
+
+class Tacto(models.Model):
+    numero_lote = models.IntegerField()
+    numero_animal = models.IntegerField()
+    prenada = models.BooleanField(default=False)
+    fecha = models.DateField()
+    userId = models.IntegerField()
+
     
 >>>>>>> main
 
