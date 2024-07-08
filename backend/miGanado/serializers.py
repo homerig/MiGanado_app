@@ -24,7 +24,7 @@ class TratamientoSerializer(serializers.ModelSerializer):
 class SangradoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sangrado
-        fields = '__all__'
+        fields = ['id', 'numero_lote', 'numero_animal', 'numero_tubo', 'fecha', 'userId']
 
 class NotificacionSerializer(serializers.ModelSerializer):
     class Meta:
