@@ -1,22 +1,23 @@
 import React, { useState, useContext } from 'react';
 import { View, TextInput, TouchableOpacity, StyleSheet, Text, Alert } from 'react-native';
-import { ThemedText } from '@/components/ThemedText'; // Asegúrate de que la ruta es correcta
-import { ThemedView } from '@/components/ThemedView'; // Asegúrate de que la ruta es correcta
+import { ThemedText } from '@/components/ThemedText';
+import { ThemedView } from '@/components/ThemedView';
 import { useNavigation } from '@react-navigation/native';
 import { UserContext } from '../../api/UserContext';
 import { createTacto } from '../../api/api';
 
-export default function TactoScreen() {
+const TactoScreen = () => {
   const [numero_lote, setNumeroLote] = useState('');
   const [numero_animal, setNumeroCaravana] = useState('');
   const [prenada, setPrenada] = useState(false);
   const { userId } = useContext(UserContext);
+  const [fecha, setFecha] = useState('');
   const navigation = useNavigation();
   
   const handleFinalizar = async () => {
     try {
-      await handlesig(); // Llama a handlesig para registrar el tacto
-      navigation.navigate('(tabs)'); // Navega a la pantalla principal después de finalizar
+      await handlesig();
+      navigation.navigate('(tabs)');
     } catch (error) {
       console.error('Error al finalizar:', error.message);
       Alert.alert('Error', 'No se pudo completar la acción.');
@@ -25,12 +26,13 @@ export default function TactoScreen() {
 
   const handlesig = async () => {
     try {
-      const tacto = await createTacto({ numero_lote, numero_animal, prenada, userId });
+      const tacto = await createTacto({ numero_lote, numero_animal, fecha, prenada, userId });
       console.log("Tacto registrado:", tacto);
       // Limpiar los campos después de guardar exitosamente
       setNumeroLote('');
       setNumeroCaravana('');
       setPrenada(false);
+      setFecha('');
       Alert.alert('Éxito', 'Tacto registrado correctamente.');
     } catch (error) {
       console.error('Error al registrar el tacto:', error.message);
@@ -53,6 +55,12 @@ export default function TactoScreen() {
         value={numero_animal}
         onChangeText={setNumeroCaravana}
       />
+      <TextInput
+        style={styles.input}
+        placeholder="Fecha (YYYY-MM-DD)"
+        value={fecha}
+        onChangeText={setFecha}
+      />
       <View style={styles.checkboxContainer}>
         <TouchableOpacity
           style={styles.checkbox}
@@ -64,6 +72,7 @@ export default function TactoScreen() {
         </TouchableOpacity>
         <ThemedText style={styles.label}>Preñada</ThemedText>
       </View>
+
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={handlesig}>
           <ThemedText style={styles.buttonText}>Siguiente</ThemedText>
@@ -139,3 +148,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
+
+export default TactoScreen;
