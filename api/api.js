@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseURL = 'http://192.168.0.10:8000/miGanado'; // Ajusta la URL a la de tu servidor
+const baseURL = 'http://192.168.0.209:8000/miGanado'; // Ajusta la URL a la de tu servidor
 
 const registerUser = async (userData) => {
   try {
@@ -61,9 +61,11 @@ const getUserNotificaciones = async (userId) => {
   }
 };
 
-const createSangrado = async (sangradoData) => {
+
+
+const createSangrado = async ({ numero_lote, numero_animal, numero_tubo, fecha, userId }) => {
   try {
-    const response = await axios.post(`${baseURL}/sangrados/`, sangradoData);
+    const response = await axios.post(`${baseURL}/sangrados/`, { numero_lote, numero_animal, numero_tubo, fecha, userId });
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -74,6 +76,11 @@ const createSangrado = async (sangradoData) => {
     throw error;
   }
 };
+
+
+
+
+
 
 
 

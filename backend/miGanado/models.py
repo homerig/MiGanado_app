@@ -51,11 +51,13 @@ class Tratamiento(models.Model):
     repeticion = models.IntegerField()
     tipo = models.CharField(max_length=20, choices=TIPO_CHOICES)
 
-class Sangrado(models.Model):    
+class Sangrado(models.Model):
     numero_lote = models.IntegerField()
     numero_animal = models.IntegerField()
     numero_tubo = models.IntegerField()
     fecha = models.DateField()
+    userId = models.IntegerField()
+    
 
 class Notificacion(models.Model):
     TIPO_CHOICES = [
