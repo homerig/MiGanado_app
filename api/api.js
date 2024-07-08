@@ -76,6 +76,19 @@ const createSangrado = async ({ numero_lote, numero_animal, numero_tubo, fecha, 
     throw error;
   }
 };
+const createTacto = async ({ numero_lote, numero_animal, prenada, fecha, userId }) => {
+  try {
+    const response = await axios.post(`${baseURL}/tactos/`, { numero_lote, numero_animal, prenada, fecha, userId });
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error('Error al guardar los datos del tacto:', error.response.data);
+    } else {
+      console.error('Error al guardar los datos del tacto:', error.message);
+    }
+    throw error;
+  }
+};
 
 
 
@@ -84,4 +97,4 @@ const createSangrado = async ({ numero_lote, numero_animal, numero_tubo, fecha, 
 
 
 
-export { baseURL, registerUser, loginUser, getUserLotes, getUserNotificaciones,createSangrado};
+export { baseURL, registerUser, loginUser, getUserLotes, getUserNotificaciones,createSangrado,createTacto};
