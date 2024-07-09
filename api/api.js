@@ -1,14 +1,7 @@
 import axios from 'axios';
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-const baseURL = 'http://192.168.0.87:8000/MiGanado_app'; // Ajusta la URL a la de tu servidor
-=======
-const baseURL = 'http://192.168.0.10:8000/miGanado'; // Ajusta la URL a la de tu servidor
->>>>>>> main
-=======
-const baseURL = 'http://192.168.0.209:8000/miGanado'; // Ajusta la URL a la de tu servidor
->>>>>>> e3e072929b99ec86afb1f3d32668aaa3292942ad
+
+const baseURL = 'http://192.168.0.181:8000/miGanado'; // Ajusta la URL a la de tu servidor
 
 const registerUser = async (userData) => {
   try {
@@ -99,6 +92,34 @@ const createTacto = async ({ numero_lote, numero_animal, prenada, fecha, userId 
   }
 };
 
+const createTratamiento = async ({ numeroCaravana, tratamiento, medicacion, fechaInicio, cada, userId }) => {
+  try {
+    const response = await axios.post(`${baseURL}/tratamientos/`, { numeroCaravana, tratamiento, medicacion, fechaInicio, cada, userId });
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error('Error al guardar los datos de tratamiento:', error.response.data);
+    } else {
+      console.error('Error al guardar los datos de tratamiento:', error.message);
+    }
+    throw error;
+  }
+};
+
+
+const registerAnimal = async({lotes, numeroCaravana, tipos, peso, edad, isNewborn, isPregnant, userId}) => {
+  try {
+    const response = await axios.post(`${baseURL}/animales/`, {numeroCaravana, lotes, tipos, sexo, peso, edad, isNewborn, isPregnant, userId});
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error('Error al registrar el animal:', error.response.data);
+    } else {
+      console.error('Error al registrar el animal:', error.message);
+    }
+    throw error;
+  }
+}
 
 
 
@@ -106,4 +127,6 @@ const createTacto = async ({ numero_lote, numero_animal, prenada, fecha, userId 
 
 
 
-export { baseURL, registerUser, loginUser, getUserLotes, getUserNotificaciones,createSangrado,createTacto};
+
+
+export { baseURL, registerUser, loginUser, getUserLotes, getUserNotificaciones,createSangrado,createTacto, createTratamiento, registerAnimal};

@@ -1,22 +1,29 @@
 
-import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, Modal, FlatList, StyleSheet, Text } from 'react-native';
+import React, { useState, useContext } from 'react';
+import { View, TextInput, TouchableOpacity, Modal, FlatList, StyleSheet, Text, Alert } from 'react-native';
 import { ThemedText } from '@/components/ThemedText'; // Asegúrate de que la ruta es correcta
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { ThemedView } from '@/components/ThemedView'; // Asegúrate de que la ruta es correcta
+import { registerAnimal } from '../../api/api';
+import { UserContext } from '../../api/UserContext';
+import { useNavigation } from 'expo-router';
 
-export default function IngresarAnimalScreen() {
-  const [selectedTipo, setSelectedTipo] = useState<string>('');
-  const [selectedLote, setSelectedLote] = useState<string>('');
-  const [numeroCaravana, setNumeroCaravana] = useState<string>('');
-  const [sexo, setSexo] = useState<string>('');
-  const [peso, setPeso] = useState<string>('');
-  const [edad, setEdad] = useState<string>('');
+
+const IngresarAnimalScreen = () => {
+  const [selectedTipo, setSelectedTipo] = useState('');
+  const [selectedLote, setSelectedLote] = useState('');
+  const [numeroCaravana, setNumeroCaravana] = useState('');
+  const [sexo, setSexo] = useState('');
+  const [peso, setPeso] = useState('');
+  const [edad, setEdad] = useState('');
   const [isPregnant, setIsPregnant] = useState<boolean>(false);
   const [isNewborn, setIsNewborn] = useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [isTipoModalVisible, setIsTipoModalVisible] = useState<boolean>(false);
-  const [tipos] = useState<string[]>(['Vaca', 'Toro']); // Agrega más tipos según sea necesario
-  const [lotes] = useState<string[]>(['Lote 1', 'Lote 2']); // Agrega más lotes según sea necesario
+  const [tipos] = useState<string[]>(['Vaca', 'Toro']); 
+  const [lotes] = useState<string[]>(['Lote 1', 'Lote 2']); 
+  const { userId } = useContext(UserContext);
 
   const selectTipo = (tipo: string) => {
     setSelectedTipo(tipo);
@@ -27,6 +34,23 @@ export default function IngresarAnimalScreen() {
     setSelectedLote(lote);
     setIsModalVisible(false);
   };
+
+  const navigation = useNavigation();
+
+  const handleGuardarAnimal = async () => {
+    try {
+      const animal = await registerAnimal({ lotes, numeroCaravana, tipos, peso, edad, isNewborn, isPregnant, userId});
+      console.log("Animal registrado:", animal);
+      setNumeroCaravana('');
+      setPeso('');
+      setEdad('');
+      Alert.alert('Éxito', 'Animal registrado correctamente.');
+    } catch (error) {
+      console.error('Error al registrar el animal:', error.message);
+      Alert.alert('Error', 'No se pudo guardar el animal.');
+    }
+  };
+
 
   return (
     <ThemedView style={styles.container}>
@@ -61,7 +85,6 @@ export default function IngresarAnimalScreen() {
         value={sexo}
         onChangeText={setSexo}
       />
-
       <TextInput
         style={styles.input}
         placeholder="Peso"
@@ -99,7 +122,6 @@ export default function IngresarAnimalScreen() {
       <TouchableOpacity
         style={styles.grayButton}
         onPress={() => {
-          // Lógica para agregar tratamiento
           console.log('Agregar Tratamiento');
         }}
       >
@@ -108,19 +130,7 @@ export default function IngresarAnimalScreen() {
 
       <TouchableOpacity
         style={styles.greenButton}
-        onPress={() => {
-          // Lógica para guardar el animal
-          console.log({
-            selectedTipo,
-            selectedLote,
-            numeroCaravana,
-            sexo,
-            peso,
-            edad,
-            isNewborn,
-            isPregnant,
-          });
-        }}
+        onPress={handleGuardarAnimal} // Aquí se llama a la función handleGuardarAnimal
       >
         <ThemedText style={styles.greenButtonText}>Guardar</ThemedText>
       </TouchableOpacity>
@@ -210,6 +220,23 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#F1F1F1',
   },
+  inputError: {
+    borderColor: '#d44648',
+  },
+  errorIcon: {
+    position: 'absolute',
+    right: 30,
+    top: 20,
+    color: '#d44648',
+
+  },
+  errorText: {
+    color: '#d44648',
+    fontSize: 12,
+    marginBottom: 5,
+    paddingHorizontal: 12,
+    alignSelf: 'flex-start',
+  },
   grayButton: {
     backgroundColor: '#A9A9A9',
     paddingVertical: 8,
@@ -283,3 +310,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
+export default IngresarAnimalScreen;
