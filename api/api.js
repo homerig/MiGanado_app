@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseURL = 'http://192.168.0.10:8000/miGanado'; // Ajusta la URL a la de tu servidor
+const baseURL = 'http://192.168.0.182:8000/miGanado'; // Ajusta la URL a la de tu servidor
 
 const registerUser = async (userData) => {
   try {
@@ -61,6 +61,32 @@ const getUserNotificaciones = async (userId) => {
   }
 };
 
+const createLote = async (loteData, userId) => {
+  try {
+    const response = await axios.post(`${baseURL}/lotes/`, { ...loteData, usuario: userId });
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error('Error al crear el lote:', error.response.data);
+    } else {
+      console.error('Error al crear el lote:', error.message);
+    }
+    throw error;
+  }
+};
+
+const deleteLote = async (loteId) => {
+  try {
+    await axios.delete(`${baseURL}/lotes/${loteId}/`);
+  } catch (error) {
+    if (error.response) {
+      console.error('Error al eliminar el lote:', error.response.data);
+    } else {
+      console.error('Error al eliminar el lote:', error.message);
+    }
+    throw error;
+  }
+};
 
 
 const createSangrado = async ({ numero_lote, numero_animal, numero_tubo, fecha, userId }) => {
@@ -97,4 +123,4 @@ const createTacto = async ({ numero_lote, numero_animal, prenada, fecha, userId 
 
 
 
-export { baseURL, registerUser, loginUser, getUserLotes, getUserNotificaciones,createSangrado,createTacto};
+export { baseURL, registerUser, loginUser, getUserLotes, getUserNotificaciones,createSangrado,createTacto,deleteLote,createLote};
