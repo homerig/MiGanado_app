@@ -63,6 +63,7 @@ const getUserNotificaciones = async (userId) => {
 
 
 
+
 const createSangrado = async ({ numero_lote, numero_animal, numero_tubo, fecha, userId }) => {
   try {
     const response = await axios.post(`${baseURL}/sangrados/`, { numero_lote, numero_animal, numero_tubo, fecha, userId });
@@ -90,6 +91,34 @@ const createTacto = async ({ numero_lote, numero_animal, prenada, fecha, userId 
   }
 };
 
+const createTratamiento = async ({ numeroCaravana, tratamiento, medicacion, fechaInicio, cada, userId }) => {
+  try {
+    const response = await axios.post(`${baseURL}/tratamientos/`, { numeroCaravana, tratamiento, medicacion, fechaInicio, cada, userId });
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error('Error al guardar los datos de tratamiento:', error.response.data);
+    } else {
+      console.error('Error al guardar los datos de tratamiento:', error.message);
+    }
+    throw error;
+  }
+};
+
+
+const registerAnimal = async({lotes, numeroCaravana, tipos, peso, edad, isNewborn, isPregnant, userId}) => {
+  try {
+    const response = await axios.post(`${baseURL}/animales/`, {numeroCaravana, lotes, tipos, sexo, peso, edad, isNewborn, isPregnant, userId});
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error('Error al registrar el animal:', error.response.data);
+    } else {
+      console.error('Error al registrar el animal:', error.message);
+    }
+    throw error;
+  }
+}
 
 
 
@@ -97,4 +126,6 @@ const createTacto = async ({ numero_lote, numero_animal, prenada, fecha, userId 
 
 
 
-export { baseURL, registerUser, loginUser, getUserLotes, getUserNotificaciones,createSangrado,createTacto};
+
+
+export { baseURL, registerUser, loginUser, getUserLotes, getUserNotificaciones,createSangrado,createTacto, createTratamiento, registerAnimal};
