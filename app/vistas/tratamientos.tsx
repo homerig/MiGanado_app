@@ -1,32 +1,37 @@
-import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, StyleSheet, Text, Platform } from 'react-native';
+import React, { useContext, useState } from 'react';
+import { View, TextInput, TouchableOpacity, StyleSheet, Text, Platform, Alert } from 'react-native';
 import { ThemedText } from '@/components/ThemedText'; // Asegúrate de que la ruta es correcta
 import { ThemedView } from '@/components/ThemedView'; // Asegúrate de que la ruta es correcta
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { useNavigation } from '@react-navigation/native';
+import { UserContext } from '../../api/UserContext';
+import { createTratamiento } from '../../api/api';
 
-export default function TratamientosScreen() {
-  const [numeroCaravana, setNumeroCaravana] = useState<string>('');
-  const [tratamiento, setTratamiento] = useState<string>('');
-  const [medicacion, setMedicacion] = useState<string>('');
-  const [fechaInicio, setFechaInicio] = useState<Date | null>(null);
-  const [duracion, setDuracion] = useState<string>('');
-  const [cada, setCada] = useState<string>('');
-  const [isDatePickerVisible, setIsDatePickerVisible] = useState<boolean>(false);
+const TratamientosScreen = () => {
+  const [numeroCaravana, setNumeroCaravana] = useState('');
+  const [tratamiento, setTratamiento] = useState('');
+  const [medicacion, setMedicacion] = useState('');
+  const [fechaInicio, setFechaInicio] = useState('');
+  const [duracion, setDuracion] = useState('');
+  const [cada, setCada] = useState('');
+  const { userId } = useContext(UserContext);
+  const navigation = useNavigation();
 
-  const handleDateChange = (event: any, selectedDate?: Date) => {
-    setIsDatePickerVisible(false);
-    if (selectedDate) {
-      setFechaInicio(selectedDate);
+  const handleGuardar = async () => {
+    try {
+      const Nuevotratamiento = await createTratamiento({ numeroCaravana, tratamiento , medicacion, fechaInicio, cada, userId });
+      console.log("Tratamiento registrado:", Nuevotratamiento);
+      setNumeroCaravana('');
+      setTratamiento('');
+      setMedicacion('');
+      setFechaInicio('');
+      setCada('');
+      Alert.alert('Éxito', 'Tratamiento registrado correctamente.');
+    } catch (error) {
+      console.error('Error al registrar el tratamiento:', error.message);
+      Alert.alert('Error', 'No se pudo guardar el tratamiento.');
     }
-  };
-
-  const formatDate = (date: Date | null) => {
-    if (!date) return 'Seleccione fecha de inicio';
-    const day = date.getDate();
-    const month = date.getMonth() + 1; // Los meses son indexados desde 0
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
-  };
+  }
 
   return (
     <ThemedView style={styles.container}>
@@ -53,21 +58,12 @@ export default function TratamientosScreen() {
         onChangeText={setMedicacion}
       />
 
-      <TouchableOpacity
+      <TextInput
         style={styles.input}
-        onPress={() => setIsDatePickerVisible(true)}
-      >
-        <Text>{formatDate(fechaInicio)}</Text>
-      </TouchableOpacity>
-
-      {isDatePickerVisible && (
-        <DateTimePicker
-          value={fechaInicio || new Date()}
-          mode="date"
-          display="default"
-          onChange={handleDateChange}
-        />
-      )}
+        placeholder="Fecha (YYYY-MM-DD)"
+        value={fechaInicio}
+        onChangeText={setFechaInicio}
+      />
 
       <TextInput
         style={styles.input}
@@ -82,23 +78,12 @@ export default function TratamientosScreen() {
         value={cada}
         onChangeText={setCada}
       />
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button} onPress={handleGuardar}>
+          <ThemedText style={styles.buttonText}>Agregar al calendario</ThemedText>
+        </TouchableOpacity>
+      </View>
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => {
-          // Lógica para agregar al calendario
-          console.log({
-            numeroCaravana,
-            tratamiento,
-            medicacion,
-            fechaInicio: fechaInicio ? formatDate(fechaInicio) : '',
-            duracion,
-            cada,
-          });
-        }}
-      >
-        <ThemedText style={styles.buttonText}>Agregar al calendario</ThemedText>
-      </TouchableOpacity>
     </ThemedView>
   );
 }
@@ -138,4 +123,11 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
   },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 20,
+  },
 });
+
+export default TratamientosScreen;
