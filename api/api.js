@@ -168,4 +168,4 @@ const createVacunacion = async ({ numero_lote, nombre_vacuna, fechaInicio, duran
 
 
 
-export { baseURL, registerUser, loginUser, getUserLotes, getUserNotificaciones,createSangrado,createTacto, createTratamiento, registerAnimal};
+export { baseURL, registerUser, loginUser, getUserLotes, getUserNotificaciones,createSangrado,createTacto,createVacunacion, createTratamiento, registerAnimal,createLote,deleteLote};
