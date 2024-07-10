@@ -1,49 +1,122 @@
-import React from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState, useEffect, useContext } from 'react';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faAngleRight, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { getUserLotes, createLote, deleteLote } from '../../api/api';
+import { UserContext } from '../../api/UserContext';
+import { useNavigation } from '@react-navigation/native'; // Importar hook de navegación
 
-const data = [
-  { id: '1', name: 'LOTE 1', count: '100/100' },
-  { id: '2', name: 'LOTE 2', count: '32/100' },
-  { id: '3', name: 'LOTE 3', count: '52/100' },
-  { id: '4', name: 'LOTE 4', count: '43/100' },
-];
-
-const ListItem = ({ item }) => (
-  <TouchableOpacity style={styles.itemContainer}>
-    <Text style={styles.itemName}>{item.name}</Text>
+const ListItem = ({ item, onPress, isSelected, isDeleting, onDelete }) => (
+  <TouchableOpacity
+    style={[styles.itemContainer, isSelected && styles.selectedItem]}
+    onPress={() => (isDeleting ? onDelete(item) : onPress(item))}
+  >
+    <Text style={styles.itemName}>Nuevo Lote</Text>
     <View>
-      <Text style={styles.itemCount}>{item.count}</Text>
-      <Text style={styles.itemCount}>Animales</Text>
+      <Text style={styles.itemCount}>{item.capacidad}/{item.capacidad_max} animales</Text>
     </View>
-    <FontAwesomeIcon icon={faAngleRight} size={20} color="#000000" style={styles.icon} />
+    <FontAwesomeIcon 
+      icon={isDeleting ? faTrash : faAngleRight} 
+      size={20} 
+      color={isDeleting ? 'red' : '#000000'} 
+      style={styles.icon} 
+    />
   </TouchableOpacity>
 );
 
 export default function TabTwoScreen() {
+  const { userId } = useContext(UserContext);
+  const [lotes, setLotes] = useState([]); 
+  const [selectedLote, setSelectedLote] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const navigation = useNavigation(); // Hook de navegación
+
+  useEffect(() => {
+    const fetchLotes = async () => {
+      try {
+        const userLotes = await getUserLotes(userId);
+        setLotes(userLotes);
+      } catch (error) {
+        console.error('Error al obtener los lotes del usuario:', error.message);
+      }
+    };
+
+    fetchLotes();
+  }, [userId]);
+
+  const handleCreateLote = async () => {
+    if (lotes && lotes.length >= 4) {
+      Alert.alert('Límite de lotes', 'Cada usuario solo puede tener un máximo de 4 lotes.');
+      return;
+    }
+
+    try {
+      const newLote = {
+        numero: lotes ? lotes.length + 1 : 1,
+        capacidad: 0,
+        capacidad_max: 100,
+        tipo_animal: 'vaca',
+        animales: []
+      };
+      const createdLote = await createLote(newLote, userId);
+      setLotes(prevLotes => [...(prevLotes || []), createdLote]);
+    } catch (error) {
+      Alert.alert('Error', 'Error al crear el lote. Inténtalo de nuevo más tarde.');
+    }
+  };
+
+  const handleDeleteLote = async (item) => {
+    try {
+      console.log(item.id);
+      await deleteLote(item.id);
+      setLotes(prevLotes => prevLotes.filter(lote => lote.id !== item.id));
+      setSelectedLote(null);
+    } catch (error) {
+      Alert.alert('Error', 'Error al eliminar el lote. Inténtalo de nuevo más tarde.');
+    }
+  };
+
+  const toggleDeleteMode = () => {
+    setIsDeleting(prev => !prev);
+  };
+
+  const handleSelectLote = (item) => {
+    if (!isDeleting) {
+      setSelectedLote(item);
+      navigation.navigate('vistas/buscar_animal_lote', { lote: item }); 
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Mis lotes</Text>
         <View style={styles.icons}>
-          <TouchableOpacity style={styles.iconButton}>
+          <TouchableOpacity style={styles.iconButton} onPress={handleCreateLote}>
             <FontAwesomeIcon icon={faPlus} size={24} color="#000000" style={styles.icon} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.iconButton}>
-            <FontAwesomeIcon icon={faTrash} size={24} color="#000000" style={styles.icon} />
+          <TouchableOpacity style={styles.iconButton} onPress={toggleDeleteMode}>
+            <FontAwesomeIcon icon={faTrash} size={24} color={isDeleting ? 'red' : '#000000'} style={styles.icon} />
           </TouchableOpacity>
         </View>
       </View>
       <FlatList
-        data={data}
-        renderItem={({ item }) => <ListItem item={item} />}
-        keyExtractor={item => item.id}
+        data={lotes || []}
+        renderItem={({ item }) => (
+          <ListItem 
+            item={item} 
+            onPress={handleSelectLote} 
+            isSelected={selectedLote && selectedLote.id === item.id} 
+            isDeleting={isDeleting}
+            onDelete={handleDeleteLote}
+          />
+        )}
+        keyExtractor={item => item.id.toString()}
         contentContainerStyle={styles.list}
       />  
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -65,20 +138,20 @@ const styles = StyleSheet.create({
     fontFamily: 'JostRegular',
   },
   icons: {
-    flexDirection: 'row',                 
+    flexDirection: 'row',
   },
   iconButton: {
     marginLeft: 10,
   },
   icon: {
-    marginRight:10, // Espacio a la derecha del icono
+    marginRight: 10,
   },
   list: {
     paddingHorizontal: 20,
   },
   itemContainer: {
     backgroundColor: '#fff',
-    padding: 40,    
+    padding: 40,
     marginTop: 40,
     borderRadius: 10,
     flexDirection: 'row',
@@ -90,14 +163,17 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 5,
   },
+  selectedItem: {
+    backgroundColor: '#e0e0e0',
+  },
   itemName: {
     fontSize: 16,
     fontWeight: 'bold',
-    fontFamily:'JostBold',
+    fontFamily: 'JostBold',
   },
   itemCount: {
     fontSize: 14,
     color: '#666',
-    fontFamily:'JostRegular',
+    fontFamily: 'JostRegular',
   },
 });

@@ -21,7 +21,6 @@ class Lote(models.Model):
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='lotes', default=1)
     numero = models.IntegerField()
     capacidad = models.IntegerField()
-
     capacidad_max = models.IntegerField()
     tipo_animal = models.CharField(max_length=20, choices=TIPO_CHOICES, default='toro')
     animales = models.ManyToManyField('Animal', blank=True, related_name='lotes_asociados', default=1)

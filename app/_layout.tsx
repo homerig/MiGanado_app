@@ -34,6 +34,7 @@ export default function RootLayout() {
         <Stack>
           <Stack.Screen name="(login)" options={{ headerShown: false }} />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="vistas/buscar_animal_lote" options={{ headerShown: false}} />
           <Stack.Screen name="vistas/buscar_animal" options={{ headerShown: false }} />
           <Stack.Screen name="vistas/IngresoAnimal" options={{ headerShown: false }} />
           <Stack.Screen name="vistas/sangrado" options={{ headerShown: false }} />
