@@ -98,7 +98,6 @@ const styles = StyleSheet.create({
     paddingVertical: '40%',
     gap: 30,
   },
-<<<<<<< HEAD
   list: {
     paddingHorizontal: 20,
   },
@@ -117,6 +116,4 @@ const styles = StyleSheet.create({
     width: '80%',
     height: '80%',
   },
-=======
->>>>>>> 5efba21f29687279a45a9c4264a571f6a37a3b99
 });
