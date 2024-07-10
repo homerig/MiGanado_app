@@ -31,24 +31,20 @@ class Animal(models.Model):
     numeroCaravana = models.CharField(max_length=100)
     raza = models.CharField(max_length=100)
     peso = models.FloatField(null=True, blank=True)
-    fechaNacimiento = models.DateField(null=True, blank=True)
-    fechaFallecimiento = models.DateField(null=True, blank=True)
+    edad = models.FloatField(null=True, blank=True)
     preniada = models.BooleanField(null=True, blank=True)
+    reciennacida = models.BooleanField(null=True, blank=True)
+    userId = models.IntegerField()
     tratamientos = models.ManyToManyField('Tratamiento')
     sangrado = models.ManyToManyField('Sangrado')
 
 class Tratamiento(models.Model):
-    TIPO_CHOICES = [
-        ('tratamiento', 'Tratamiento'),
-        ('vacunacion', 'Vacunación'),
-    ]
-    
-    nombre = models.CharField(max_length=100)
+    numeroCaravana = models.CharField(max_length=100)
+    tratamiento = models.CharField(max_length=100)
     medicacion = models.CharField(max_length=100)
-    fecha_inicio = models.DateField()
-    duracion = models.IntegerField()
-    repeticion = models.IntegerField()
-    tipo = models.CharField(max_length=20, choices=TIPO_CHOICES)
+    fechaInicio = models.DateField()
+    cada = models.IntegerField()
+    userId = models.IntegerField()
 
 class Sangrado(models.Model):
     numero_lote = models.IntegerField()

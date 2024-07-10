@@ -70,59 +70,11 @@ export default function TabLayout() {
           ),
         }}
       />
+      
       <Tabs.Screen
         name="lotes"
         options={{
           title: 'Lotes',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'map' : 'map'} color={color} focused={focused} />
-          ),
-        }}
-      />
-
-<Tabs.Screen
-        name="sangrado"
-        options={{
-          title: 'sangrado',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'map' : 'map'} color={color} focused={focused} />
-          ),
-        }}
-      />
-
-
-<Tabs.Screen
-        name="Ver Animal"
-        options={{
-          title: 'Ver Animal',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'map' : 'map'} color={color} focused={focused} />
-          ),
-        }}
-      />
-
-<Tabs.Screen
-        name="Tacto"
-        options={{
-          title: 'Tacto',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'map' : 'map'} color={color} focused={focused} />
-          ),
-        }}
-      />
-<Tabs.Screen
-        name="Buscar animal"
-        options={{
-          title: 'Buscar Animal',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'map' : 'map'} color={color} focused={focused} />
-          ),
-        }}
-      />
-<Tabs.Screen
-        name="Vacunacion"
-        options={{
-          title: 'Vacunacion',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'map' : 'map'} color={color} focused={focused} />
           ),
