@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseURL = 'http://192.168.0.71:8000/miGanado'; // Ajusta la URL a la de tu servidor
+const baseURL = 'http://192.168.0.181:8000/miGanado'; // Ajusta la URL a la de tu servidor
 
 const registerUser = async (userData) => {
   try {
@@ -91,9 +91,9 @@ const createTacto = async ({ numero_lote, numero_animal, prenada, fecha, userId 
   }
 };
 
-const createTratamiento = async ({ numeroCaravana, tratamiento, medicacion, fechaInicio, cada, userId }) => {
+const createTratamiento = async ({ numeroCaravana, tratamiento, medicacion, fechaInicio, cada, durante, userId }) => {
   try {
-    const response = await axios.post(`${baseURL}/tratamientos/`, { numeroCaravana, tratamiento, medicacion, fechaInicio, cada, userId });
+    const response = await axios.post(`${baseURL}/tratamientos/`, { numeroCaravana, tratamiento, medicacion, fechaInicio, cada, durante, userId });
     return response.data;
   } catch (error) {
     if (error.response) {

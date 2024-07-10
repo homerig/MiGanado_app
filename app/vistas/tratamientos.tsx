@@ -12,14 +12,14 @@ const TratamientosScreen = () => {
   const [tratamiento, setTratamiento] = useState('');
   const [medicacion, setMedicacion] = useState('');
   const [fechaInicio, setFechaInicio] = useState('');
-  const [duracion, setDuracion] = useState('');
+  const [durante, setDuracion] = useState('');
   const [cada, setCada] = useState('');
   const { userId } = useContext(UserContext);
   const navigation = useNavigation();
 
   const handleGuardar = async () => {
     try {
-      const Nuevotratamiento = await createTratamiento({ numeroCaravana, tratamiento , medicacion, fechaInicio, cada, userId });
+      const Nuevotratamiento = await createTratamiento({ numeroCaravana, tratamiento , medicacion, fechaInicio, cada, durante, userId });
       console.log("Tratamiento registrado:", Nuevotratamiento);
       setNumeroCaravana('');
       setTratamiento('');
@@ -69,7 +69,7 @@ const TratamientosScreen = () => {
       <TextInput
         style={styles.input}
         placeholder="Durante/Duración (dias)"
-        value={duracion}
+        value={durante}
         onChangeText={setDuracion}
       />
 

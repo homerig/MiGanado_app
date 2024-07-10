@@ -19,7 +19,7 @@ class AnimalSerializer(serializers.ModelSerializer):
 class TratamientoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tratamiento
-        fields = ['id', 'numeroCaravana', 'tratamiento' , 'medicacion', 'fechaInicio', 'cada', 'userId' ]
+        fields = ['id', 'numeroCaravana', 'tratamiento' , 'medicacion', 'fechaInicio', 'cada', 'durante', 'userId' ]
 
 class SangradoSerializer(serializers.ModelSerializer):
     class Meta:

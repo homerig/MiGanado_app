@@ -45,6 +45,7 @@ class Tratamiento(models.Model):
     medicacion = models.CharField(max_length=100)
     fechaInicio = models.DateField()
     cada = models.IntegerField()
+    durante = models.IntegerField()
     userId = models.IntegerField()
 
 class Sangrado(models.Model):
