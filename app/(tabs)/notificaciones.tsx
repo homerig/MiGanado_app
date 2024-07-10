@@ -66,7 +66,6 @@ export default function NotificacionScreen() {
           />
           <ThemedText type="subtitle">Sin notificaciones</ThemedText>
         </ThemedView>
-<<<<<<< HEAD
       ) : (
         <FlatList
           data={notifications}
@@ -75,10 +74,6 @@ export default function NotificacionScreen() {
           contentContainerStyle={styles.list}
         />
       )}
-=======
-      </ThemedView>
-      
->>>>>>> ecb52bc (cambios santi)
     </ThemedView>
   );
 }
@@ -103,6 +98,7 @@ const styles = StyleSheet.create({
     paddingVertical: '40%',
     gap: 30,
   },
+<<<<<<< HEAD
   list: {
     paddingHorizontal: 20,
   },
@@ -121,4 +117,6 @@ const styles = StyleSheet.create({
     width: '80%',
     height: '80%',
   },
+=======
+>>>>>>> 5efba21f29687279a45a9c4264a571f6a37a3b99
 });
