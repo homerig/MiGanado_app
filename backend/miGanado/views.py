@@ -5,12 +5,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework import status
 
 from django.contrib.auth import authenticate
-from django.shortcuts import get_object_or_404
-from django.http import JsonResponse
-from django.views import View
-
-from .models import Usuario, Lote, Animal, Tratamiento, Sangrado, Notificacion, ConfigNotificaciones, Tacto
-from .serializers import UsuarioSerializer, LoteSerializer, AnimalSerializer, TratamientoSerializer, SangradoSerializer, NotificacionSerializer, ConfigNotificacionesSerializer,TactoSerializer
+from .models import Usuario, Lote, Animal, Tratamiento, Sangrado, Notificacion, ConfigNotificaciones, Tacto,Vacunacion
+from .serializers import UsuarioSerializer, LoteSerializer, AnimalSerializer, TratamientoSerializer, SangradoSerializer, NotificacionSerializer, ConfigNotificacionesSerializer,TactoSerializer, VacunacionSerializer
 
 class LoginView(APIView):
     def post(self, request, *args, **kwargs):
@@ -85,3 +81,7 @@ class NotificacionViewSet(viewsets.ModelViewSet):
 class ConfigNotificacionesViewSet(viewsets.ModelViewSet):
     queryset = ConfigNotificaciones.objects.all()
     serializer_class = ConfigNotificacionesSerializer
+
+class VacunacionViewSet(viewsets.ModelViewSet):
+    queryset = Vacunacion.objects.all()
+    serializer_class=VacunacionSerializer

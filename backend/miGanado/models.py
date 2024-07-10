@@ -85,3 +85,11 @@ class ConfigNotificaciones(models.Model):
     recibir_notificaciones_tacto = models.BooleanField(default=False)
     recibir_notificaciones_sangrado = models.BooleanField(default=False)
     recibir_notificaciones_estadisticas = models.BooleanField(default=False)
+
+class Vacunacion (models.Model):
+    numero_lote = models.CharField(max_length=100)
+    nombre_vacuna = models.CharField(max_length=100)
+    fechaInicio = models.DateField()
+    durante = models.IntegerField()
+    cada = models.IntegerField()
+    userId = models.IntegerField()
