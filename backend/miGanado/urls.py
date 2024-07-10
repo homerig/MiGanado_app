@@ -16,4 +16,5 @@ router.register(r'vacunaciones', VacunacionViewSet, basename='vacunacion')
 urlpatterns = [
     path('', include(router.urls)),
     path('login/', LoginView.as_view(), name='login'),
+    path('user_notifications/<int:user_id>/', UserNotificationsView.as_view(), name='user_notifications'),
 ]

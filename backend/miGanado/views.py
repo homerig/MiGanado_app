@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework import status
+
 from django.contrib.auth import authenticate
 from .models import Usuario, Lote, Animal, Tratamiento, Sangrado, Notificacion, ConfigNotificaciones, Tacto,Vacunacion
 from .serializers import UsuarioSerializer, LoteSerializer, AnimalSerializer, TratamientoSerializer, SangradoSerializer, NotificacionSerializer, ConfigNotificacionesSerializer,TactoSerializer, VacunacionSerializer
@@ -27,10 +28,13 @@ class LoginView(APIView):
             # No se encontró un usuario con el correo electrónico proporcionado
             return Response({'message': 'Credenciales inválidas'}, status=status.HTTP_401_UNAUTHORIZED)
 
-class UsuarioViewSet(viewsets.ModelViewSet):
-    queryset = Usuario.objects.all()
-    serializer_class = UsuarioSerializer
-
+class UserNotificationsView(APIView):
+    def get(self, request, user_id):
+        usuario = get_object_or_404(Usuario, pk=user_id)
+        notificaciones = Notificacion.objects.filter(usuario=usuario)
+        notificaciones_data = list(notificaciones.values('tipo', 'mensaje', 'fecha'))
+        return JsonResponse(notificaciones_data, safe=False)
+    
 class CrearLoteView(APIView):
     def post(self, request, *args, **kwargs):
         # Verifica la cantidad de lotes existentes
@@ -45,6 +49,10 @@ class CrearLoteView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class UsuarioViewSet(viewsets.ModelViewSet):
+    queryset = Usuario.objects.all()
+    serializer_class = UsuarioSerializer
 
 class LoteViewSet(viewsets.ModelViewSet):
     queryset = Lote.objects.all()
