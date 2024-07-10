@@ -4,25 +4,32 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faAngleRight, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { getUserLotes, createLote, deleteLote } from '../../api/api';
 import { UserContext } from '../../api/UserContext';
+import { useNavigation } from '@react-navigation/native'; // Importar hook de navegación
 
-const ListItem = ({ item, onPress, isSelected }) => (
+const ListItem = ({ item, onPress, isSelected, isDeleting, onDelete }) => (
   <TouchableOpacity
     style={[styles.itemContainer, isSelected && styles.selectedItem]}
-    onPress={() => onPress(item)}
+    onPress={() => (isDeleting ? onDelete(item) : onPress(item))}
   >
-    <Text style={styles.itemName}>{item.name}</Text>
+    <Text style={styles.itemName}>Nuevo Lote</Text>
     <View>
-      <Text style={styles.itemCount}>{item.count}</Text>
-      <Text style={styles.itemCount}>Animales</Text>
+      <Text style={styles.itemCount}>{item.capacidad}/{item.capacidad_max} animales</Text>
     </View>
-    <FontAwesomeIcon icon={faAngleRight} size={20} color="#000000" style={styles.icon} />
+    <FontAwesomeIcon 
+      icon={isDeleting ? faTrash : faAngleRight} 
+      size={20} 
+      color={isDeleting ? 'red' : '#000000'} 
+      style={styles.icon} 
+    />
   </TouchableOpacity>
 );
 
 export default function TabTwoScreen() {
   const { userId } = useContext(UserContext);
-  const [lotes, setLotes] = useState([]); // Inicializa lotes como una lista vacía
+  const [lotes, setLotes] = useState([]); 
   const [selectedLote, setSelectedLote] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const navigation = useNavigation(); // Hook de navegación
 
   useEffect(() => {
     const fetchLotes = async () => {
@@ -38,43 +45,46 @@ export default function TabTwoScreen() {
   }, [userId]);
 
   const handleCreateLote = async () => {
-    if (lotes && lotes.length >= 4) { // Asegúrate de que lotes está definido antes de acceder a length
+    if (lotes && lotes.length >= 4) {
       Alert.alert('Límite de lotes', 'Cada usuario solo puede tener un máximo de 4 lotes.');
       return;
     }
 
     try {
       const newLote = {
-        numero: lotes ? lotes.length + 1 : 1, // Si lotes es undefined, inicializa numero con 1
+        numero: lotes ? lotes.length + 1 : 1,
         capacidad: 0,
         capacidad_max: 100,
         tipo_animal: 'vaca',
         animales: []
       };
       const createdLote = await createLote(newLote, userId);
-      setLotes(prevLotes => [...(prevLotes || []), createdLote]); // Asegura que prevLotes no sea undefined
+      setLotes(prevLotes => [...(prevLotes || []), createdLote]);
     } catch (error) {
       Alert.alert('Error', 'Error al crear el lote. Inténtalo de nuevo más tarde.');
     }
   };
 
-  const handleDeleteLote = async () => {
-    if (!selectedLote) {
-      Alert.alert('Selección necesaria', 'Por favor selecciona un lote para eliminar.');
-      return;
-    }
-
+  const handleDeleteLote = async (item) => {
     try {
-      await deleteLote(selectedLote.id);
-      setLotes(prevLotes => prevLotes.filter(lote => lote.id !== selectedLote.id));
+      console.log(item.id);
+      await deleteLote(item.id);
+      setLotes(prevLotes => prevLotes.filter(lote => lote.id !== item.id));
       setSelectedLote(null);
     } catch (error) {
       Alert.alert('Error', 'Error al eliminar el lote. Inténtalo de nuevo más tarde.');
     }
   };
 
+  const toggleDeleteMode = () => {
+    setIsDeleting(prev => !prev);
+  };
+
   const handleSelectLote = (item) => {
-    setSelectedLote(item);
+    if (!isDeleting) {
+      setSelectedLote(item);
+      navigation.navigate('vistas/buscar_animal_lote', { lote: item }); 
+    }
   };
 
   return (
@@ -85,18 +95,20 @@ export default function TabTwoScreen() {
           <TouchableOpacity style={styles.iconButton} onPress={handleCreateLote}>
             <FontAwesomeIcon icon={faPlus} size={24} color="#000000" style={styles.icon} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.iconButton} onPress={handleDeleteLote}>
-            <FontAwesomeIcon icon={faTrash} size={24} color="#000000" style={styles.icon} />
+          <TouchableOpacity style={styles.iconButton} onPress={toggleDeleteMode}>
+            <FontAwesomeIcon icon={faTrash} size={24} color={isDeleting ? 'red' : '#000000'} style={styles.icon} />
           </TouchableOpacity>
         </View>
       </View>
       <FlatList
-        data={lotes || []} // Asegura que data siempre es una lista
+        data={lotes || []}
         renderItem={({ item }) => (
           <ListItem 
             item={item} 
             onPress={handleSelectLote} 
             isSelected={selectedLote && selectedLote.id === item.id} 
+            isDeleting={isDeleting}
+            onDelete={handleDeleteLote}
           />
         )}
         keyExtractor={item => item.id.toString()}

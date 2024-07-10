@@ -35,8 +35,8 @@ const loginUser = async (email, password) => {
 
 const getUserLotes = async (userId) => {
   try {
-    const response = await axios.get(`${baseURL}/usuarios/${userId}/`);
-    return response.data.lotes;
+    const response = await axios.get(`${baseURL}/lotes/?userId=${userId}`);
+    return response.data;
   } catch (error) {
     if (error.response) {
       console.error('Error al obtener los lotes del usuario:', error.response.data);
@@ -46,6 +46,7 @@ const getUserLotes = async (userId) => {
     throw error;
   }
 };
+
 
 const getUserNotificaciones = async (userId) => {
   try {
@@ -78,7 +79,8 @@ const createLote = async (loteData, userId) => {
 
 const deleteLote = async (loteId) => {
   try {
-    await axios.delete(`${baseURL}/lotes/${loteId}/`);
+    const response = await axios.delete(`${baseURL}/lotes/${loteId}/`);
+    return response.data;
   } catch (error) {
     if (error.response) {
       console.error('Error al eliminar el lote:', error.response.data);
