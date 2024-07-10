@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseURL = 'http://192.168.0.71:8000/miGanado'; // Ajusta la URL a la de tu servidor
+const baseURL = 'http://192.168.0.182:8000/miGanado'; // Ajusta la URL a la de tu servidor
 
 const registerUser = async (userData) => {
   try {
@@ -35,8 +35,8 @@ const loginUser = async (email, password) => {
 
 const getUserLotes = async (userId) => {
   try {
-    const response = await axios.get(`${baseURL}/usuarios/${userId}/`);
-    return response.data.lotes;
+    const response = await axios.get(`${baseURL}/lotes/?userId=${userId}`);
+    return response.data;
   } catch (error) {
     if (error.response) {
       console.error('Error al obtener los lotes del usuario:', error.response.data);
@@ -47,6 +47,7 @@ const getUserLotes = async (userId) => {
   }
 };
 
+
 const getUserNotificaciones = async (userId) => {
   try {
     const response = await axios.get(`${baseURL}/user_notifications/${userId}/`);
@@ -56,6 +57,36 @@ const getUserNotificaciones = async (userId) => {
     throw error;
   }
 };
+
+
+const createLote = async (loteData, userId) => {
+  try {
+    const response = await axios.post(`${baseURL}/lotes/`, { ...loteData, usuario: userId });
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error('Error al crear el lote:', error.response.data);
+    } else {
+      console.error('Error al crear el lote:', error.message);
+    }
+    throw error;
+  }
+};
+
+const deleteLote = async (loteId) => {
+  try {
+    const response = await axios.delete(`${baseURL}/lotes/${loteId}/`);
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error('Error al eliminar el lote:', error.response.data);
+    } else {
+      console.error('Error al eliminar el lote:', error.message);
+    }
+    throw error;
+  }
+};
+
 
 const createSangrado = async ({ numero_lote, numero_animal, numero_tubo, fecha, userId }) => {
   try {
@@ -135,4 +166,6 @@ const createVacunacion = async ({ numero_lote, nombre_vacuna, fechaInicio, duran
 
 
 
-export { baseURL, registerUser, loginUser, getUserLotes, getUserNotificaciones,createSangrado,createTacto, createTratamiento, registerAnimal, createVacunacion};
+
+
+export { baseURL, registerUser, loginUser, getUserLotes, getUserNotificaciones,createSangrado,createTacto,createVacunacion, createTratamiento, registerAnimal,createLote,deleteLote};
