@@ -16,7 +16,7 @@ const NotificationItem = ({ item }) => (
   </View>
 );
 
-export default function NotificacionScreen() {
+const NotificacionScreen = () => {
   const navigation = useNavigation();
   const { userId } = useContext(UserContext);
   const [notifications, setNotifications] = useState([]);
@@ -74,7 +74,7 @@ export default function NotificacionScreen() {
       )}
     </ThemedView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -111,3 +111,5 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
 });
+
+export default NotificacionScreen;

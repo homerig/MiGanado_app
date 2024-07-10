@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseURL = 'http://192.168.0.181:8000/miGanado'; // Ajusta la URL a la de tu servidor
+const baseURL = 'http://192.168.0.71:8000/miGanado'; // Ajusta la URL a la de tu servidor
 
 const registerUser = async (userData) => {
   try {
@@ -49,20 +49,13 @@ const getUserLotes = async (userId) => {
 
 const getUserNotificaciones = async (userId) => {
   try {
-    const response = await axios.get(`${baseURL}/usuarios/${userId}/`); 
-    return response.data.notificaciones;
+    const response = await axios.get(`${baseURL}/user_notifications/${userId}/`);
+    return response.data;
   } catch (error) {
-    if (error.response) {
-      console.error('Error al obtener los lotes del usuario:', error.response.data);
-    } else {
-      console.error('Error al obtener los lotes del usuario:', error.message);
-    }
+    console.error('Error fetching notifications:', error.message);
     throw error;
   }
 };
-
-
-
 
 const createSangrado = async ({ numero_lote, numero_animal, numero_tubo, fecha, userId }) => {
   try {
@@ -119,13 +112,6 @@ const registerAnimal = async({ numeroCaravana, numero_lote, tipos, peso, edad, p
     throw error;
   }
 }
-
-
-
-
-
-
-
 
 
 export { baseURL, registerUser, loginUser, getUserLotes, getUserNotificaciones,createSangrado,createTacto, createTratamiento, registerAnimal};
