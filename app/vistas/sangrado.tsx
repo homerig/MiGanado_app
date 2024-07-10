@@ -67,6 +67,7 @@ const SangradoScreen = () => {
         value={fecha}
         onChangeText={setFecha}
       />
+      
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={handlesig}>
           <ThemedText style={styles.buttonText}>Siguiente</ThemedText>
