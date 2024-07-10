@@ -26,6 +26,7 @@ const TratamientosScreen = () => {
       setMedicacion('');
       setFechaInicio('');
       setCada('');
+      setDuracion('');
       Alert.alert('Éxito', 'Tratamiento registrado correctamente.');
     } catch (error) {
       console.error('Error al registrar el tratamiento:', error.message);
@@ -39,7 +40,7 @@ const TratamientosScreen = () => {
 
       <TextInput
         style={styles.input}
-        placeholder="Números de caravana"
+        placeholder="Número de caravana"
         value={numeroCaravana}
         onChangeText={setNumeroCaravana}
       />
@@ -67,14 +68,14 @@ const TratamientosScreen = () => {
 
       <TextInput
         style={styles.input}
-        placeholder="Durante/Duración"
+        placeholder="Durante/Duración (dias)"
         value={duracion}
         onChangeText={setDuracion}
       />
 
       <TextInput
         style={styles.input}
-        placeholder="Cada.."
+        placeholder="Cada..(dias)"
         value={cada}
         onChangeText={setCada}
       />

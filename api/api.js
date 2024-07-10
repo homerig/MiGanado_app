@@ -107,9 +107,9 @@ const createTratamiento = async ({ numeroCaravana, tratamiento, medicacion, fech
 };
 
 
-const registerAnimal = async({lotes, numeroCaravana, tipos, peso, edad, isNewborn, isPregnant, userId}) => {
+const registerAnimal = async({ numeroCaravana, numero_lote, tipos, peso, edad, preniada, reciennacida, userId }) => {
   try {
-    const response = await axios.post(`${baseURL}/animales/`, {numeroCaravana, lotes, tipos, sexo, peso, edad, isNewborn, isPregnant, userId});
+    const response = await axios.post(`${baseURL}/animales/`, { numeroCaravana, numero_lote, tipos, peso, edad, preniada, reciennacida, userId });
     return response.data;
   } catch (error) {
     if (error.response) {

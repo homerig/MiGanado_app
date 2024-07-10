@@ -28,13 +28,13 @@ class Lote(models.Model):
 
 
 class Animal(models.Model):
-    lote = models.ForeignKey(Lote, on_delete=models.CASCADE, related_name='animales_asociados', default=1)
+    numero_lote = models.IntegerField()
     numeroCaravana = models.CharField(max_length=100)
-    raza = models.CharField(max_length=100)
+    tipos = models.CharField(max_length=100)
     peso = models.FloatField(null=True, blank=True)
     edad = models.FloatField(null=True, blank=True)
-    preniada = models.BooleanField(null=True, blank=True)
-    reciennacida = models.BooleanField(null=True, blank=True)
+    preniada = models.BooleanField(default=False)
+    reciennacida = models.BooleanField(default=False)
     userId = models.IntegerField()
     tratamientos = models.ManyToManyField('Tratamiento')
     sangrado = models.ManyToManyField('Sangrado')

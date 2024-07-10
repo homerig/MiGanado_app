@@ -14,7 +14,7 @@ class LoteSerializer(serializers.ModelSerializer):
 class AnimalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Animal
-        fields = ['id', 'lotes', 'numeroCaravana', 'tipos', 'peso', 'edad', 'isNewborn', 'isPregnant', 'userId']
+        fields = ['id', 'numeroCaravana', 'numero_lote', 'tipos', 'peso', 'edad', 'preniada', 'reciennacida', 'userId']
 
 class TratamientoSerializer(serializers.ModelSerializer):
     class Meta:
