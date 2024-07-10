@@ -50,14 +50,10 @@ const getUserLotes = async (userId) => {
 
 const getUserNotificaciones = async (userId) => {
   try {
-    const response = await axios.get(`${baseURL}/usuarios/${userId}/`); 
-    return response.data.notificaciones;
+    const response = await axios.get(`${baseURL}/user_notifications/${userId}/`);
+    return response.data;
   } catch (error) {
-    if (error.response) {
-      console.error('Error al obtener los lotes del usuario:', error.response.data);
-    } else {
-      console.error('Error al obtener los lotes del usuario:', error.message);
-    }
+    console.error('Error fetching notifications:', error.message);
     throw error;
   }
 };
@@ -119,9 +115,9 @@ const createTacto = async ({ numero_lote, numero_animal, prenada, fecha, userId 
   }
 };
 
-const createTratamiento = async ({ numeroCaravana, tratamiento, medicacion, fechaInicio, cada, userId }) => {
+const createTratamiento = async ({ numeroCaravana, tratamiento, medicacion, fechaInicio, cada, durante, userId }) => {
   try {
-    const response = await axios.post(`${baseURL}/tratamientos/`, { numeroCaravana, tratamiento, medicacion, fechaInicio, cada, userId });
+    const response = await axios.post(`${baseURL}/tratamientos/`, { numeroCaravana, tratamiento, medicacion, fechaInicio, cada, durante, userId });
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -134,9 +130,9 @@ const createTratamiento = async ({ numeroCaravana, tratamiento, medicacion, fech
 };
 
 
-const registerAnimal = async({lotes, numeroCaravana, tipos, peso, edad, isNewborn, isPregnant, userId}) => {
+const registerAnimal = async({ numeroCaravana, numero_lote, tipos, peso, edad, preniada, reciennacida, userId }) => {
   try {
-    const response = await axios.post(`${baseURL}/animales/`, {numeroCaravana, lotes, tipos, sexo, peso, edad, isNewborn, isPregnant, userId});
+    const response = await axios.post(`${baseURL}/animales/`, { numeroCaravana, numero_lote, tipos, peso, edad, preniada, reciennacida, userId });
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -149,6 +145,19 @@ const registerAnimal = async({lotes, numeroCaravana, tipos, peso, edad, isNewbor
 }
 
 
+const createVacunacion = async ({ numero_lote, nombre_vacuna, fechaInicio, durante,cada, userId }) => {
+  try {
+    const response = await axios.post(`${baseURL}/vacunaciones/`, { numero_lote, nombre_vacuna, fechaInicio,durante,cada, userId });
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error('Error al guardar los datos de vacunacion:', error.response.data);
+    } else {
+      console.error('Error al guardar los datos de vacunacion:', error.message);
+    }
+    throw error;
+  }
+};
 
 
 
@@ -156,4 +165,7 @@ const registerAnimal = async({lotes, numeroCaravana, tipos, peso, edad, isNewbor
 
 
 
-export { baseURL, registerUser, loginUser, getUserLotes, getUserNotificaciones,createSangrado,createTacto, createTratamiento, registerAnimal,deleteLote,createLote};
+
+
+
+export { baseURL, registerUser, loginUser, getUserLotes, getUserNotificaciones,createSangrado,createTacto, createTratamiento, registerAnimal};

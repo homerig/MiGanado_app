@@ -1,128 +1,86 @@
-import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, Modal, FlatList, StyleSheet, Text, Platform } from 'react-native';
+import React, { useContext, useState } from 'react';
+import { View, TextInput, TouchableOpacity, Modal, FlatList, StyleSheet, Text, Platform,Alert } from 'react-native';
 import { ThemedText } from '@/components/ThemedText'; // Asegúrate de que la ruta es correcta
 import { ThemedView } from '@/components/ThemedView'; // Asegúrate de que la ruta es correcta
-import DateTimePicker from '@react-native-community/datetimepicker';
+import { useNavigation } from '@react-navigation/native';
+import { UserContext } from '../../api/UserContext';
 
-export default function VaccinationScreen() {
-  const [selectedLot, setSelectedLot] = useState<string>('');
-  const [vaccineName, setVaccineName] = useState<string>('');
-  const [startDate, setStartDate] = useState<Date | null>(null);
-  const [duration, setDuration] = useState<string>('');
-  const [interval, setInterval] = useState<string>('');
-  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
-  const [isDatePickerVisible, setIsDatePickerVisible] = useState<boolean>(false);
-  const [lots] = useState<string[]>(['Lote 1', 'Lote 2']); // Agrega más lotes según sea necesario
+import { createVacunacion } from '@/api/api';
 
-  const selectLot = (lot: string) => {
-    setSelectedLot(lot);
-    setIsModalVisible(false);
-  };
+const VacunacionScreen = () => {
+  const [numero_lote, setNumeroLote] = useState('');
+  const [nombre_vacuna, setNombreVacuna] = useState('');
+  const [fechaInicio, setFechaInicio] = useState('');
+  const [durante, setDurante] = useState('');
+  const [cada, setCada] = useState('');
+  const { userId } = useContext(UserContext);
+  
+  const navigation = useNavigation();
 
-  const handleDateChange = (event: any, selectedDate?: Date) => {
-    setIsDatePickerVisible(false);
-    if (selectedDate) {
-      setStartDate(selectedDate);
+  const handleGuardar = async () => {
+    try {
+      const Nuevotratamiento = await createVacunacion({ numero_lote, nombre_vacuna , fechaInicio,  durante,cada, userId });
+      console.log("Tratamiento registrado:", Nuevotratamiento);
+      setNumeroLote('');
+      setNombreVacuna('');
+      setFechaInicio('');
+      setDurante('');
+      setCada('');
+      Alert.alert('Éxito', 'Vacunacion registrada correctamente.');
+    } catch (error) {
+      console.error('Error al registrar la vacunacion:', error.message);
+      Alert.alert('Error', 'No se pudo guardar la vacunacion.');
     }
-  };
+  }
 
-  const formatDate = (date: Date | null) => {
-    if (!date) return 'Seleccione fecha de inicio';
-    const day = date.getDate();
-    const month = date.getMonth() + 1; // Los meses son indexados desde 0
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
-  };
+ 
+
+
 
   return (
     <ThemedView style={styles.container}>
       <ThemedText style={styles.label}>Vacunación</ThemedText>
 
-      <TouchableOpacity
+      <TextInput
         style={styles.input}
-        onPress={() => setIsModalVisible(true)}
-      >
-        <Text>{selectedLot || 'Seleccione Lote'}</Text>
-      </TouchableOpacity>
+        placeholder="Seleccione Lote"
+        value={numero_lote}
+        onChangeText={setNumeroLote}
+      />
 
       <TextInput
         style={styles.input}
         placeholder="Nombre de la Vacuna"
-        value={vaccineName}
-        onChangeText={setVaccineName}
+        value={nombre_vacuna}
+        onChangeText={setNombreVacuna}
       />
 
-      <TouchableOpacity
+<TextInput
         style={styles.input}
-        onPress={() => setIsDatePickerVisible(true)}
-      >
-        <Text>{formatDate(startDate)}</Text>
-      </TouchableOpacity>
-
-      {isDatePickerVisible && (
-        <DateTimePicker
-          value={startDate || new Date()}
-          mode="date"
-          display="default"
-          onChange={handleDateChange}
-        />
-      )}
-
-      <TextInput
-        style={styles.input}
-        placeholder="Durante / Duración"
-        value={duration}
-        onChangeText={setDuration}
+        placeholder="Fecha (YYYY-MM-DD)"
+        value={fechaInicio}
+        onChangeText={setFechaInicio}
       />
 
       <TextInput
         style={styles.input}
-        placeholder="Cada"
-        value={interval}
-        onChangeText={setInterval}
+        placeholder="Durante/Duración (dias)"
+        value={durante}
+        onChangeText={setDurante}
       />
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => {
-          // Lógica para agregar al calendario
-          console.log({
-            selectedLot,
-            vaccineName,
-            startDate: startDate ? formatDate(startDate) : '',
-            duration,
-            interval
-          });
-        }}
-      >
-        <ThemedText style={styles.buttonText}>Agregar al calendario</ThemedText>
-      </TouchableOpacity>
+      <TextInput
+        style={styles.input}
+        placeholder="Cada..(dias)"
+        value={cada}
+        onChangeText={setCada}
+      />
+      <View style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={handleGuardar}>
+          <ThemedText style={styles.buttonText}>Agregar al calendario</ThemedText>
+        </TouchableOpacity>
+      </View>
 
-      <Modal
-        visible={isModalVisible}
-        animationType="slide"
-        transparent={true}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <FlatList
-              data={lots}
-              keyExtractor={(item) => item}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.modalItem}
-                  onPress={() => selectLot(item)}
-                >
-                  <Text>{item}</Text>
-                </TouchableOpacity>
-              )}
-            />
-            <TouchableOpacity onPress={() => setIsModalVisible(false)}>
-              <Text style={styles.closeText}>Cerrar</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
     </ThemedView>
   );
 }
@@ -188,3 +146,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
+
+export default VacunacionScreen;

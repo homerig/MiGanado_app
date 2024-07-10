@@ -12,20 +12,21 @@ const TratamientosScreen = () => {
   const [tratamiento, setTratamiento] = useState('');
   const [medicacion, setMedicacion] = useState('');
   const [fechaInicio, setFechaInicio] = useState('');
-  const [duracion, setDuracion] = useState('');
+  const [durante, setDuracion] = useState('');
   const [cada, setCada] = useState('');
   const { userId } = useContext(UserContext);
   const navigation = useNavigation();
 
   const handleGuardar = async () => {
     try {
-      const Nuevotratamiento = await createTratamiento({ numeroCaravana, tratamiento , medicacion, fechaInicio, cada, userId });
+      const Nuevotratamiento = await createTratamiento({ numeroCaravana, tratamiento , medicacion, fechaInicio, cada, durante, userId });
       console.log("Tratamiento registrado:", Nuevotratamiento);
       setNumeroCaravana('');
       setTratamiento('');
       setMedicacion('');
       setFechaInicio('');
       setCada('');
+      setDuracion('');
       Alert.alert('Éxito', 'Tratamiento registrado correctamente.');
     } catch (error) {
       console.error('Error al registrar el tratamiento:', error.message);
@@ -39,7 +40,7 @@ const TratamientosScreen = () => {
 
       <TextInput
         style={styles.input}
-        placeholder="Números de caravana"
+        placeholder="Número de caravana"
         value={numeroCaravana}
         onChangeText={setNumeroCaravana}
       />
@@ -67,14 +68,14 @@ const TratamientosScreen = () => {
 
       <TextInput
         style={styles.input}
-        placeholder="Durante/Duración"
-        value={duracion}
+        placeholder="Durante/Duración (dias)"
+        value={durante}
         onChangeText={setDuracion}
       />
 
       <TextInput
         style={styles.input}
-        placeholder="Cada.."
+        placeholder="Cada..(dias)"
         value={cada}
         onChangeText={setCada}
       />
