@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseURL = 'http://192.168.0.181:8000/miGanado'; // Ajusta la URL a la de tu servidor
+const baseURL = 'http://192.168.0.209:8000/miGanado'; // Ajusta la URL a la de tu servidor
 
 const registerUser = async (userData) => {
   try {
@@ -121,6 +121,19 @@ const registerAnimal = async({ numeroCaravana, numero_lote, tipos, peso, edad, p
 }
 
 
+const createVacunacion = async ({ numero_lote, nombre_vacuna, fechaInicio, durante,cada, userId }) => {
+  try {
+    const response = await axios.post(`${baseURL}/vacunaciones/`, { numero_lote, nombre_vacuna, fechaInicio,durante,cada, userId });
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error('Error al guardar los datos de vacunacion:', error.response.data);
+    } else {
+      console.error('Error al guardar los datos de vacunacion:', error.message);
+    }
+    throw error;
+  }
+};
 
 
 
@@ -128,4 +141,5 @@ const registerAnimal = async({ numeroCaravana, numero_lote, tipos, peso, edad, p
 
 
 
-export { baseURL, registerUser, loginUser, getUserLotes, getUserNotificaciones,createSangrado,createTacto, createTratamiento, registerAnimal};
+
+export { baseURL, registerUser, loginUser, getUserLotes, getUserNotificaciones,createSangrado,createTacto, createTratamiento, registerAnimal, createVacunacion};

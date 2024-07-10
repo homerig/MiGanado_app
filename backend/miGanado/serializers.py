@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Usuario, Lote, Animal, Tratamiento, Sangrado, Notificacion, ConfigNotificaciones,Tacto
+from .models import Usuario, Lote, Animal, Tratamiento, Sangrado, Notificacion, ConfigNotificaciones,Tacto, Vacunacion
 
 class UsuarioSerializer(serializers.ModelSerializer):
     class Meta:
@@ -41,3 +41,9 @@ class ConfigNotificacionesSerializer(serializers.ModelSerializer):
     class Meta:
         model = ConfigNotificaciones
         fields = '__all__'
+
+class VacunacionSerializer (serializers.ModelSerializer):
+    class Meta:
+        model = Vacunacion
+        fields= ['id', 'numero_lote', 'nombre_vacuna', 'fechaInicio', 'durante','cada','userId']
+
