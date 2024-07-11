@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Usuario, Lote, Animal, HistorialMedico, Tratamiento, Sangrado, Notificacion, ConfigNotificaciones
+from .models import Usuario, Lote, Animal, Tratamiento, Sangrado, Notificacion, ConfigNotificaciones,Tacto, Vacunacion
 
 class UsuarioSerializer(serializers.ModelSerializer):
     class Meta:
@@ -9,27 +9,28 @@ class UsuarioSerializer(serializers.ModelSerializer):
 class LoteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lote
-        fields = '__all__'
+        fields = ['id','usuario','numero','capacidad','capacidad_max','tipo_animal','animales']
 
 class AnimalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Animal
-        fields = '__all__'
-
-class HistorialMedicoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = HistorialMedico
-        fields = '__all__'
+        fields = ['id', 'numeroCaravana', 'numero_lote', 'tipos', 'peso', 'edad', 'preniada', 'reciennacida', 'userId']
 
 class TratamientoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tratamiento
-        fields = '__all__'
+        fields = ['id', 'numeroCaravana', 'tratamiento' , 'medicacion', 'fechaInicio', 'cada', 'durante', 'userId' ]
 
 class SangradoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sangrado
-        fields = '__all__'
+        fields = ['id', 'numero_lote', 'numero_animal','numero_tubo', 'fecha', 'userId']
+        
+class TactoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tacto
+        fields= ['id', 'numero_lote', 'numero_animal', 'fecha', 'prenada','userId']
+
 
 class NotificacionSerializer(serializers.ModelSerializer):
     class Meta:
@@ -40,3 +41,9 @@ class ConfigNotificacionesSerializer(serializers.ModelSerializer):
     class Meta:
         model = ConfigNotificaciones
         fields = '__all__'
+
+class VacunacionSerializer (serializers.ModelSerializer):
+    class Meta:
+        model = Vacunacion
+        fields= ['id', 'numero_lote', 'nombre_vacuna', 'fechaInicio', 'durante','cada','userId']
+

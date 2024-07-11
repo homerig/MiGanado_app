@@ -19,6 +19,7 @@ const CustomHeader = () => {
   );
 };
 
+
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
@@ -69,6 +70,7 @@ export default function TabLayout() {
           ),
         }}
       />
+      
       <Tabs.Screen
         name="lotes"
         options={{
@@ -87,7 +89,7 @@ export default function TabLayout() {
             <TabBarIcon name={focused ? 'user' : 'user'} color={color} focused={focused} />
           ),
         }}
-      />
+      />      
     </Tabs>
   );
 }
