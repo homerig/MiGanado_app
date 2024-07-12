@@ -39,15 +39,17 @@ class BuscarAnimalView(APIView):
         numCaravana = request.data.get('numeroCaravana')
 
         try:
-            # Buscar un usuario con el correo electrónico proporcionado
-            animal = Animal.objects.get(numeroCaravana=numCaravana, numero_lote=idLote, userId=idUsuario)
+            if not idLote:  # Si idLote está vacío, buscar solo por número de caravana y userId
+                animal = Animal.objects.get(numeroCaravana=numCaravana, userId=idUsuario)
+            else:
+                animal = Animal.objects.get(numeroCaravana=numCaravana, numero_lote=idLote, userId=idUsuario)
+
             serializer = AnimalSerializer(animal)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         except Animal.DoesNotExist:
-            # No se encontró un usuario con el correo electrónico proporcionado
             return Response({'message': 'Animal no encontrado'})
-
+        
 class UserNotificationsView(APIView):
     def get(self, request, user_id):
         usuario = get_object_or_404(Usuario, pk=user_id)
