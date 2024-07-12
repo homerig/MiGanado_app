@@ -32,6 +32,22 @@ class LoginView(APIView):
             # No se encontró un usuario con el correo electrónico proporcionado
             return Response({'message': 'Credenciales inválidas'}, status=status.HTTP_401_UNAUTHORIZED)
 
+class BuscarAnimalView(APIView):
+    def post(self, request, *args, **kwargs):
+        idUsuario = request.data.get('idUsuario')
+        idLote = request.data.get('idLote')
+        numCaravana = request.data.get('numeroCaravana')
+
+        try:
+            # Buscar un usuario con el correo electrónico proporcionado
+            animal = Animal.objects.get(numeroCaravana=numCaravana, numero_lote=idLote, userId=idUsuario)
+            serializer = AnimalSerializer(animal)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except Animal.DoesNotExist:
+            # No se encontró un usuario con el correo electrónico proporcionado
+            return Response({'message': 'Animal no encontrado'})
+
 class UserNotificationsView(APIView):
     def get(self, request, user_id):
         usuario = get_object_or_404(Usuario, pk=user_id)

@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import LoginView, UsuarioViewSet, LoteViewSet, AnimalViewSet, TratamientoViewSet, SangradoViewSet, NotificacionViewSet, ConfigNotificacionesViewSet,TactoViewSet,VacunacionViewSet, UserNotificationsView
+from .views import LoginView, UsuarioViewSet, BuscarAnimalView, LoteViewSet, AnimalViewSet, TratamientoViewSet, SangradoViewSet, NotificacionViewSet, ConfigNotificacionesViewSet,TactoViewSet,VacunacionViewSet, UserNotificationsView
 
 router = DefaultRouter()
 router.register(r'usuarios', UsuarioViewSet, basename='usuario')
@@ -16,5 +16,6 @@ router.register(r'vacunaciones', VacunacionViewSet, basename='vacunacion')
 urlpatterns = [
     path('', include(router.urls)),
     path('login/', LoginView.as_view(), name='login'),
+    path('buscarAnimal/', BuscarAnimalView.as_view(), name='buscarAnimal'),
     path('user_notifications/<int:user_id>/', UserNotificationsView.as_view(), name='user_notifications'),
 ]
