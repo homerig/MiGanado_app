@@ -10,23 +10,22 @@ import { UserContext } from '../../api/UserContext';
 const BuscarAnimalScreen = () => {
   const [idLote, setIdLote] = useState('');
   const [numeroCaravana, setNumeroCaravana] = useState('');
-  const [animalEncontrado, setAnimalEncontrado] = useState(null); // Estado para almacenar los datos del animal encontrado
+  const [animalEncontrado, setAnimalEncontrado] = useState(null); 
   const { userId } = useContext(UserContext);
 
   const buscar = async () => {
     try {
       const animal = await buscarAnimal(userId, idLote, numeroCaravana);
-      setAnimalEncontrado(animal); // Guardar el animal encontrado en el estado
+      setAnimalEncontrado(animal); 
     } catch (error) {
       console.error('Error al buscar animal:', error);
-      // Manejo de errores aquí si es necesario
     }
   };
 
   const resetForm = () => {
     setIdLote('');
     setNumeroCaravana('');
-    setAnimalEncontrado(null); // Limpiar el estado para mostrar el formulario vacío
+    setAnimalEncontrado(null);
   };
 
   return (
