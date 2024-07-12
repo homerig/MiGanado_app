@@ -32,9 +32,9 @@ const loginUser = async (email, password) => {
   }
 };
 
-const buscarAnimal = async (idUsuario, idLote, numeroCaravana) => {
+const buscarAnimal = async (idUsuario, numeroCaravana) => {
   try {
-    const response = await axios.post(`${baseURL}/buscarAnimal/`, { idUsuario, idLote, numeroCaravana });
+    const response = await axios.post(`${baseURL}/buscarAnimal/`, { idUsuario, numeroCaravana });
     return response.data;
   } catch (error) {
     if (error.response) {

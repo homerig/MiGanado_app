@@ -35,15 +35,10 @@ class LoginView(APIView):
 class BuscarAnimalView(APIView):
     def post(self, request, *args, **kwargs):
         idUsuario = request.data.get('idUsuario')
-        idLote = request.data.get('idLote')
         numCaravana = request.data.get('numeroCaravana')
 
         try:
-            if not idLote:  # Si idLote está vacío, buscar solo por número de caravana y userId
-                animal = Animal.objects.get(numeroCaravana=numCaravana, userId=idUsuario)
-            else:
-                animal = Animal.objects.get(numeroCaravana=numCaravana, numero_lote=idLote, userId=idUsuario)
-
+            animal = Animal.objects.get(numeroCaravana=numCaravana, userId=idUsuario)
             serializer = AnimalSerializer(animal)
             return Response(serializer.data, status=status.HTTP_200_OK)
 

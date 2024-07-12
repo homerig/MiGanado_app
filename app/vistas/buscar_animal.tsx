@@ -8,14 +8,13 @@ import { buscarAnimal } from '../../api/api';
 import { UserContext } from '../../api/UserContext';
 
 const BuscarAnimalScreen = () => {
-  const [idLote, setIdLote] = useState('');
   const [numeroCaravana, setNumeroCaravana] = useState('');
   const [animalEncontrado, setAnimalEncontrado] = useState(null); 
   const { userId } = useContext(UserContext);
 
   const buscar = async () => {
     try {
-      const animal = await buscarAnimal(userId, idLote, numeroCaravana);
+      const animal = await buscarAnimal(userId, numeroCaravana);
       setAnimalEncontrado(animal); 
     } catch (error) {
       console.error('Error al buscar animal:', error);
@@ -23,7 +22,6 @@ const BuscarAnimalScreen = () => {
   };
 
   const resetForm = () => {
-    setIdLote('');
     setNumeroCaravana('');
     setAnimalEncontrado(null);
   };
@@ -33,14 +31,6 @@ const BuscarAnimalScreen = () => {
       {!animalEncontrado ? (
         <>
           <ThemedText style={styles.title}>Buscar Animal</ThemedText>
-          <TextInput
-            style={styles.input}
-            placeholder="Seleccione Lote"
-            placeholderTextColor="#666666"
-            value={idLote}
-            onChangeText={setIdLote}
-            autoCapitalize="none"
-          />
           <TextInput
             style={styles.input}
             placeholder="Número de caravana"
