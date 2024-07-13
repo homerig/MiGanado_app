@@ -1,21 +1,30 @@
 import React, { useState, useContext } from 'react';
-import { View, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { faCow, faPen, faTrash, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
+import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { buscarAnimal } from '../../api/api';
+import { buscarAnimal, buscarTratam } from '../../api/api';
 import { UserContext } from '../../api/UserContext';
 
 const BuscarAnimalScreen = () => {
   const [numeroCaravana, setNumeroCaravana] = useState('');
-  const [animalEncontrado, setAnimalEncontrado] = useState(null); 
+  const [animalEncontrado, setAnimalEncontrado] = useState(null);
+  const [tratamientoEncontrado, setTratamientoEncontrado] = useState(null);
+  const [tratamientoBuscado, setTratamientoBuscado] = useState(false);
   const { userId } = useContext(UserContext);
 
   const buscar = async () => {
     try {
       const animal = await buscarAnimal(userId, numeroCaravana);
-      setAnimalEncontrado(animal); 
+      if (animal && animal.numeroCaravana === numeroCaravana) {
+        setAnimalEncontrado(animal);
+      } else {
+        setAnimalEncontrado(null);
+        Alert.alert('Animal no encontrado', 'No se encontró un animal con ese número de caravana. Inténtelo de nuevo.', [
+          { text: 'OK', onPress: () => setNumeroCaravana('') }
+        ]);
+      }
     } catch (error) {
       console.error('Error al buscar animal:', error);
     }
@@ -24,6 +33,23 @@ const BuscarAnimalScreen = () => {
   const resetForm = () => {
     setNumeroCaravana('');
     setAnimalEncontrado(null);
+    setTratamientoEncontrado(null);
+    setTratamientoBuscado(false);
+  };
+
+  const buscarTratamiento = async () => {
+    try {
+      const tratamiento = await buscarTratam(userId, numeroCaravana);
+      if (tratamiento && tratamiento.numeroCaravana === numeroCaravana) {
+        setTratamientoEncontrado(tratamiento);
+      } else {
+        setTratamientoEncontrado(null);
+      }
+      setTratamientoBuscado(true);
+    } catch (error) {
+      console.error('Error al buscar tratamiento:', error);
+      setTratamientoBuscado(true);
+    }
   };
 
   return (
@@ -48,8 +74,10 @@ const BuscarAnimalScreen = () => {
       ) : (
         <>
           <TouchableOpacity style={styles.buttonVolver} onPress={resetForm}>
-            <ThemedText><FontAwesomeIcon icon={faChevronLeft} size={20} style={styles.iconVolver}/>
-            Volver a buscar</ThemedText>
+            <ThemedText>
+              <FontAwesomeIcon icon={faChevronLeft} size={20} style={styles.iconVolver} />
+              Volver a buscar
+            </ThemedText>
           </TouchableOpacity>
           <View style={styles.animalDetailContainer}>
             <ThemedText style={styles.detail}>N° {animalEncontrado.numeroCaravana}</ThemedText>
@@ -57,6 +85,31 @@ const BuscarAnimalScreen = () => {
             <ThemedText style={styles.detail}>Lote: {animalEncontrado.numero_lote}</ThemedText>
             <ThemedText style={styles.detail}>Peso: {animalEncontrado.peso} kg</ThemedText>
             <ThemedText style={styles.detail}>Preñada: {animalEncontrado.preniada ? 'Sí' : 'No'}</ThemedText>
+
+            <View style={styles.tratamientosContainer}>
+              {!tratamientoBuscado ? (
+                <View style={styles.buttonContainer}>
+                  <TouchableOpacity style={styles.button} onPress={buscarTratamiento}>
+                    <ThemedText style={styles.buttonText}>Ver tratamiento</ThemedText>
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <>
+                  <ThemedText style={styles.detail}>Tratamientos:</ThemedText>
+                  {tratamientoEncontrado ? (
+                    <>
+                      <ThemedText style={styles.tratamiento}>Tratamiento: {tratamientoEncontrado.tratamiento}</ThemedText>
+                      <ThemedText style={styles.tratamiento}>Medicación: {tratamientoEncontrado.medicacion}</ThemedText>
+                      <ThemedText style={styles.tratamiento}>Fecha Inicio: {tratamientoEncontrado.fechaInicio}</ThemedText>
+                      <ThemedText style={styles.tratamiento}>Cada: {tratamientoEncontrado.cada} días</ThemedText>
+                      <ThemedText style={styles.tratamiento}>Durante: {tratamientoEncontrado.durante} días</ThemedText>
+                    </>
+                  ) : (
+                    <ThemedText style={styles.detail}>No hay tratamientos registrados.</ThemedText>
+                  )}
+                </>
+              )}
+            </View>
           </View>
         </>
       )}
@@ -111,17 +164,24 @@ const styles = StyleSheet.create({
   },
   animalDetailContainer: {
     marginTop: 20,
-    padding: 20, // Añadir un padding adicional para los detalles del animal
-    backgroundColor: '#f0f0f0', // Color de fondo para distinguir los detalles del formulario
-    borderRadius: 10, // Borde redondeado
+    padding: 20,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 10,
   },
   detail: {
     fontSize: 18,
     marginBottom: 5,
   },
-  iconVolver:{
+  iconVolver: {
     marginRight: 8,
-  }
+  },
+  tratamientosContainer: {
+    marginLeft: 20,
+  },
+  tratamiento: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
 });
 
 export default BuscarAnimalScreen;
