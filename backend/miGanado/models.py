@@ -49,7 +49,7 @@ class Tratamiento(models.Model):
 
 class Sangrado(models.Model):
     numero_lote = models.IntegerField()
-    numero_animal = models.IntegerField()
+    numeroCaravana = models.CharField(max_length=100)
     numero_tubo = models.IntegerField()
     fecha = models.DateField()
     userId = models.IntegerField()

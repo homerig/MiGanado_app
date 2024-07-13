@@ -58,6 +58,20 @@ class buscarTratamView(APIView):
         except Tratamiento.DoesNotExist:
             return Response({'message': 'tratamiento no encontrado'})
 
+class buscarSanView(APIView):
+    def post(self, request, *args, **kwargs):
+        idUsuario = request.data.get('idUsuario')
+        numCaravana = request.data.get('numeroCaravana')
+
+        try:
+            sangrado = Sangrado.objects.get(numeroCaravana=numCaravana, userId=idUsuario)
+            serializer = SangradoSerializer(sangrado)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except Sangrado.DoesNotExist:
+            return Response({'message': 'sangrado no encontrado'})
+
+
 class UserNotificationsView(APIView):
     def get(self, request, user_id):
         usuario = get_object_or_404(Usuario, pk=user_id)
