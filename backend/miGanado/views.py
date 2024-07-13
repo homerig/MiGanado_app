@@ -45,6 +45,19 @@ class BuscarAnimalView(APIView):
         except Animal.DoesNotExist:
             return Response({'message': 'Animal no encontrado'})
         
+class buscarTratamView(APIView):
+    def post(self, request, *args, **kwargs):
+        idUsuario = request.data.get('idUsuario')
+        numCaravana = request.data.get('numeroCaravana')
+
+        try:
+            tratamiento = Tratamiento.objects.get(numeroCaravana=numCaravana, userId=idUsuario)
+            serializer = TratamientoSerializer(tratamiento)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except Tratamiento.DoesNotExist:
+            return Response({'message': 'tratamiento no encontrado'})
+
 class UserNotificationsView(APIView):
     def get(self, request, user_id):
         usuario = get_object_or_404(Usuario, pk=user_id)

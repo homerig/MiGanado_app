@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseURL = 'http://192.168.0.71:8000/miGanado'; // Ajusta la URL a la de tu servidor
+const baseURL = 'http://192.168.0.10:8000/miGanado'; // Ajusta la URL a la de tu servidor
 
 const registerUser = async (userData) => {
   try {
@@ -43,6 +43,21 @@ const buscarAnimal = async (idUsuario, numeroCaravana) => {
       console.error('Error al buscar el animal - No se recibió respuesta:', error.request);
     } else {
       console.error('Error al buscar el animal:', error.message);
+    }
+    throw error;
+  }
+};
+const buscarTratam = async (idUsuario, numeroCaravana) => {
+  try {
+    const response = await axios.post(`${baseURL}/buscarTratam/`, { idUsuario, numeroCaravana });
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error('Error al buscar tratamiento:', error.response.data);
+    } else if (error.request) {
+      console.error('Error al buscar el tratamiento - No se recibió respuesta:', error.request);
+    } else {
+      console.error('Error al buscar tratamiento:', error.message);
     }
     throw error;
   }
@@ -183,4 +198,4 @@ const createVacunacion = async ({ numero_lote, nombre_vacuna, fechaInicio, duran
 
 
 
-export { baseURL, registerUser, loginUser, buscarAnimal, getUserLotes, getUserNotificaciones,createSangrado,createTacto,createVacunacion, createTratamiento, registerAnimal,createLote,deleteLote};
+export { baseURL,buscarTratam ,registerUser, loginUser, buscarAnimal, getUserLotes, getUserNotificaciones,createSangrado,createTacto,createVacunacion, createTratamiento, registerAnimal,createLote,deleteLote};
