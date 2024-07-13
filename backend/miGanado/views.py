@@ -44,6 +44,25 @@ class BuscarAnimalView(APIView):
 
         except Animal.DoesNotExist:
             return Response({'message': 'Animal no encontrado'})
+
+class ActualizarPreniesView(APIView):
+    def put(self, request, *args, **kwargs):
+        idUsuario = request.data.get('idUsuario')
+        numeroCaravana = request.data.get('numeroCaravana')
+        preniada = request.data.get('preniada')
+
+        try:
+            animal = Animal.objects.get(numeroCaravana=numeroCaravana, userId=idUsuario)
+            animal.preniada = preniada
+            animal.save()
+            serializer = AnimalSerializer(animal)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except Animal.DoesNotExist:
+            return Response({'message': 'Animal no encontrado'}, status=status.HTTP_404_NOT_FOUND)
+
+        except Exception as e:
+            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
 class buscarTratamView(APIView):
     def post(self, request, *args, **kwargs):

@@ -47,6 +47,25 @@ const buscarAnimal = async (idUsuario, numeroCaravana) => {
     throw error;
   }
 };
+const actualizarPrenies = async (idUsuario, numeroCaravana, preniada) => {
+  try {
+    const response = await axios.put(`${baseURL}/actualizarPrenies/`, { idUsuario, numeroCaravana, preniada });
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error('Error al actualizar la preñez del animal:', error.response.data);
+    } else if (error.request) {
+      console.error('Error al actualizar la preñez del animal - No se recibió respuesta:', error.request);
+    } else {
+      console.error('Error al actualizar la preñez del animal:', error.message);
+    }
+    throw error;
+  }
+};
+
+
+
+
 const buscarTratam = async (idUsuario, numeroCaravana) => {
   try {
     const response = await axios.post(`${baseURL}/buscarTratam/`, { idUsuario, numeroCaravana });
@@ -213,4 +232,4 @@ const createVacunacion = async ({ numero_lote, nombre_vacuna, fechaInicio, duran
 
 
 
-export { baseURL,buscarSan ,buscarTratam ,registerUser, loginUser, buscarAnimal, getUserLotes, getUserNotificaciones,createSangrado,createTacto,createVacunacion, createTratamiento, registerAnimal,createLote,deleteLote};
+export { baseURL ,actualizarPrenies ,buscarSan ,buscarTratam ,registerUser, loginUser, buscarAnimal, getUserLotes, getUserNotificaciones,createSangrado,createTacto,createVacunacion, createTratamiento, registerAnimal,createLote,deleteLote};

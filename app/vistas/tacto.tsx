@@ -4,7 +4,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useNavigation } from '@react-navigation/native';
 import { UserContext } from '../../api/UserContext';
-import { createTacto } from '../../api/api';
+import { createTacto, actualizarPrenies } from '../../api/api';
 
 const TactoScreen = () => {
   const [numero_lote, setNumeroLote] = useState('');
@@ -28,6 +28,11 @@ const TactoScreen = () => {
     try {
       const tacto = await createTacto({ numero_lote, numero_animal, fecha, prenada, userId });
       console.log("Tacto registrado:", tacto);
+      
+      // Actualizar la preñez del animal
+      await actualizarPrenies(userId, numero_animal, prenada);
+      console.log("Preñez del animal actualizada");
+      
       // Limpiar los campos después de guardar exitosamente
       setNumeroLote('');
       setNumeroCaravana('');
