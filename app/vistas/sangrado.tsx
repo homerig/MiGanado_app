@@ -8,7 +8,7 @@ import { createSangrado } from '../../api/api';
 
 const SangradoScreen = () => {
   const [numero_lote, setNumeroLote] = useState('');
-  const [numero_animal, setNumeroCaravana] = useState('');
+  const [numeroCaravana, setNumeroCaravana] = useState('');
   const [numero_tubo, setNumeroTuboEnsayo] = useState('');
   const [fecha, setFecha] = useState('');
   const { userId } = useContext(UserContext);
@@ -26,7 +26,7 @@ const SangradoScreen = () => {
 
   const handlesig = async () => {
     try {
-      const sangrado = await createSangrado({ numero_lote, numero_animal, numero_tubo, fecha, userId });
+      const sangrado = await createSangrado({ numero_lote, numeroCaravana, numero_tubo, fecha, userId });
       console.log("Sangrado registrado:", sangrado);
       // Limpiar los campos después de guardar exitosamente
       setNumeroLote('');
@@ -52,7 +52,7 @@ const SangradoScreen = () => {
       <TextInput
         style={styles.input}
         placeholder="Número de caravana"
-        value={numero_animal}
+        value={numeroCaravana}
         onChangeText={setNumeroCaravana}
       />
       <TextInput

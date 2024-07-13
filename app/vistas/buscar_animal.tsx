@@ -4,7 +4,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { buscarAnimal, buscarTratam } from '../../api/api';
+import { buscarAnimal, buscarTratam,buscarSan } from '../../api/api';
 import { UserContext } from '../../api/UserContext';
 
 const BuscarAnimalScreen = () => {
@@ -12,6 +12,8 @@ const BuscarAnimalScreen = () => {
   const [animalEncontrado, setAnimalEncontrado] = useState(null);
   const [tratamientoEncontrado, setTratamientoEncontrado] = useState(null);
   const [tratamientoBuscado, setTratamientoBuscado] = useState(false);
+  const [sangradoEncontrado, setSangradoEncontrado] = useState(null);
+  const [sangradobuscado, setsangradobuscado] = useState(false);
   const { userId } = useContext(UserContext);
 
   const buscar = async () => {
@@ -35,6 +37,8 @@ const BuscarAnimalScreen = () => {
     setAnimalEncontrado(null);
     setTratamientoEncontrado(null);
     setTratamientoBuscado(false);
+    setSangradoEncontrado(null);
+    setsangradobuscado(false);
   };
 
   const buscarTratamiento = async () => {
@@ -49,6 +53,21 @@ const BuscarAnimalScreen = () => {
     } catch (error) {
       console.error('Error al buscar tratamiento:', error);
       setTratamientoBuscado(true);
+    }
+  };
+  
+  const buscarSangrado = async () => {
+    try {
+      const sangrado = await buscarSan(userId, numeroCaravana);
+      if (sangrado && sangrado.numeroCaravana === numeroCaravana) {
+        setSangradoEncontrado(sangrado);
+      } else {
+        setSangradoEncontrado(null);
+      }
+      setsangradobuscado(true);
+    } catch (error) {
+      console.error('Error al buscar sangrado:', error);
+      setsangradobuscado(true);
     }
   };
 
@@ -109,8 +128,32 @@ const BuscarAnimalScreen = () => {
                   )}
                 </>
               )}
+            </View> 
+            
+            <View style={styles.tratamientosContainer}>
+              {!sangradobuscado ? (
+                <View style={styles.buttonContainer}>
+                  <TouchableOpacity style={styles.button} onPress={buscarSangrado}>
+                    <ThemedText style={styles.buttonText}>Ver sangrado</ThemedText>
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <>
+                  <ThemedText style={styles.detail}>Sangrado:</ThemedText>
+                  {sangradoEncontrado ? (
+                    <>
+                      <ThemedText style={styles.sangrado}>Numero tubo: {sangradoEncontrado.numero_tubo}</ThemedText>
+                      </>
+                  ) : (
+                    <ThemedText style={styles.detail}>No hay sangrados registrados.</ThemedText>
+                  )}
+                </>
+              )}
             </View>
+
+
           </View>
+
         </>
       )}
     </ThemedView>
@@ -179,6 +222,10 @@ const styles = StyleSheet.create({
     marginLeft: 20,
   },
   tratamiento: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  sangrado: {
     fontSize: 16,
     marginBottom: 5,
   },

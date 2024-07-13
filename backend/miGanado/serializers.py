@@ -24,7 +24,7 @@ class TratamientoSerializer(serializers.ModelSerializer):
 class SangradoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sangrado
-        fields = ['id', 'numero_lote', 'numero_animal','numero_tubo', 'fecha', 'userId']
+        fields = ['id', 'numero_lote', 'numeroCaravana','numero_tubo', 'fecha', 'userId']
         
 class TactoSerializer(serializers.ModelSerializer):
     class Meta:
