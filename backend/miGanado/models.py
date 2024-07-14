@@ -65,14 +65,15 @@ class Tacto(models.Model):
 
 class Notificacion(models.Model):
     TIPO_CHOICES = [
-        ('lote', 'Lote'),
-        ('tratamiento', 'Tratamiento'),
-        ('tacto', 'Tacto'),
-        ('sangrado', 'Sangrado'),
-        ('estadísticas', 'Estadísticas'),
+        ('Lote', 'Lote'),
+        ('Tratamiento', 'Tratamiento'),
+        ('Vacunación', 'Vacunación'),
+        ('Tacto', 'Tacto'),
+        ('Sangrado', 'Sangrado'),
+        ('Estadísticas', 'Estadísticas'),
     ]
     
-    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='notificaciones', default=1)  # Cambia 'default=1' al ID correcto
+    userId = models.IntegerField()
     tipo = models.CharField(max_length=20, choices=TIPO_CHOICES)
     mensaje = models.CharField(max_length=255)
     fecha = models.DateTimeField()

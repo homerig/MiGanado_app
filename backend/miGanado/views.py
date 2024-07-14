@@ -47,9 +47,8 @@ class BuscarAnimalView(APIView):
         
 class UserNotificationsView(APIView):
     def get(self, request, user_id):
-        usuario = get_object_or_404(Usuario, pk=user_id)
-        notificaciones = Notificacion.objects.filter(usuario=usuario)
-        notificaciones_data = list(notificaciones.values('tipo', 'mensaje', 'fecha'))
+        notificaciones = Notificacion.objects.filter(userId=user_id)
+        notificaciones_data = list(notificaciones.values('tipo', 'mensaje', 'fecha', 'id'))
         return JsonResponse(notificaciones_data, safe=False)
     
 class CrearLoteView(APIView):
