@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faAngleRight, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { getUserLotes, createLote, deleteLote } from '../../api/api';
 import { UserContext } from '../../api/UserContext';
-import { useNavigation } from '@react-navigation/native'; // Importar hook de navegación
+import { useNavigation, useFocusEffect } from '@react-navigation/native'; // Importar hook de navegación
 
 const ListItem = ({ item, onPress, isSelected, isDeleting, onDelete }) => (
   <TouchableOpacity
@@ -31,18 +31,21 @@ export default function TabTwoScreen() {
   const [isDeleting, setIsDeleting] = useState(false);
   const navigation = useNavigation(); // Hook de navegación
 
-  useEffect(() => {
-    const fetchLotes = async () => {
-      try {
-        const userLotes = await getUserLotes(userId);
-        setLotes(userLotes);
-      } catch (error) {
-        console.error('Error al obtener los lotes del usuario:', error.message);
-      }
-    };
-
-    fetchLotes();
+  const fetchLotes = useCallback(async () => {
+    try {
+      const userLotes = await getUserLotes(userId);
+      setLotes(userLotes);
+    } catch (error) {
+      console.error('Error al obtener los lotes del usuario:', error.message);
+    }
   }, [userId]);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchLotes();
+      setSelectedLote(null); // Limpiar la selección al enfocar la pantalla
+    }, [fetchLotes])
+  );
 
   const handleCreateLote = async () => {
     if (lotes && lotes.length >= 4) {
@@ -68,10 +71,10 @@ export default function TabTwoScreen() {
 
   const handleDeleteLote = async (item) => {
     try {
-      console.log(item.id);
       await deleteLote(item.id);
       setLotes(prevLotes => prevLotes.filter(lote => lote.id !== item.id));
       setSelectedLote(null);
+      setIsDeleting(false); // Desactivar el modo eliminar después de eliminar el lote
     } catch (error) {
       Alert.alert('Error', 'Error al eliminar el lote. Inténtalo de nuevo más tarde.');
     }

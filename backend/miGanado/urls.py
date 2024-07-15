@@ -1,5 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
+from .views import ActualizarPreniesView,ActualizarNombreLoteView, buscarSanView,buscarTratamView, LoginView, UsuarioViewSet, BuscarAnimalView, LoteViewSet, AnimalViewSet, TratamientoViewSet, SangradoViewSet, NotificacionViewSet, ConfigNotificacionesViewSet,TactoViewSet,VacunacionViewSet, UserNotificationsView
 from .views import ActualizarSangradoView ,ActualizarPreniesView, buscarSanView,buscarTratamView, LoginView, UsuarioViewSet, BuscarAnimalView, LoteViewSet, AnimalViewSet, TratamientoViewSet, SangradoViewSet, NotificacionViewSet, ConfigNotificacionesViewSet,TactoViewSet,VacunacionViewSet, UserNotificationsView
 
 router = DefaultRouter()
@@ -20,6 +21,7 @@ urlpatterns = [
     path('buscarTratam/', buscarTratamView.as_view(), name='buscarTratam'),
     path('buscarSan/', buscarSanView.as_view(), name='buscarSan'),
     path('actualizarPrenies/', ActualizarPreniesView.as_view(), name='actualizarPrenies'),
+    path('actualizarNombreLote/<int:lote_id>/', ActualizarNombreLoteView.as_view(), name='actualizarNombreLote'),
     path('actualizarSangrado/', ActualizarSangradoView.as_view(), name='actualizar_sangrado'),
     path('user_notifications/<int:user_id>/', UserNotificationsView.as_view(), name='user_notifications'),
 ]

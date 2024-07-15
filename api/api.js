@@ -63,6 +63,19 @@ const actualizarPrenies = async (idUsuario, numeroCaravana, preniada) => {
   }
 };
 
+const actualizarNombreLote = async (loteId, nombre_lote) => {
+  try {
+    const response = await axios.put(`${baseURL}/actualizarNombreLote/${loteId}/`, { nombre_lote });
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error('Error al actualizar el nombre del lote:', error.response.data);
+    } else {
+      console.error('Error al actualizar el nombre del lote:', error.message);
+    }
+    throw error;
+  }
+};
 const actualizarSangrado = async (idUsuario, numeroCaravana, numero_tubo) => {
   try {
     const response = await axios.put(`${baseURL}/actualizarSangrado/`, { idUsuario, numeroCaravana, numero_tubo });
@@ -177,6 +190,9 @@ const createLote = async (loteData, userId) => {
   }
 };
 
+
+
+
 const deleteLote = async (loteId) => {
   try {
     const response = await axios.delete(`${baseURL}/lotes/${loteId}/`);
@@ -278,4 +294,13 @@ const createVacunacion = async ({ numero_lote, nombre_vacuna, fechaInicio, duran
   }
 };
 
-export { baseURL ,actualizarSangrado ,actualizarPrenies ,buscarSan ,buscarTratam ,registerUser, loginUser, buscarAnimal, getUserLotes, createNotificacion, getUserNotificaciones , deleteNotificacion, createSangrado ,createTacto ,createVacunacion ,createTratamiento ,registerAnimal ,createLote ,deleteLote };
+
+
+
+
+
+
+
+
+
+export { baseURL ,actualizarPrenies ,buscarSan ,buscarTratam ,registerUser, loginUser, buscarAnimal, getUserLotes, getUserNotificaciones,createSangrado,createTacto,createVacunacion, createTratamiento, registerAnimal,createLote,deleteLote};
