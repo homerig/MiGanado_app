@@ -154,8 +154,10 @@ export default function HomeScreen() {
   };
 
   const agregarNotificacion = () => {
-    selectedDate.setDate(selectedDate.getDate() - 1);
-    const notificacion = createNotificacion(userId, tipoNotificacion, nuevaNotificacion, selectedDate );
+    const nextDay = new Date(selectedDate);
+    nextDay.setDate(selectedDate.getDate());
+    const utcDate = new Date(Date.UTC(nextDay.getFullYear(), nextDay.getMonth(), nextDay.getDate(), 0, 0, 0));
+    const notificacion = createNotificacion(userId, tipoNotificacion, nuevaNotificacion, utcDate );
     setNotificaciones([...notificaciones, notificacion]);
     setNuevaNotificacion('');
     setTipoNotificacion('Seleccione una opción'); // Reiniciar el tipo de notificación
@@ -165,8 +167,7 @@ export default function HomeScreen() {
   const onChangeFecha = (event, selectedDate) => {
     const currentDate = selectedDate || selectedDate;
     setShowDatePicker(false);
-    const utcDate = new Date(Date.UTC(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 0, 0, 0));
-    setSelectedDate(utcDate);
+    setSelectedDate(currentDate);
   };
 
   return (
