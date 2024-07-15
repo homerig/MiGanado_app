@@ -57,7 +57,7 @@ class Sangrado(models.Model):
 
 class Tacto(models.Model):
     numero_lote = models.IntegerField()
-    numero_animal = models.IntegerField()
+    numeroCaravana = models.IntegerField()
     prenada = models.BooleanField(default=False)
     fecha = models.DateField()
     userId = models.IntegerField()

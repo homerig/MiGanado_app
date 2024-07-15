@@ -29,7 +29,7 @@ class SangradoSerializer(serializers.ModelSerializer):
 class TactoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tacto
-        fields= ['id', 'numero_lote', 'numero_animal', 'fecha', 'prenada','userId']
+        fields= ['id', 'numero_lote', 'numeroCaravana', 'fecha', 'prenada','userId']
 
 
 class NotificacionSerializer(serializers.ModelSerializer):
