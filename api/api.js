@@ -63,8 +63,21 @@ const actualizarPrenies = async (idUsuario, numeroCaravana, preniada) => {
   }
 };
 
-
-
+const actualizarSangrado = async (idUsuario, numeroCaravana, numero_tubo) => {
+  try {
+    const response = await axios.put(`${baseURL}/actualizarSangrado/`, { idUsuario, numeroCaravana, numero_tubo });
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error('Error al actualizar el sangrado del animal:', error.response.data);
+    } else if (error.request) {
+      console.error('Error al actualizar el sangrado del animal - No se recibió respuesta:', error.request);
+    } else {
+      console.error('Error al actualizar el sangrado del animal:', error.message);
+    }
+    throw error;
+  }
+};
 
 const buscarTratam = async (idUsuario, numeroCaravana) => {
   try {
@@ -165,9 +178,9 @@ const createSangrado = async ({ numero_lote, numeroCaravana, numero_tubo, fecha,
     throw error;
   }
 };
-const createTacto = async ({ numero_lote, numero_animal, prenada, fecha, userId }) => {
+const createTacto = async ({ numero_lote, numeroCaravana, prenada, fecha, userId }) => {
   try {
-    const response = await axios.post(`${baseURL}/tactos/`, { numero_lote, numero_animal, prenada, fecha, userId });
+    const response = await axios.post(`${baseURL}/tactos/`, { numero_lote, numeroCaravana, prenada, fecha, userId });
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -223,13 +236,4 @@ const createVacunacion = async ({ numero_lote, nombre_vacuna, fechaInicio, duran
   }
 };
 
-
-
-
-
-
-
-
-
-
-export { baseURL ,actualizarPrenies ,buscarSan ,buscarTratam ,registerUser, loginUser, buscarAnimal, getUserLotes, getUserNotificaciones,createSangrado,createTacto,createVacunacion, createTratamiento, registerAnimal,createLote,deleteLote};
+export { baseURL ,actualizarSangrado ,actualizarPrenies ,buscarSan ,buscarTratam ,registerUser, loginUser, buscarAnimal, getUserLotes, getUserNotificaciones ,createSangrado ,createTacto ,createVacunacion ,createTratamiento ,registerAnimal ,createLote ,deleteLote };
