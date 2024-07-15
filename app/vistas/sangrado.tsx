@@ -81,7 +81,7 @@ const SangradoScreen = () => {
       if (sangrado && sangrado.numeroCaravana === numeroCaravana) {
         return true;
       } else {
-          return false;
+        return false;
       }
     } catch (error) {
       console.error('Error al buscar animal:', error);
@@ -132,39 +132,52 @@ const SangradoScreen = () => {
   return (
     <ThemedView style={styles.container}>
       <ThemedText style={styles.title}>Sangrado</ThemedText>
-      <TextInput
-        style={[styles.input, numeroLoteError && styles.errorInput]}
-        placeholder="Seleccione Lote"
-        value={numero_lote}
-        onChangeText={setNumeroLote}
-      />
-      {numeroLoteError && <ErrorIcon onPress={() => Alert.alert('Error', 'El campo Lote no puede estar vacío')} />}
-      <TextInput
-        style={[styles.input, numeroCaravanaError && styles.errorInput]}
-        placeholder="Número de caravana"
-        value={numeroCaravana}
-        onChangeText={setNumeroCaravana}
-      />
-      {numeroCaravanaError && <ErrorIcon onPress={() => Alert.alert('Error', 'El campo Número de caravana no puede estar vacío')} />}
-      <TextInput
-        style={[styles.input, numeroTuboError && styles.errorInput]}
-        placeholder="Número del tubo de ensayo"
-        value={numero_tubo}
-        onChangeText={setNumeroTubo}
-      />
-      {numeroTuboError && <ErrorIcon onPress={() => Alert.alert('Error', 'El campo Número del tubo de ensayo no puede estar vacío')} />}
-      <TextInput
-        style={[styles.input, fechaError && styles.errorInput]}
-        placeholder="Fecha (YYYY-MM-DD)"
-        value={fecha}
-        onChangeText={setFecha}
-      />
-      {fechaError && <ErrorIcon onPress={() => Alert.alert('Error', 'El campo fecha no puede estar vacío')} />}
+
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={[styles.input, numeroLoteError && styles.errorInput]}
+          placeholder="Seleccione Lote"
+          value={numero_lote}
+          onChangeText={setNumeroLote}
+        />
+        {numeroLoteError && <ErrorIcon onPress={() => Alert.alert('Error', 'El campo Lote no puede estar vacío')} />}
+      </View>
+
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={[styles.input, numeroCaravanaError && styles.errorInput]}
+          placeholder="Número de caravana"
+          value={numeroCaravana}
+          onChangeText={setNumeroCaravana}
+        />
+        {numeroCaravanaError && <ErrorIcon onPress={() => Alert.alert('Error', 'El campo Número de caravana no puede estar vacío')} />}
+      </View>
+
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={[styles.input, numeroTuboError && styles.errorInput]}
+          placeholder="Número del tubo de ensayo"
+          value={numero_tubo}
+          onChangeText={setNumeroTubo}
+        />
+        {numeroTuboError && <ErrorIcon onPress={() => Alert.alert('Error', 'El campo Número del tubo de ensayo no puede estar vacío')} />}
+      </View>
+
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={[styles.input, fechaError && styles.errorInput]}
+          placeholder="Fecha (YYYY-MM-DD)"
+          value={fecha}
+          onChangeText={setFecha}
+        />
+        {fechaError && <ErrorIcon onPress={() => Alert.alert('Error', 'El campo Fecha no puede estar vacío')} />}
+      </View>
+
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={handlesig}>
+        <TouchableOpacity style={[styles.button, styles.buttonGreen]} onPress={handlesig}>
           <ThemedText style={styles.buttonText}>Siguiente</ThemedText>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={handleFinalizar}>
+        <TouchableOpacity style={[styles.button, styles.buttonGreen]} onPress={handleFinalizar}>
           <ThemedText style={styles.buttonText}>Finalizar</ThemedText>
         </TouchableOpacity>
       </View>
@@ -186,12 +199,15 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     marginHorizontal: -2,
   },
+  inputContainer: {
+    position: 'relative',
+    marginBottom: 16,
+  },
   input: {
     height: 50,
     borderColor: '#CCCCCC',
     borderWidth: 1,
     borderRadius: 20,
-    marginBottom: 16,
     paddingHorizontal: 10,
   },
   errorInput: {
@@ -203,13 +219,15 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   button: {
-    backgroundColor: '#4CAF50',
     paddingVertical: 8,
     paddingHorizontal: 10,
     borderRadius: 20,
     flex: 1,
     marginHorizontal: 5,
     alignItems: 'center',
+  },
+  buttonGreen: {
+    backgroundColor: '#407157',
   },
   buttonText: {
     color: '#FFFFFF',
