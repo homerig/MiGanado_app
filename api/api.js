@@ -62,6 +62,19 @@ const getUserLotes = async (userId) => {
   }
 };
 
+const createNotificacion = async(userId, tipo, mensaje, fecha ) => {
+  try {
+    const response = await axios.post(`${baseURL}/notificaciones/`, {  userId, tipo, mensaje, fecha });
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error('Error al registrar el animal:', error.response.data);
+    } else {
+      console.error('Error al registrar el animal:', error.message);
+    }
+    throw error;
+  }
+}
 
 const getUserNotificaciones = async (userId) => {
   try {
@@ -153,7 +166,7 @@ const createTratamiento = async ({ numeroCaravana, tratamiento, medicacion, fech
     var animal = await buscarAnimal(userId, numeroCaravana);
     var fecha = fechaInicio;
     var mensaje = tratamiento + " de Caravana Nº"+ numeroCaravana +" en el lote N°" + animal.numero_lote;
-    const notificacion = await axios.post(`${baseURL}/notificaciones/`, { userId, tipo, mensaje, fecha });
+    const notificacion = await createNotificacion(userId, tipo, mensaje, fecha);
 
     return response.data;
   } catch (error) {
@@ -190,7 +203,7 @@ const createVacunacion = async ({ numero_lote, nombre_vacuna, fechaInicio, duran
     var tipo = "Vacunación";
     var fecha = fechaInicio;
     var mensaje = "Vacunación del lote N°" + numero_lote +" con la vacuna "+ nombre_vacuna;
-    const notificacion = await axios.post(`${baseURL}/notificaciones/`, { userId, tipo, mensaje, fecha });
+    const notificacion = await createNotificacion(userId, tipo, mensaje, fecha);
 
     return response.data;
   } catch (error) {
@@ -212,4 +225,4 @@ const createVacunacion = async ({ numero_lote, nombre_vacuna, fechaInicio, duran
 
 
 
-export { baseURL, registerUser, loginUser, buscarAnimal, getUserLotes, getUserNotificaciones, deleteNotificacion, createSangrado,createTacto,createVacunacion, createTratamiento, registerAnimal,createLote,deleteLote};
+export { baseURL, registerUser, loginUser, buscarAnimal, getUserLotes, createNotificacion, getUserNotificaciones, deleteNotificacion, createSangrado,createTacto,createVacunacion, createTratamiento, registerAnimal,createLote,deleteLote};
