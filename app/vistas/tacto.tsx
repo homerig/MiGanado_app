@@ -118,37 +118,44 @@ const TactoScreen = () => {
   return (
     <ThemedView style={styles.container}>
       <ThemedText style={styles.title}>Tacto</ThemedText>
-      <TextInput
-        style={[styles.input, numeroLoteError && styles.errorInput]}
-        placeholder="Seleccione Lote"
-        value={numero_lote}
-        onChangeText={setNumeroLote}
-      />
-      {numeroLoteError && <ErrorIcon onPress={() => Alert.alert('Error', 'El campo Lote no puede estar vacío')} />}
 
-      <TextInput
-        style={[styles.input, numeroCaravanaError && styles.errorInput]}
-        placeholder="Número de caravana"
-        value={numeroCaravana}
-        onChangeText={setNumeroCaravana}
-      />
-      {numeroCaravanaError && (
-        <ErrorIcon
-          onPress={() =>
-            Alert.alert('Error', 'El campo Número de caravana no puede estar vacío')
-          }
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={[styles.input, numeroLoteError && styles.errorInput]}
+          placeholder="Seleccione Lote"
+          value={numero_lote}
+          onChangeText={setNumeroLote}
         />
-      )}
+        {numeroLoteError && <ErrorIcon onPress={() => Alert.alert('Error', 'El campo Lote no puede estar vacío')} />}
+      </View>
 
-      <TextInput
-        style={[styles.input, fechaError && styles.errorInput]}
-        placeholder="Fecha (YYYY-MM-DD)"
-        value={fecha}
-        onChangeText={setFecha}
-      />
-      {fechaError && (
-        <ErrorIcon onPress={() => Alert.alert('Error', 'El campo fecha no puede estar vacío')} />
-      )}
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={[styles.input, numeroCaravanaError && styles.errorInput]}
+          placeholder="Número de caravana"
+          value={numeroCaravana}
+          onChangeText={setNumeroCaravana}
+        />
+        {numeroCaravanaError && (
+          <ErrorIcon
+            onPress={() =>
+              Alert.alert('Error', 'El campo Número de caravana no puede estar vacío')
+            }
+          />
+        )}
+      </View>
+
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={[styles.input, fechaError && styles.errorInput]}
+          placeholder="Fecha (YYYY-MM-DD)"
+          value={fecha}
+          onChangeText={setFecha}
+        />
+        {fechaError && (
+          <ErrorIcon onPress={() => Alert.alert('Error', 'El campo fecha no puede estar vacío')} />
+        )}
+      </View>
 
       <View style={styles.checkboxContainer}>
         <TouchableOpacity
@@ -187,12 +194,15 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: 'center',
   },
+  inputContainer: {
+    position: 'relative',
+    marginBottom: 16,
+  },
   input: {
     height: 50,
     borderColor: '#CCCCCC',
     borderWidth: 1,
     borderRadius: 20,
-    marginBottom: 16,
     paddingHorizontal: 10,
   },
   errorInput: {
