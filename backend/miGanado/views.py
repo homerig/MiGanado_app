@@ -87,6 +87,28 @@ class ActualizarPreniesView(APIView):
         except Exception as e:
             return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
+
+class ActualizarSangradoView(APIView):
+    def put(self, request, *args, **kwargs):
+        idUsuario = request.data.get('idUsuario')
+        numeroCaravana = request.data.get('numeroCaravana')
+        numero_tubo = request.data.get('numero_tubo')
+
+        try:
+            sangrado = Sangrado.objects.get(numeroCaravana=numeroCaravana, userId=idUsuario)
+            sangrado.numero_tubo = numero_tubo
+            sangrado.save()
+            serializer = SangradoSerializer(sangrado)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except Sangrado.DoesNotExist:
+            return Response({'message': 'sangrado no encontrado'}, status=status.HTTP_404_NOT_FOUND)
+
+        except Exception as e:
+            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
 class buscarTratamView(APIView):
     def post(self, request, *args, **kwargs):
         idUsuario = request.data.get('idUsuario')
@@ -116,9 +138,8 @@ class buscarSanView(APIView):
 
 class UserNotificationsView(APIView):
     def get(self, request, user_id):
-        usuario = get_object_or_404(Usuario, pk=user_id)
-        notificaciones = Notificacion.objects.filter(usuario=usuario)
-        notificaciones_data = list(notificaciones.values('tipo', 'mensaje', 'fecha'))
+        notificaciones = Notificacion.objects.filter(userId=user_id)
+        notificaciones_data = list(notificaciones.values('tipo', 'mensaje', 'fecha', 'id'))
         return JsonResponse(notificaciones_data, safe=False)
     
 

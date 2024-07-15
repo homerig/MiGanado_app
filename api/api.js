@@ -76,8 +76,21 @@ const actualizarNombreLote = async (loteId, nombre_lote) => {
     throw error;
   }
 };
-
-
+const actualizarSangrado = async (idUsuario, numeroCaravana, numero_tubo) => {
+  try {
+    const response = await axios.put(`${baseURL}/actualizarSangrado/`, { idUsuario, numeroCaravana, numero_tubo });
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error('Error al actualizar el sangrado del animal:', error.response.data);
+    } else if (error.request) {
+      console.error('Error al actualizar el sangrado del animal - No se recibió respuesta:', error.request);
+    } else {
+      console.error('Error al actualizar el sangrado del animal:', error.message);
+    }
+    throw error;
+  }
+};
 
 const buscarTratam = async (idUsuario, numeroCaravana) => {
   try {
@@ -124,6 +137,19 @@ const getUserLotes = async (userId) => {
   }
 };
 
+const createNotificacion = async(userId, tipo, mensaje, fecha ) => {
+  try {
+    const response = await axios.post(`${baseURL}/notificaciones/`, {  userId, tipo, mensaje, fecha });
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error('Error al registrar el animal:', error.response.data);
+    } else {
+      console.error('Error al registrar el animal:', error.message);
+    }
+    throw error;
+  }
+}
 
 const getUserNotificaciones = async (userId) => {
   try {
@@ -135,6 +161,20 @@ const getUserNotificaciones = async (userId) => {
   }
 };
 
+const deleteNotificacion = async (notificacionId) => {
+  try {
+    console.log(notificacionId);
+    const response = await axios.delete(`${baseURL}/notificaciones/${notificacionId}/`);
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error('Error al eliminar la notificaciones:', error.response.data);
+    } else {
+      console.error('Error al eliminar la notificaciones:', error.message);
+    }
+    throw error;
+  }
+};
 
 const createLote = async (loteData, userId) => {
   try {
@@ -181,9 +221,9 @@ const createSangrado = async ({ numero_lote, numeroCaravana, numero_tubo, fecha,
     throw error;
   }
 };
-const createTacto = async ({ numero_lote, numero_animal, prenada, fecha, userId }) => {
+const createTacto = async ({ numero_lote, numeroCaravana, prenada, fecha, userId }) => {
   try {
-    const response = await axios.post(`${baseURL}/tactos/`, { numero_lote, numero_animal, prenada, fecha, userId });
+    const response = await axios.post(`${baseURL}/tactos/`, { numero_lote, numeroCaravana, prenada, fecha, userId });
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -198,6 +238,14 @@ const createTacto = async ({ numero_lote, numero_animal, prenada, fecha, userId 
 const createTratamiento = async ({ numeroCaravana, tratamiento, medicacion, fechaInicio, cada, durante, userId }) => {
   try {
     const response = await axios.post(`${baseURL}/tratamientos/`, { numeroCaravana, tratamiento, medicacion, fechaInicio, cada, durante, userId });
+    
+    //Creación de notificación
+    var tipo = "Tratamiento";
+    var animal = await buscarAnimal(userId, numeroCaravana);
+    var fecha = fechaInicio;
+    var mensaje = tratamiento + " de Caravana Nº"+ numeroCaravana +" en el lote N°" + animal.numero_lote;
+    const notificacion = await createNotificacion(userId, tipo, mensaje, fecha);
+
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -228,6 +276,13 @@ const registerAnimal = async({ numeroCaravana, numero_lote, tipos, peso, edad, p
 const createVacunacion = async ({ numero_lote, nombre_vacuna, fechaInicio, durante,cada, userId }) => {
   try {
     const response = await axios.post(`${baseURL}/vacunaciones/`, { numero_lote, nombre_vacuna, fechaInicio,durante,cada, userId });
+    
+    //Creación de notificación
+    var tipo = "Vacunación";
+    var fecha = fechaInicio;
+    var mensaje = "Vacunación del lote N°" + numero_lote +" con la vacuna "+ nombre_vacuna;
+    const notificacion = await createNotificacion(userId, tipo, mensaje, fecha);
+
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -248,4 +303,4 @@ const createVacunacion = async ({ numero_lote, nombre_vacuna, fechaInicio, duran
 
 
 
-export { baseURL ,actualizarPrenies ,buscarSan ,buscarTratam ,registerUser,actualizarNombreLote, loginUser, buscarAnimal, getUserLotes, getUserNotificaciones,createSangrado,createTacto,createVacunacion, createTratamiento, registerAnimal,createLote,deleteLote};
+export { baseURL ,actualizarPrenies ,buscarSan ,buscarTratam ,registerUser, loginUser, buscarAnimal, getUserLotes, getUserNotificaciones,createSangrado,createTacto,createVacunacion, createTratamiento, registerAnimal,createLote,deleteLote};
