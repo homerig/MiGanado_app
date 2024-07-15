@@ -1,113 +1,158 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, TextInput, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { View, TextInput, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { ThemedText } from '@/components/ThemedText';
+import { ThemedView } from '@/components/ThemedView';
 
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faAngleRight, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { UserContext } from '../../api/UserContext';
-import { useNavigation, useRoute } from '@react-navigation/native';
-
-// Función para generar datos de animales aleatoriamente
-const generateRandomAnimals = (num) => {
-  const animals = [];
-  const prefixes = ['A', 'B', 'C', 'D', 'E'];
-  for (let i = 0; i < num; i++) {
-    const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
-    const number = Math.floor(Math.random() * 1000);
-    animals.push({ numeroCaravana: `${prefix}${number}` });
-  }
-  return animals;
-};
-
-const AnimalItem = ({ item, isSelected, onSelect }) => (
-  <TouchableOpacity style={styles.animalItem} onPress={() => onSelect(item)}>
-    <Text style={styles.animalText}>N°: {item.numeroCaravana}</Text>
-  </TouchableOpacity>
-);
-
-export default function AnimalListScreen() {
-  const route = useRoute();
-  const { lote } = route.params; // Asegúrate de que route.params no es undefined
-  const [animalLimit, setAnimalLimit] = useState(100);
+const AnimalSearchScreen = () => {
+  const [selectedType, setSelectedType] = useState('');
+  const [caravanaNumber, setCaravanaNumber] = useState('');
   const [selectedAnimals, setSelectedAnimals] = useState([]);
-  const [animals, setAnimals] = useState([]);
 
-  useEffect(() => {
-    // Generar datos de animales aleatoriamente para prueba
-    const randomAnimals = generateRandomAnimals(10);
-    setAnimals(randomAnimals);
-  }, []);
+  const animals = [
+    { id: 1, tag: '200H' },
+    { id: 2, tag: '205H' },
+    { id: 3, tag: '134G' },
+    { id: 4, tag: '235G' },
+    { id: 5, tag: 'A533' },
+    { id: 6, tag: 'A513' },
+    { id: 7, tag: 'A514' },
+    { id: 8, tag: 'A510' }
+  ];
 
-  const handleAnimalSelection = (animal) => {
-    setSelectedAnimals((prevSelected) =>
-      prevSelected.includes(animal.numeroCaravana)
-        ? prevSelected.filter((a) => a !== animal.numeroCaravana)
-        : [...prevSelected, animal.numeroCaravana]
-    );
+  const toggleAnimalSelection = (id) => {
+    setSelectedAnimals(prevSelectedAnimals => {
+      if (prevSelectedAnimals.includes(id)) {
+        return prevSelectedAnimals.filter(animalId => animalId !== id);
+      } else {
+        return [...prevSelectedAnimals, id];
+      }
+    });
+  };
+
+  const selectAllAnimals = () => {
+    if (selectedAnimals.length === animals.length) {
+      setSelectedAnimals([]);
+    } else {
+      setSelectedAnimals(animals.map(animal => animal.id));
+    }
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.limitContainer}>
-          <Text style={styles.label}>Límite de animales</Text>
-          <TextInput
-            style={styles.input}
-            value={String(animalLimit)}
-            keyboardType="numeric"
-            onChangeText={(text) => setAnimalLimit(Number(text))}
-          />
-        </View>
+    <ThemedView style={styles.container}>
+      <ThemedText style={styles.title}>Lote 1</ThemedText>
+
+      <View style={styles.searchContainer}>
+        <ThemedText style={styles.label}>Buscar Animal</ThemedText>
+
+        <TextInput
+          style={styles.input}
+          placeholder="Seleccione Tipo"
+          value={selectedType}
+          onChangeText={setSelectedType}
+          placeholderTextColor="#666666"
+        />
+
+        <TextInput
+          style={styles.input}
+          placeholder="Número de caravana"
+          value={caravanaNumber}
+          onChangeText={setCaravanaNumber}
+          placeholderTextColor="#666666"
+        />
+
+        <TouchableOpacity style={styles.button}>
+          <ThemedText style={styles.buttonText}>Buscar</ThemedText>
+        </TouchableOpacity>
       </View>
-      <ScrollView>
-        {animals.map((animal, index) => (
-          <AnimalItem
-            key={index}
-            item={animal}
-            isSelected={selectedAnimals.includes(animal.numeroCaravana)}
-            onSelect={handleAnimalSelection}
-          />
+
+      <TouchableOpacity style={styles.selectAllButton} onPress={selectAllAnimals}>
+        <ThemedText style={styles.selectAllText}>
+          {selectedAnimals.length === animals.length ? 'Deseleccionar todo' : 'Seleccionar todo'}
+        </ThemedText>
+      </TouchableOpacity>
+
+      <ScrollView contentContainerStyle={styles.animalList}>
+        {animals.map(animal => (
+          <TouchableOpacity
+            key={animal.id}
+            style={[styles.animalItem, selectedAnimals.includes(animal.id) && styles.animalItemSelected]}
+            onPress={() => toggleAnimalSelection(animal.id)}
+          >
+            <ThemedText style={styles.animalTag}>N°: {animal.tag}</ThemedText>
+          </TouchableOpacity>
         ))}
       </ScrollView>
-    </View>
+    </ThemedView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    padding: 20,
     backgroundColor: '#fff',
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    flexWrap: 'wrap',
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
   },
-  limitContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  searchContainer: {
+    marginBottom: 20,
   },
   label: {
-    fontSize: 16,
-    marginRight: 8,
+    fontSize: 18,
+    marginBottom: 10,
   },
   input: {
+    height: 50,
+    borderColor: '#CCCCCC',
     borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 8,
-    width: 60,
-    textAlign: 'center',
+    borderRadius: 20,
+    marginBottom: 16,
+    paddingHorizontal: 10,
+  },
+  button: {
+    backgroundColor: '#407157',
+    paddingVertical: 10,
+    borderRadius: 20,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+  },
+  selectAllButton: {
+    alignSelf: 'flex-end',
+    marginBottom: 20,
+    padding: 10,
+    backgroundColor: '#407157',
+    borderRadius: 20,
+  },
+  selectAllText: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+  },
+  animalList: {
+    paddingVertical: 16,
   },
   animalItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 8,
-    borderBottomWidth: 1,
+    padding: 12,
+    borderWidth: 1,
     borderColor: '#ccc',
+    borderRadius: 20,
+    marginBottom: 10,
+    backgroundColor: '#fff',
   },
-  animalText: {
+  animalItemSelected: {
+    backgroundColor: '#D3D3D3',
+  },
+  animalTag: {
     fontSize: 16,
   },
 });
+
+export default AnimalSearchScreen;

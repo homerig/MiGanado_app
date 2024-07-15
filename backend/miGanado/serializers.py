@@ -9,7 +9,7 @@ class UsuarioSerializer(serializers.ModelSerializer):
 class LoteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lote
-        fields = ['id','usuario','numero','capacidad','capacidad_max','tipo_animal','animales']
+        fields = ['id','usuario','nombre_lote','numero','capacidad','capacidad_max','tipo_animal','animales']
 
 class AnimalSerializer(serializers.ModelSerializer):
     class Meta:

@@ -19,6 +19,7 @@ class Lote(models.Model):
     ]
     
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='lotes', default=1)
+    nombre_lote = models.CharField(max_length=50, default="Lote Nuevo")
     numero = models.IntegerField()
     capacidad = models.IntegerField()
     capacidad_max = models.IntegerField()
