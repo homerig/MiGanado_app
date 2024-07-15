@@ -19,6 +19,7 @@ class Lote(models.Model):
     ]
     
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='lotes', default=1)
+    nombre_lote = models.CharField(max_length=50, default="Lote Nuevo")
     numero = models.IntegerField()
     capacidad = models.IntegerField()
     capacidad_max = models.IntegerField()
@@ -49,14 +50,14 @@ class Tratamiento(models.Model):
 
 class Sangrado(models.Model):
     numero_lote = models.IntegerField()
-    numero_animal = models.IntegerField()
+    numeroCaravana = models.CharField(max_length=100)
     numero_tubo = models.IntegerField()
     fecha = models.DateField()
     userId = models.IntegerField()
 
 class Tacto(models.Model):
     numero_lote = models.IntegerField()
-    numero_animal = models.IntegerField()
+    numeroCaravana = models.IntegerField()
     prenada = models.BooleanField(default=False)
     fecha = models.DateField()
     userId = models.IntegerField()

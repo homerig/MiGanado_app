@@ -9,7 +9,7 @@ class UsuarioSerializer(serializers.ModelSerializer):
 class LoteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lote
-        fields = ['id','usuario','numero','capacidad','capacidad_max','tipo_animal','animales']
+        fields = ['id','usuario','nombre_lote','numero','capacidad','capacidad_max','tipo_animal','animales']
 
 class AnimalSerializer(serializers.ModelSerializer):
     class Meta:
@@ -24,12 +24,12 @@ class TratamientoSerializer(serializers.ModelSerializer):
 class SangradoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sangrado
-        fields = ['id', 'numero_lote', 'numero_animal','numero_tubo', 'fecha', 'userId']
+        fields = ['id', 'numero_lote', 'numeroCaravana','numero_tubo', 'fecha', 'userId']
         
 class TactoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tacto
-        fields= ['id', 'numero_lote', 'numero_animal', 'fecha', 'prenada','userId']
+        fields= ['id', 'numero_lote', 'numeroCaravana', 'fecha', 'prenada','userId']
 
 
 class NotificacionSerializer(serializers.ModelSerializer):

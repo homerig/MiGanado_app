@@ -11,7 +11,7 @@ const ListItem = ({ item, onPress, isSelected, isDeleting, onDelete }) => (
     style={[styles.itemContainer, isSelected && styles.selectedItem]}
     onPress={() => (isDeleting ? onDelete(item) : onPress(item))}
   >
-    <Text style={styles.itemName}>Nuevo Lote</Text>
+    <Text style={styles.itemName}>{item.nombre_lote}</Text>
     <View>
       <Text style={styles.itemCount}>{item.capacidad}/{item.capacidad_max} animales</Text>
     </View>
@@ -52,6 +52,7 @@ export default function TabTwoScreen() {
 
     try {
       const newLote = {
+        nombre_lote: "Lote nuevo "+ (lotes.length + 1),
         numero: lotes ? lotes.length + 1 : 1,
         capacidad: 0,
         capacidad_max: 100,

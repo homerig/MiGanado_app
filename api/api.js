@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseURL = 'http://192.168.0.71:8000/miGanado'; // Ajusta la URL a la de tu servidor
+const baseURL = 'http://192.168.0.182:8000/miGanado'; // Ajusta la URL a la de tu servidor
 
 const registerUser = async (userData) => {
   try {
@@ -43,6 +43,68 @@ const buscarAnimal = async (idUsuario, numeroCaravana) => {
       console.error('Error al buscar el animal - No se recibió respuesta:', error.request);
     } else {
       console.error('Error al buscar el animal:', error.message);
+    }
+    throw error;
+  }
+};
+const actualizarPrenies = async (idUsuario, numeroCaravana, preniada) => {
+  try {
+    const response = await axios.put(`${baseURL}/actualizarPrenies/`, { idUsuario, numeroCaravana, preniada });
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error('Error al actualizar la preñez del animal:', error.response.data);
+    } else if (error.request) {
+      console.error('Error al actualizar la preñez del animal - No se recibió respuesta:', error.request);
+    } else {
+      console.error('Error al actualizar la preñez del animal:', error.message);
+    }
+    throw error;
+  }
+};
+
+const actualizarSangrado = async (idUsuario, numeroCaravana, numero_tubo) => {
+  try {
+    const response = await axios.put(`${baseURL}/actualizarSangrado/`, { idUsuario, numeroCaravana, numero_tubo });
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error('Error al actualizar el sangrado del animal:', error.response.data);
+    } else if (error.request) {
+      console.error('Error al actualizar el sangrado del animal - No se recibió respuesta:', error.request);
+    } else {
+      console.error('Error al actualizar el sangrado del animal:', error.message);
+    }
+    throw error;
+  }
+};
+
+const buscarTratam = async (idUsuario, numeroCaravana) => {
+  try {
+    const response = await axios.post(`${baseURL}/buscarTratam/`, { idUsuario, numeroCaravana });
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error('Error al buscar tratamiento:', error.response.data);
+    } else if (error.request) {
+      console.error('Error al buscar el tratamiento - No se recibió respuesta:', error.request);
+    } else {
+      console.error('Error al buscar tratamiento:', error.message);
+    }
+    throw error;
+  }
+};
+const buscarSan = async (idUsuario, numeroCaravana) => {
+  try {
+    const response = await axios.post(`${baseURL}/buscarSan/`, { idUsuario, numeroCaravana });
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error('Error al buscar sangrado:', error.response.data);
+    } else if (error.request) {
+      console.error('Error al buscar sangrado - No se recibió respuesta:', error.request);
+    } else {
+      console.error('Error al buscar sangrado:', error.message);
     }
     throw error;
   }
@@ -130,9 +192,9 @@ const deleteLote = async (loteId) => {
 };
 
 
-const createSangrado = async ({ numero_lote, numero_animal, numero_tubo, fecha, userId }) => {
+const createSangrado = async ({ numero_lote, numeroCaravana, numero_tubo, fecha, userId }) => {
   try {
-    const response = await axios.post(`${baseURL}/sangrados/`, { numero_lote, numero_animal, numero_tubo, fecha, userId });
+    const response = await axios.post(`${baseURL}/sangrados/`, { numero_lote, numeroCaravana, numero_tubo, fecha, userId });
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -143,9 +205,9 @@ const createSangrado = async ({ numero_lote, numero_animal, numero_tubo, fecha, 
     throw error;
   }
 };
-const createTacto = async ({ numero_lote, numero_animal, prenada, fecha, userId }) => {
+const createTacto = async ({ numero_lote, numeroCaravana, prenada, fecha, userId }) => {
   try {
-    const response = await axios.post(`${baseURL}/tactos/`, { numero_lote, numero_animal, prenada, fecha, userId });
+    const response = await axios.post(`${baseURL}/tactos/`, { numero_lote, numeroCaravana, prenada, fecha, userId });
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -216,13 +278,4 @@ const createVacunacion = async ({ numero_lote, nombre_vacuna, fechaInicio, duran
   }
 };
 
-
-
-
-
-
-
-
-
-
-export { baseURL, registerUser, loginUser, buscarAnimal, getUserLotes, createNotificacion, getUserNotificaciones, deleteNotificacion, createSangrado,createTacto,createVacunacion, createTratamiento, registerAnimal,createLote,deleteLote};
+export { baseURL ,actualizarSangrado ,actualizarPrenies ,buscarSan ,buscarTratam ,registerUser, loginUser, buscarAnimal, getUserLotes, createNotificacion, getUserNotificaciones , deleteNotificacion, createSangrado ,createTacto ,createVacunacion ,createTratamiento ,registerAnimal ,createLote ,deleteLote };

@@ -1,73 +1,162 @@
 import React, { useState, useContext } from 'react';
-import { View, TextInput, TouchableOpacity, StyleSheet, Text, Alert } from 'react-native';
+import { View, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { useNavigation } from '@react-navigation/native';
 import { UserContext } from '../../api/UserContext';
-import { createTacto } from '../../api/api';
+import { createTacto, buscarAnimal, actualizarPrenies } from '../../api/api';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
+
+const ErrorIcon = ({ onPress }) => (
+  <TouchableOpacity onPress={onPress} style={styles.errorIcon}>
+    <FontAwesomeIcon icon={faTimesCircle} size={24} color="#d44648" />
+  </TouchableOpacity>
+);
 
 const TactoScreen = () => {
   const [numero_lote, setNumeroLote] = useState('');
-  const [numero_animal, setNumeroCaravana] = useState('');
+  const [numeroCaravana, setNumeroCaravana] = useState('');
   const [prenada, setPrenada] = useState(false);
-  const { userId } = useContext(UserContext);
   const [fecha, setFecha] = useState('');
+  const [numeroLoteError, setNumeroLoteError] = useState(false);
+  const [numeroCaravanaError, setNumeroCaravanaError] = useState(false);
+  const [fechaError, setFechaError] = useState(false);
+  const [animalEncontrado, setAnimalEncontrado] = useState(false);
+  const { userId } = useContext(UserContext);
   const navigation = useNavigation();
-  
+
+  const validateFields = () => {
+    let isValid = true;
+    if (!numeroCaravana) {
+      setNumeroCaravanaError(true);
+      isValid = false;
+    } else {
+      setNumeroCaravanaError(false);
+    }
+    if (!numero_lote) {
+      setNumeroLoteError(true);
+      isValid = false;
+    } else {
+      setNumeroLoteError(false);
+    }
+    if (!fecha) {
+      setFechaError(true);
+      isValid = false;
+    } else {
+      setFechaError(false);
+    }
+    return isValid;
+  };
+
   const handleFinalizar = async () => {
+    if (!validateFields()) {
+      return;
+    }
     try {
-      await handlesig();
-      navigation.navigate('(tabs)');
+      const result = await handlesig();
+      if (result) {
+        Alert.alert('Éxito', 'Tacto registrado y finalizado correctamente.');
+        navigation.navigate('(tabs)');
+      }
     } catch (error) {
       console.error('Error al finalizar:', error.message);
       Alert.alert('Error', 'No se pudo completar la acción.');
     }
   };
 
-  const handlesig = async () => {
+  const validar = async () => {
     try {
-      const tacto = await createTacto({ numero_lote, numero_animal, fecha, prenada, userId });
-      console.log("Tacto registrado:", tacto);
-      // Limpiar los campos después de guardar exitosamente
-      setNumeroLote('');
-      setNumeroCaravana('');
-      setPrenada(false);
-      setFecha('');
-      Alert.alert('Éxito', 'Tacto registrado correctamente.');
+      const animal = await buscarAnimal(userId, numeroCaravana);
+      if (animal && animal.numeroCaravana === numeroCaravana) {
+        return true;
+      } else {
+        Alert.alert(
+          'Animal no encontrado',
+          'No se encontró un animal con ese número de caravana. Inténtelo de nuevo.',
+          [{ text: 'OK', onPress: () => setNumeroCaravana('') }]
+        );
+        return false;
+      }
     } catch (error) {
-      console.error('Error al registrar el tacto:', error.message);
-      Alert.alert('Error', 'No se pudo guardar el tacto.');
+      console.error('Error al buscar animal:', error);
+      Alert.alert('Error', 'No se pudo buscar el animal. Inténtelo de nuevo más tarde.');
+      return false;
     }
+  };
+
+  const handlesig = async () => {
+    if (!validateFields()) {
+      return false;
+    }
+    const valid = await validar();
+    if (valid) {
+      try {
+        const tacto = await createTacto({ numero_lote, numeroCaravana, fecha, prenada, userId });
+        console.log("Tacto registrado:", tacto);
+        
+        // Actualizar la preñez del animal
+        await actualizarPrenies(userId, numeroCaravana, prenada);
+        console.log("Preñez del animal actualizada");
+        
+        // Limpiar los campos después de guardar exitosamente
+        setNumeroLote('');
+        setNumeroCaravana('');
+        setPrenada(false);
+        setFecha('');
+        Alert.alert('Éxito', 'Tacto registrado correctamente.');
+        return true;
+      } catch (error) {
+        console.error('Error al registrar el tacto:', error.message);
+        Alert.alert('Error', 'No se pudo guardar el tacto.');
+        return false;
+      }
+    }
+    return false;
   };
 
   return (
     <ThemedView style={styles.container}>
       <ThemedText style={styles.title}>Tacto</ThemedText>
       <TextInput
-        style={styles.input}
+        style={[styles.input, numeroLoteError && styles.errorInput]}
         placeholder="Seleccione Lote"
         value={numero_lote}
         onChangeText={setNumeroLote}
       />
+      {numeroLoteError && <ErrorIcon onPress={() => Alert.alert('Error', 'El campo Lote no puede estar vacío')} />}
+
       <TextInput
-        style={styles.input}
+        style={[styles.input, numeroCaravanaError && styles.errorInput]}
         placeholder="Número de caravana"
-        value={numero_animal}
+        value={numeroCaravana}
         onChangeText={setNumeroCaravana}
       />
+      {numeroCaravanaError && (
+        <ErrorIcon
+          onPress={() =>
+            Alert.alert('Error', 'El campo Número de caravana no puede estar vacío')
+          }
+        />
+      )}
+
       <TextInput
-        style={styles.input}
+        style={[styles.input, fechaError && styles.errorInput]}
         placeholder="Fecha (YYYY-MM-DD)"
         value={fecha}
         onChangeText={setFecha}
       />
+      {fechaError && (
+        <ErrorIcon onPress={() => Alert.alert('Error', 'El campo fecha no puede estar vacío')} />
+      )}
+
       <View style={styles.checkboxContainer}>
         <TouchableOpacity
           style={styles.checkbox}
           onPress={() => setPrenada(!prenada)}
         >
           <View style={styles.box}>
-            {prenada && <Text style={styles.checkmark}>✓</Text>}
+            {prenada && <ThemedText style={styles.checkmark}>✓</ThemedText>}
           </View>
         </TouchableOpacity>
         <ThemedText style={styles.label}>Preñada</ThemedText>
@@ -83,7 +172,7 @@ const TactoScreen = () => {
       </View>
     </ThemedView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -105,6 +194,9 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     marginBottom: 16,
     paddingHorizontal: 10,
+  },
+  errorInput: {
+    borderColor: '#d44648',
   },
   checkboxContainer: {
     flexDirection: 'row',
@@ -146,6 +238,11 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#FFFFFF',
     fontSize: 16,
+  },
+  errorIcon: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
   },
 });
 
