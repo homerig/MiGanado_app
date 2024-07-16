@@ -294,6 +294,35 @@ const createVacunacion = async ({ numero_lote, nombre_vacuna, fechaInicio, duran
   }
 };
 
+const getTasaNatalidad = async (loteId) => {
+  try {
+    const response = await axios.get(`${baseURL}/estadisticas/natalidad`, { params: { loteId } });
+    return response.data;
+  } catch (error) {
+    console.error('Error al obtener la tasa de natalidad:', error.message);
+    throw error;
+  }
+};
+
+const getPesoPromedio = async (loteId) => {
+  try {
+    const response = await axios.get(`${baseURL}/estadisticas/peso-promedio`, { params: { loteId } });
+    return response.data;
+  } catch (error) {
+    console.error('Error al obtener el peso promedio:', error.message);
+    throw error;
+  }
+};
+
+const getTasaPrenez = async (loteId) => {
+  try {
+    const response = await axios.get(`${baseURL}/estadisticas/tasa-prenez`, { params: { loteId } });
+    return response.data;
+  } catch (error) {
+    console.error('Error al obtener la tasa de preñez:', error.message);
+    throw error;
+  }
+};
 
 
 
@@ -303,4 +332,6 @@ const createVacunacion = async ({ numero_lote, nombre_vacuna, fechaInicio, duran
 
 
 
-export { baseURL ,actualizarPrenies,actualizarNombreLote ,buscarSan ,buscarTratam ,registerUser, loginUser, buscarAnimal, getUserLotes, getUserNotificaciones,createSangrado,createTacto,createVacunacion, createTratamiento, registerAnimal,createLote,deleteLote};
+
+
+export { baseURL ,actualizarPrenies,actualizarNombreLote ,buscarSan ,buscarTratam ,registerUser, loginUser, buscarAnimal, getUserLotes, getUserNotificaciones,createSangrado,createTacto,createVacunacion, createTratamiento, registerAnimal,createLote,deleteLote,getTasaNatalidad,getPesoPromedio,getTasaPrenez};
