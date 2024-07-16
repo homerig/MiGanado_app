@@ -5,7 +5,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faPen, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { buscarAnimal, actualizarNombreLote, buscarAnimalLote } from '../../api/api';
+import { buscarAnimal, actualizarNombreLote, buscarAnimalLote, buscarTratam, buscarSan } from '../../api/api';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { UserContext } from '../../api/UserContext';
 
@@ -25,16 +25,7 @@ const AnimalSearchScreen = () => {
 
   const [animalEncontrado, setAnimalEncontrado] = useState(null);
   const [tratamientoEncontrado, setTratamientoEncontrado] = useState(null);
-
-  const toggleAnimalSelection = (id) => {
-    setSelectedAnimals(prevSelectedAnimals => {
-      if (prevSelectedAnimals.includes(id)) {
-        return prevSelectedAnimals.filter(animalId => animalId !== id);
-      } else {
-        return [...prevSelectedAnimals, id];
-      }
-    });
-  };
+  const [sangradoEncontrado, setSangradoEncontrado] = useState(null);
 
   useEffect(() => {
     const buscar = async () => {
@@ -44,6 +35,17 @@ const AnimalSearchScreen = () => {
           Alert.alert('Éxito', 'Animales encontrados correctamente.');
           const numerosCaravana = animales.map(animal => animal.numeroCaravana);
           setCaravanas(numerosCaravana);
+
+          // Buscar tratamiento y sangrado para el primer animal encontrado
+          if (animales.length > 0) {
+            const primerAnimal = animales[0];
+            const [tratamiento, sangrado] = await Promise.all([
+              buscarTratam(userId, primerAnimal.numeroCaravana),
+              buscarSan(userId, primerAnimal.numeroCaravana)
+            ]);
+            setTratamientoEncontrado(tratamiento);
+            setSangradoEncontrado(sangrado);
+          }
         } else {
           Alert.alert('Animales no encontrados', 'No se encontraron animales con ese número de lote. Inténtelo de nuevo.', [
             { text: 'OK', onPress: () => setNumeroLote('') }
@@ -71,6 +73,14 @@ const AnimalSearchScreen = () => {
       if (animal && animal.numeroCaravana === caravanaNumber) {
         setAnimalEncontrado(animal);
         setIsModalVisible(true); // Mostrar el modal al encontrar el animal
+
+        // Buscar tratamiento y sangrado al encontrar el animal
+        const [tratamiento, sangrado] = await Promise.all([
+          buscarTratam(userId, caravanaNumber),
+          buscarSan(userId, caravanaNumber)
+        ]);
+        setTratamientoEncontrado(tratamiento);
+        setSangradoEncontrado(sangrado);
       } else {
         Alert.alert('Animal no encontrado', 'No se encontró un animal con ese número de caravana. Inténtelo de nuevo.', [
           { text: 'OK', onPress: () => setCaravanaNumber('') }
@@ -100,6 +110,14 @@ const AnimalSearchScreen = () => {
       if (animal && animal.numeroCaravana === numeroCaravana) {
         setAnimalEncontrado(animal);
         setIsModalVisible(true); // Mostrar el modal al seleccionar una caravana
+
+        // Buscar tratamiento y sangrado al seleccionar una caravana
+        const [tratamiento, sangrado] = await Promise.all([
+          buscarTratam(userId, numeroCaravana),
+          buscarSan(userId, numeroCaravana)
+        ]);
+        setTratamientoEncontrado(tratamiento);
+        setSangradoEncontrado(sangrado);
       } else {
         Alert.alert('Animal no encontrado', 'No se encontró un animal con ese número de caravana.');
       }
@@ -159,8 +177,27 @@ const AnimalSearchScreen = () => {
               <ThemedText style={styles.detail}>Preñada: {animalEncontrado.preniada ? 'Sí' : 'No'}</ThemedText>
             </View>
           )}
-          <TouchableOpacity style={styles.modalButton} onPress={() => setIsModalVisible(false)}>
-            <Text style={styles.modalButtonText}>Cerrar</Text>
+          {tratamientoEncontrado && tratamientoEncontrado.tratamiento ? (
+            <View style={styles.tratamientoDetail}>
+              <ThemedText style={styles.detail}>Tratamiento: {tratamientoEncontrado.tratamiento}</ThemedText>
+              <ThemedText style={styles.detail}>Medicación: {tratamientoEncontrado.medicacion}</ThemedText>
+              <ThemedText style={styles.detail}>Fecha Inicio: {tratamientoEncontrado.fechaInicio}</ThemedText>
+              <ThemedText style={styles.detail}>Cada: {tratamientoEncontrado.cada} días</ThemedText>
+              <ThemedText style={styles.detail}>Durante: {tratamientoEncontrado.durante} días</ThemedText>
+            </View>
+          ) : (
+            <Text style={styles.detail}>No hay tratamiento registrado</Text>
+          )}
+          {sangradoEncontrado && sangradoEncontrado.numero_tubo ? (
+            <View style={styles.sangradoDetail}>
+              <ThemedText style={styles.detail}>Número tubo: {sangradoEncontrado.numero_tubo}</ThemedText>
+              <ThemedText style={styles.detail}>Fecha: {sangradoEncontrado.fecha}</ThemedText>
+            </View>
+          ) : (
+            <Text style={styles.detail}>No hay sangrado registrado</Text>
+          )}
+          <TouchableOpacity style={styles.closeButton} onPress={() => setIsModalVisible(false)}>
+            <Text style={styles.buttonText}>Cerrar</Text>
           </TouchableOpacity>
         </View>
       </Modal>
@@ -171,8 +208,9 @@ const AnimalSearchScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    padding: 20,
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
   },
   header: {
     flexDirection: 'row',
@@ -190,7 +228,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#407157',
+    marginRight: 10,
   },
   iconButton: {
     marginLeft: 10,
@@ -200,78 +238,74 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
+    fontWeight: 'bold',
     marginBottom: 10,
-    color: '#407157',
   },
   input: {
-    height: 40,
-    borderColor: '#CCCCCC',
     borderWidth: 1,
-    borderRadius: 20,
-    paddingHorizontal: 10,
+    borderColor: '#CCCCCC',
+    borderRadius: 5,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    fontSize: 16,
     marginBottom: 10,
+    color: '#333333',
   },
   button: {
     backgroundColor: '#407157',
-    paddingVertical: 10,
-    borderRadius: 20,
+    borderRadius: 5,
+    paddingVertical: 12,
     alignItems: 'center',
+    marginBottom: 10,
   },
   buttonText: {
     color: '#FFFFFF',
     fontSize: 16,
+    fontWeight: 'bold',
   },
   caravanasList: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
     marginBottom: 20,
   },
   caravanaItem: {
-    width: '48%',
-    padding: 10,
     borderWidth: 1,
     borderColor: '#CCCCCC',
-    borderRadius: 20,
+    borderRadius: 5,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
     marginBottom: 10,
-    alignItems: 'center',
   },
   caravanaText: {
-    fontSize: 14,
-    color: '#407157',
+    fontSize: 16,
   },
   modalContent: {
-    backgroundColor: 'white',
+    backgroundColor: '#FFFFFF',
     padding: 20,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
+    borderRadius: 10,
   },
   modalTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 20,
-    color: '#407157',
-  },
-  modalButton: {
-    backgroundColor: '#407157',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 20,
     marginBottom: 10,
-    alignItems: 'center',
-  },
-  modalButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
   },
   animalDetail: {
-    alignItems: 'center',
+    marginBottom: 10,
+  },
+  tratamientoDetail: {
+    marginBottom: 10,
+  },
+  sangradoDetail: {
+    marginBottom: 10,
   },
   detail: {
     fontSize: 16,
-    marginBottom: 10,
-    color: '#407157',
+    marginBottom: 5,
+  },
+  closeButton: {
+    backgroundColor: '#407157',
+    borderRadius: 5,
+    paddingVertical: 12,
+    alignItems: 'center',
+    marginTop: 10,
   },
 });
 
