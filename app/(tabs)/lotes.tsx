@@ -2,9 +2,9 @@ import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faAngleRight, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { getUserLotes, createLote, deleteLote } from '../../api/api';
+import { getUserLotes, createLote, deleteLote, buscarAnimalLote } from '../../api/api'; // Importar la función buscarAnimalLote
 import { UserContext } from '../../api/UserContext';
-import { useNavigation, useFocusEffect } from '@react-navigation/native'; // Importar hook de navegación
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
 const ListItem = ({ item, onPress, isSelected, isDeleting, onDelete }) => (
   <TouchableOpacity
@@ -12,32 +12,40 @@ const ListItem = ({ item, onPress, isSelected, isDeleting, onDelete }) => (
     onPress={() => (isDeleting ? onDelete(item) : onPress(item))}
   >
     <View>
-    <Text style={styles.numName}>Lote N: {item.numero}</Text>
-    <Text style={styles.itemName}>{item.nombre_lote}</Text>    
+      <Text style={styles.numName}>Lote N: {item.numero}</Text>
+      <Text style={styles.itemName}>{item.nombre_lote}</Text>
     </View>
     <View>
-      <Text style={styles.itemCount}>{item.capacidad}/{item.capacidad_max} animales</Text>
+      <Text style={styles.itemCount}>{item.animalCount || 0}/{item.capacidad_max} animales</Text>
     </View>
-    <FontAwesomeIcon 
-      icon={isDeleting ? faTrash : faAngleRight} 
-      size={20} 
-      color={isDeleting ? 'red' : '#000000'} 
-      style={styles.icon} 
+    <FontAwesomeIcon
+      icon={isDeleting ? faTrash : faAngleRight}
+      size={20}
+      color={isDeleting ? 'red' : '#000000'}
+      style={styles.icon}
     />
   </TouchableOpacity>
 );
 
 export default function TabTwoScreen() {
   const { userId } = useContext(UserContext);
-  const [lotes, setLotes] = useState([]); 
+  const [lotes, setLotes] = useState([]);
   const [selectedLote, setSelectedLote] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const navigation = useNavigation(); // Hook de navegación
+  const navigation = useNavigation();
 
   const fetchLotes = useCallback(async () => {
     try {
       const userLotes = await getUserLotes(userId);
-      setLotes(userLotes);
+
+      const lotesConAnimales = await Promise.all(
+        userLotes.map(async lote => {
+          const animales = await buscarAnimalLote(userId, lote.numero);
+          return { ...lote, animalCount: animales.length };
+        })
+      );
+
+      setLotes(lotesConAnimales);
     } catch (error) {
       console.error('Error al obtener los lotes del usuario:', error.message);
     }
@@ -46,24 +54,15 @@ export default function TabTwoScreen() {
   useFocusEffect(
     useCallback(() => {
       fetchLotes();
-      setSelectedLote(null); 
+      setSelectedLote(null);
     }, [fetchLotes])
   );
 
   const handleCreateLote = async () => {
-    
-    //Limitador Lotes
-    /*
-    if (lotes && lotes.length >= 4) {
-      Alert.alert('Límite de lotes', 'Cada usuario solo puede tener un máximo de 4 lotes.');
-      return;
-    }
-    */
-
     try {
       const highestNumero = lotes.reduce((max, lote) => (lote.numero > max ? lote.numero : max), 0);
       const newLote = {
-        nombre_lote: "Lote nuevo "+ (highestNumero + 1),
+        nombre_lote: "Lote nuevo " + (highestNumero + 1),
         numero: highestNumero + 1,
         capacidad: 0,
         capacidad_max: 100,
@@ -82,7 +81,7 @@ export default function TabTwoScreen() {
       await deleteLote(item.id);
       setLotes(prevLotes => prevLotes.filter(lote => lote.id !== item.id));
       setSelectedLote(null);
-      setIsDeleting(false); // Desactivar el modo eliminar después de eliminar el lote
+      setIsDeleting(false);
     } catch (error) {
       Alert.alert('Error', 'Error al eliminar el lote. Inténtalo de nuevo más tarde.');
     }
@@ -95,7 +94,7 @@ export default function TabTwoScreen() {
   const handleSelectLote = (item) => {
     if (!isDeleting) {
       setSelectedLote(item);
-      navigation.navigate('vistas/buscar_animal_lote', { lote: item }); 
+      navigation.navigate('vistas/buscar_animal_lote', { lote: item });
     }
   };
 
@@ -115,17 +114,17 @@ export default function TabTwoScreen() {
       <FlatList
         data={lotes || []}
         renderItem={({ item }) => (
-          <ListItem 
-            item={item} 
-            onPress={handleSelectLote} 
-            isSelected={selectedLote && selectedLote.id === item.id} 
+          <ListItem
+            item={item}
+            onPress={handleSelectLote}
+            isSelected={selectedLote && selectedLote.id === item.id}
             isDeleting={isDeleting}
             onDelete={handleDeleteLote}
           />
         )}
         keyExtractor={item => item.id.toString()}
         contentContainerStyle={styles.list}
-      />  
+      />
     </View>
   );
 }
@@ -163,8 +162,8 @@ const styles = StyleSheet.create({
   },
   itemContainer: {
     backgroundColor: '#fff',
-    padding: 40,
-    marginTop: 40,
+    padding: 20,
+    marginTop: 10,
     borderRadius: 10,
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -184,7 +183,7 @@ const styles = StyleSheet.create({
     fontFamily: 'JostBold',
   },
   numName: {
-    fontSize: 12,    
+    fontSize: 12,
     fontFamily: 'JostRegular',
     alignItems: 'center',
     marginLeft: 15,
