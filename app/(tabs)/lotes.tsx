@@ -46,7 +46,7 @@ export default function TabTwoScreen() {
   useFocusEffect(
     useCallback(() => {
       fetchLotes();
-      setSelectedLote(null); // Limpiar la selección al enfocar la pantalla
+      setSelectedLote(null); 
     }, [fetchLotes])
   );
 

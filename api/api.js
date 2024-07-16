@@ -140,7 +140,7 @@ const buscarSan = async (idUsuario, numeroCaravana) => {
 
 const getUserLotes = async (userId) => {
   try {
-    const response = await axios.get(`${baseURL}/lotes/?userId=${userId}`);
+    const response = await axios.get(`${baseURL}/user_lotes/`, { params: { userId } });
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -151,6 +151,7 @@ const getUserLotes = async (userId) => {
     throw error;
   }
 };
+
 
 const createNotificacion = async(userId, tipo, mensaje, fecha ) => {
   try {
