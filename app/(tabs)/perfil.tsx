@@ -1,20 +1,23 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Image, StyleSheet, TouchableOpacity, TextInput, View } from 'react-native';
+import { Image, StyleSheet, TouchableOpacity, TextInput, View, Alert } from 'react-native';
 import Modal from 'react-native-modal';
 import { useNavigation } from '@react-navigation/native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faPen, faEnvelope, faKey, faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
-import { UserContext, UserProvider } from '../../api/UserContext';
+import { UserContext } from '../../api/UserContext';
 
 export default function HomeScreen() {
   const [isEditProfileModalVisible, setEditProfileModalVisible] = useState(false);
   const [isChangePasswordModalVisible, setChangePasswordModalVisible] = useState(false);
-  const { userName, userEmail } = useContext(UserContext);
+  const { userId, userName, userEmail, updateUserDetails, updateUserPassword, verifyCurrentPassword } = useContext(UserContext);
 
   const [name, setName] = useState(userName);
   const [email, setEmail] = useState(userEmail);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [repeatNewPassword, setRepeatNewPassword] = useState('');
 
   const navigation = useNavigation();
 
@@ -22,6 +25,47 @@ export default function HomeScreen() {
     setName(userName);
     setEmail(userEmail);
   }, [userName, userEmail]);
+
+  const handleSaveProfile = async () => {
+    try {
+      await updateUserDetails(userId, name, email);
+      setEditProfileModalVisible(false);
+    } catch (error) {
+      Alert.alert('Error', 'No se pudo actualizar el perfil. Inténtelo de nuevo.');
+    }
+  };
+
+  const handleChangePassword = async () => {
+    if (newPassword !== repeatNewPassword) {
+      Alert.alert('Error', 'Las nuevas contraseñas no coinciden.');
+      return;
+    }
+  
+    const isCurrentPasswordValid = await verifyCurrentPassword(userId, currentPassword);
+    if (!isCurrentPasswordValid) {
+      Alert.alert('Error', 'La contraseña actual no es correcta.');
+      return;
+    }
+  
+    try {
+      await updateUserPassword(userId, newPassword);
+      setChangePasswordModalVisible(false);
+      // Resetear los campos de contraseña
+      setCurrentPassword('');
+      setNewPassword('');
+      setRepeatNewPassword('');
+    } catch (error) {
+      Alert.alert('Error', 'No se pudo cambiar la contraseña. Inténtelo de nuevo.');
+    }
+  };
+
+  const handleCloseChangePasswordModal = () => {
+    // Resetear los campos de contraseña al cerrar el modal
+    setCurrentPassword('');
+    setNewPassword('');
+    setRepeatNewPassword('');
+    setChangePasswordModalVisible(false);
+  };
 
   return (
     <ThemedView style={styles.container}>
@@ -69,7 +113,7 @@ export default function HomeScreen() {
             onChangeText={setEmail}
             placeholderTextColor="#666666"
           />
-          <TouchableOpacity style={styles.modalButton} onPress={() => setEditProfileModalVisible(false)}>
+          <TouchableOpacity style={styles.modalButton} onPress={handleSaveProfile}>
             <ThemedText style={styles.modalButtonText}>Guardar</ThemedText>
           </TouchableOpacity>
           <TouchableOpacity style={styles.modalButton} onPress={() => setEditProfileModalVisible(false)}>
@@ -86,24 +130,30 @@ export default function HomeScreen() {
             style={styles.modalInput}
             placeholder="Contraseña Actual"
             secureTextEntry
+            value={currentPassword}
+            onChangeText={setCurrentPassword}
             placeholderTextColor="#666666"
           />
           <TextInput
             style={styles.modalInput}
             placeholder="Contraseña Nueva"
             secureTextEntry
+            value={newPassword}
+            onChangeText={setNewPassword}
             placeholderTextColor="#666666"
           />
           <TextInput
             style={styles.modalInput}
             placeholder="Repetir Contraseña"
             secureTextEntry
+            value={repeatNewPassword}
+            onChangeText={setRepeatNewPassword}
             placeholderTextColor="#666666"
           />
-          <TouchableOpacity style={styles.modalButton} onPress={() => setChangePasswordModalVisible(false)}>
+          <TouchableOpacity style={styles.modalButton} onPress={handleChangePassword}>
             <ThemedText style={styles.modalButtonText}>Guardar</ThemedText>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.modalButton} onPress={() => setChangePasswordModalVisible(false)}>
+          <TouchableOpacity style={styles.modalButton} onPress={handleCloseChangePasswordModal}>
             <ThemedText style={styles.modalButtonText}>Cancelar</ThemedText>
           </TouchableOpacity>
         </View>
