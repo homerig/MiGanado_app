@@ -144,7 +144,18 @@ class UserNotificationsView(APIView):
         notificaciones_data = list(notificaciones.values('tipo', 'mensaje', 'fecha', 'id'))
         return JsonResponse(notificaciones_data, safe=False)
     
+class UserLotesView(viewsets.ModelViewSet):
+    queryset = Lote.objects.all()
+    serializer_class = LoteSerializer
 
+    @action(detail=False, methods=['get'])
+    def user_lotes(self, request, user_id=None):
+        user_id = request.query_params.get('userId', None)
+        if user_id is not None:
+            lotes = Lote.objects.filter(usuario=user_id)
+            serializer = self.get_serializer(lotes, many=True)
+            return Response(serializer.data)
+        return Response({"error": "User ID not provided"}, status=400)        
 
 class CrearLoteView(APIView):
     def post(self, request, *args, **kwargs):
@@ -168,6 +179,9 @@ class UsuarioViewSet(viewsets.ModelViewSet):
 class LoteViewSet(viewsets.ModelViewSet):
     queryset = Lote.objects.all()
     serializer_class = LoteSerializer
+
+
+    
 
 class AnimalViewSet(viewsets.ModelViewSet):
     queryset = Animal.objects.all()
