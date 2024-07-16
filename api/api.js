@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseURL = 'http://192.168.0.182:8000/miGanado'; // Ajusta la URL a la de tu servidor
+const baseURL = 'http://192.168.0.226:8000/miGanado'; // Ajusta la URL a la de tu servidor
 
 const registerUser = async (userData) => {
   try {
@@ -11,6 +11,22 @@ const registerUser = async (userData) => {
       console.error('Error al registrar el usuario:', error.response.data);
     } else {
       console.error('Error al registrar el usuario:', error.message);
+    }
+    throw error;
+  }
+};
+
+const changePassword = async (userData) => {
+  try {
+    const response = await axios.post(`${baseURL}/cambiar_contrasena/`, userData);
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      // Error de respuesta de la API (errores HTTP)
+      console.error('Error al cambiar la contraseña:', error.response.data);
+    } else {
+      // Otros errores
+      console.error('Error al cambiar la contraseña:', error.message);
     }
     throw error;
   }
@@ -159,13 +175,21 @@ const createVacunacion = async ({ numero_lote, nombre_vacuna, fechaInicio, duran
   }
 };
 
+const getUserProfile = async (userId) => {
+  try {
+    const response = await axios.get(`${baseURL}/usuarios/${userId}/`);
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error('Error al obtener el perfil del usuario:', error.response.data);
+    } else {
+      console.error('Error al obtener el perfil del usuario:', error.message);
+    }
+    throw error;
+  }
+};
+
+export { baseURL, registerUser, changePassword, loginUser, getUserLotes, getUserNotificaciones, createSangrado, createTacto, createVacunacion, createTratamiento, registerAnimal, createLote, deleteLote, getUserProfile };
 
 
 
-
-
-
-
-
-
-export { baseURL, registerUser, loginUser, getUserLotes, getUserNotificaciones,createSangrado,createTacto,createVacunacion, createTratamiento, registerAnimal,createLote,deleteLote};

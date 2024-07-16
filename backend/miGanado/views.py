@@ -53,6 +53,25 @@ class CrearLoteView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class ChangePasswordView(APIView):
+    def post(self, request, *args, **kwargs):
+        user_id = request.data.get('user_id')
+        old_password = request.data.get('old_password')
+        new_password = request.data.get('new_password')
+
+        try:
+            usuario = Usuario.objects.get(id=user_id)
+
+            if usuario.password == old_password:
+                usuario.password = new_password
+                usuario.save()
+                return Response({'message': 'Contraseña cambiada exitosamente'}, status=status.HTTP_200_OK)
+            else:
+                return Response({'message': 'La contraseña actual es incorrecta'}, status=status.HTTP_400_BAD_REQUEST)
+        except Usuario.DoesNotExist:
+            # No se encontró al usuario
+            return Response({'message': 'Usuario no encontrado'}, status=status.HTTP_404_NOT_FOUND)
 
 class UsuarioViewSet(viewsets.ModelViewSet):
     queryset = Usuario.objects.all()

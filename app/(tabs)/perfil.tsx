@@ -1,42 +1,52 @@
-import { Image, StyleSheet, Platform } from 'react-native';
-
-import ParallaxScrollView from '@/components/ParallaxScrollView';
+import React, { useContext, useEffect } from 'react';
+import { Image, StyleSheet, View, TouchableOpacity } from 'react-native';
+import { UserContext } from '../../api/UserContext';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faPen, faEnvelope, faKey, faArrowRightFromBracket} from '@fortawesome/free-solid-svg-icons';
+import { faPen, faEnvelope, faKey, faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import { useNavigation } from '@react-navigation/native';
 
-export default function HomeScreen() {
+export default function ProfileScreen() {
+  const { userId, userName, userEmail, userCampo, fetchUserData } = useContext(UserContext);
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    if (userId) {
+      fetchUserData(userId);
+    }
+  }, [userId]);
+
+  console.log('Datos en el perfil:', { userName, userEmail, userCampo });
+
   return (
     <ThemedView style={styles.container}>
-
       <ThemedView style={styles.titleContainer}>
-
-        <ThemedView style={styles.container}>
-
-          <Image source={require('@/assets/images/sinFotoPerfil.png')} style={styles.imagen}/>
-
-          <ThemedView style={styles.icon}>
-            <FontAwesomeIcon icon={faPen} size={22} color="#605856"/>
-          </ThemedView>
-          
-        </ThemedView>
-
-        <ThemedText type="title" style={styles.container}>Nombre y Apellido</ThemedText>
-        
+        <View style={styles.imageContainer}>
+          <Image source={require('@/assets/images/sinFotoPerfil.png')} style={styles.image} />
+          <View style={styles.icon}>
+            <FontAwesomeIcon icon={faPen} size={22} color="#605856" />
+          </View>
+        </View>
+        <View>
+          <ThemedText type="title">{userName}</ThemedText>
+          <ThemedText type="subtitle">{userCampo}</ThemedText> 
+        </View>
       </ThemedView>
+
       <ThemedView style={styles.section}>
-        
         <ThemedText type="subtitle">Datos Personales</ThemedText>
-        <ThemedText type="default"><FontAwesomeIcon icon={faEnvelope}  color="#605856"/>  ejemplo123@gmail.com</ThemedText>
-        
+        <ThemedText type="default"><FontAwesomeIcon icon={faEnvelope} color="#605856" /> {userEmail}</ThemedText>
+        <TouchableOpacity onPress={() => navigation.navigate('vistas/cambiarContra')}>
+          <ThemedText type="default"><FontAwesomeIcon icon={faKey} color="#605856" /> Cambiar Contraseña</ThemedText>
+        </TouchableOpacity>
+      </ThemedView>
 
-      </ThemedView>
       <ThemedView style={styles.item}>
-      <ThemedText type="default"><FontAwesomeIcon icon={faKey}  color="#605856"/>  Cambiar Contraseña</ThemedText>
-        <ThemedText type="default"><FontAwesomeIcon icon={faArrowRightFromBracket}  color="#605856"/>  Cerrar Sesión</ThemedText>
+      <TouchableOpacity onPress={() => navigation.navigate('(login)')}>
+        <ThemedText type="default"><FontAwesomeIcon icon={faArrowRightFromBracket} color="#605856" /> Cerrar Sesión</ThemedText>
+      </TouchableOpacity>
       </ThemedView>
-      
     </ThemedView>
   );
 }
@@ -52,45 +62,47 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   section: {
-    // alignItems: 'center',
     justifyContent: 'space-between',
     margin: 16,
     padding: 20,
     gap: 16,
     borderRadius: 10,
-    shadowColor: '#0000001A', // Color de la sombra
-    shadowOpacity: 1, // Opacidad de la sombra (valor entre 0 y 1)
-    shadowRadius: 10, // Radio de la sombra
+    shadowColor: '#0000001A',
+    shadowOpacity: 1,
+    shadowRadius: 10,
     shadowOffset: {
-      width: 0, // Desplazamiento horizontal
-      height: 0, // Desplazamiento vertical
+      width: 0,
+      height: 0,
     },
-    elevation: 4
+    elevation: 4,
   },
-  imagen:{
-    width: '100%',
-    height: 150
+  imageContainer: {
+    position: 'relative',
   },
-  icon:{
-    backgroundColor: 'white',
-    borderRadius: 99,
-    padding: 12,
-    margin: 14,
-    shadowColor: '#00000026', // Color de la sombra
-    shadowOpacity: 1, // Opacidad de la sombra (valor entre 0 y 1)
-    shadowRadius: 5, // Radio de la sombra
-    shadowOffset: {
-      width: 0, // Desplazamiento horizontal
-      height: 0, // Desplazamiento vertical
-    },
-    elevation: 4, // Solo para Android
-    position:'absolute',
+  image: {
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+  },
+  icon: {
+    position: 'absolute',
     bottom: 0,
-    right: 0
+    right: 0,
+    backgroundColor: 'white',
+    borderRadius: 50,
+    padding: 12,
+    shadowColor: '#00000026',
+    shadowOpacity: 1,
+    shadowRadius: 5,
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    elevation: 4,
   },
-  item:{
+  item: {
     flexDirection: 'column',
     alignItems: 'center',
     gap: 8,
-  }
+  },
 });
