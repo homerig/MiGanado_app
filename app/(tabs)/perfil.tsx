@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faPen, faEnvelope, faKey, faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import { faPen, faEnvelope, faKey, faArrowRightFromBracket, faCow } from '@fortawesome/free-solid-svg-icons';
 import { UserContext } from '../../api/UserContext';
 
 export default function HomeScreen() {
@@ -71,7 +71,9 @@ export default function HomeScreen() {
     <ThemedView style={styles.container}>
       <ThemedView style={styles.titleContainer}>
         <ThemedView style={styles.container}>
-          <Image source={require('@/assets/images/sinFotoPerfil.png')} style={styles.imagen} />
+        <View style={styles.profileImageContainer}>
+          <FontAwesomeIcon icon={faCow} size={100} color="#407157" />
+        </View>
 
           <TouchableOpacity style={styles.icon} onPress={() => setEditProfileModalVisible(true)}>
             <FontAwesomeIcon icon={faPen} size={22} color="#605856" />
@@ -186,6 +188,14 @@ const styles = StyleSheet.create({
       height: 0,
     },
     elevation: 4
+  },
+  profileImageContainer: {
+    width: 150,
+    height: 150,
+    borderRadius: 75, // Mitad del ancho/alto para hacer un círculo
+    backgroundColor: '#eff1ed', // Color de fondo opcional para el círculo
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   imagen: {
     width: '100%',
