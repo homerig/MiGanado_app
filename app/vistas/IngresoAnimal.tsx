@@ -5,7 +5,7 @@ import { ThemedText } from '@/components/ThemedText'; // Asegúrate de que la ru
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { ThemedView } from '@/components/ThemedView'; // Asegúrate de que la ruta es correcta
-import { registerAnimal, getUserLotes } from '../../api/api';
+import { registerAnimal, getUserLotes, buscarAnimal } from '../../api/api';
 import { UserContext } from '../../api/UserContext';
 import { useNavigation } from 'expo-router';
 
@@ -72,11 +72,17 @@ const IngresarAnimalScreen = () => {
       return;
     }
     try {
-      const lotes = await getUserLotes(userId);
-    console.log('Lotes:', lotes);
 
-    const numeroLoteInt = parseInt(numero_lote, 10);
-    const loteExiste = lotes.some(lote => {
+      const animal2 = await buscarAnimal(userId, numeroCaravana);
+      if (animal2 && animal2.numeroCaravana === numeroCaravana) {
+        Alert.alert('Error', 'El número de caravana ya está en uso.');
+        return;
+      }
+      const lotes = await getUserLotes(userId);
+      console.log('Lotes:', lotes);
+
+       const numeroLoteInt = parseInt(numero_lote, 10);
+      const loteExiste = lotes.some(lote => {
       console.log(`Comparando ${lote.numero} con ${numeroLoteInt}`); 
       return lote.numero === numeroLoteInt;
     });
@@ -101,6 +107,9 @@ const IngresarAnimalScreen = () => {
       console.error('Error al registrar el animal:', error.message);
       Alert.alert('Error', 'No se pudo guardar el animal.');
     }
+  };
+  const handleFinalizar = () => {
+    navigation.navigate('(tabs)');
   };
 
 
@@ -180,14 +189,11 @@ const IngresarAnimalScreen = () => {
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity
-        style={styles.grayButton}
-        onPress={() => {
-          console.log('Agregar Tratamiento');
-        }}
-      >
-        <ThemedText style={styles.grayButtonText}>Agregar Tratamiento</ThemedText>
-      </TouchableOpacity>
+      <View style={styles.buttonContainer}>
+      <TouchableOpacity style={styles.button} onPress={handleFinalizar}>
+          <ThemedText style={styles.buttonText}>Finalizar</ThemedText>
+        </TouchableOpacity>
+      </View>
 
       <TouchableOpacity
         style={styles.greenButton}
@@ -320,6 +326,23 @@ const styles = StyleSheet.create({
   closeText: {
     marginTop: 10,
     color: '#407157',
+    fontSize: 16,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 20,
+  },
+  button: {
+    backgroundColor: '#407157',
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderRadius: 20,
+    alignItems: 'center',
+    width: '45%',
+  },
+  buttonText: {
+    color: '#FFFFFF',
     fontSize: 16,
   },
 });
