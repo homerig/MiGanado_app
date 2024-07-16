@@ -52,6 +52,23 @@ class BuscarAnimalView(APIView):
         except Animal.DoesNotExist:
             return Response({'message': 'Animal no encontrado'})
         
+class BuscarAnimalLoteView(APIView):
+    def post(self, request, *args, **kwargs):
+        idUsuario = request.data.get('idUsuario')
+        numLote = request.data.get('numero_lote')
+
+        try:
+            # Filtrar los animales por número de lote y usuario
+            animales = Animal.objects.filter(numero_lote=numLote, userId=idUsuario)
+            
+            # Serializar los animales encontrados
+            serializer = AnimalSerializer(animales, many=True)
+            
+            # Retornar los datos serializados
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except Animal.DoesNotExist:
+            return Response({'message': 'Animales no encontrados'}, status=status.HTTP_404_NOT_FOUND)
 class ActualizarNombreLoteView(APIView):
     def put(self, request, *args, **kwargs):
         lote_id = kwargs.get('lote_id')
