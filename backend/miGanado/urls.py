@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
-from .views import EstadisticasView,ActualizarNombreLoteView,BuscarAnimalLoteView,ActualizarSangradoView ,UserLotesView,ActualizarPreniesView, buscarSanView,buscarTratamView, LoginView, UsuarioViewSet, BuscarAnimalView, LoteViewSet, AnimalViewSet, TratamientoViewSet, SangradoViewSet, NotificacionViewSet, ConfigNotificacionesViewSet,TactoViewSet,VacunacionViewSet, UserNotificationsView
+from .views import VerifyCurrentPasswordView,ActualizarContrasenaView,ActualizarDetallesUsuarioView,EstadisticasView,ActualizarNombreLoteView,BuscarAnimalLoteView,ActualizarSangradoView ,UserLotesView,ActualizarPreniesView, buscarSanView,buscarTratamView, LoginView, UsuarioViewSet, BuscarAnimalView, LoteViewSet, AnimalViewSet, TratamientoViewSet, SangradoViewSet, NotificacionViewSet, ConfigNotificacionesViewSet,TactoViewSet,VacunacionViewSet, UserNotificationsView
 
 
 router = DefaultRouter()
@@ -28,5 +28,8 @@ urlpatterns = [
     path('user_notifications/<int:user_id>/', UserNotificationsView.as_view(), name='user_notifications'),
     path('user_lotes/', UserLotesView.as_view({'get': 'user_lotes'}), name='user_lotes'),
     path('estadisticas/<int:lote_id>/', EstadisticasView.as_view(), name='estadisticas'),
+    path('actualizarContrasena/', ActualizarContrasenaView.as_view(), name='actualizar_contrasena'),
+    path('actualizarDetallesUsuario/', ActualizarDetallesUsuarioView.as_view(), name='actualizar_detalles_usuario'),
+    path('verifyCurrentPassword/', VerifyCurrentPasswordView.as_view(), name='verify_current_password'),
 ]
 

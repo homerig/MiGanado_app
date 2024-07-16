@@ -15,6 +15,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from .models import Lote
 from .serializers import LoteSerializer
+from django.contrib.auth.hashers import check_password
 
 from .models import Usuario, Lote, Animal, Tratamiento, Sangrado, Notificacion, ConfigNotificaciones, Tacto,Vacunacion
 from .serializers import UsuarioSerializer, LoteSerializer, AnimalSerializer, TratamientoSerializer, SangradoSerializer, NotificacionSerializer, ConfigNotificacionesSerializer,TactoSerializer, VacunacionSerializer
@@ -38,6 +39,25 @@ class LoginView(APIView):
         except Usuario.DoesNotExist:
             # No se encontró un usuario con el correo electrónico proporcionado
             return Response({'message': 'Credenciales inválidas'}, status=status.HTTP_401_UNAUTHORIZED)
+
+class VerifyCurrentPasswordView(APIView):
+    def post(self, request, *args, **kwargs):
+        idUsuario = request.data.get('idUsuario')
+        current_password = request.data.get('current_password')  # Asegúrate de que el nombre de la variable sea correcto
+
+        try:
+            usuario = Usuario.objects.get(id=idUsuario)
+
+            if current_password==usuario.contrasenia:
+                return Response({'es_valido': True}, status=status.HTTP_200_OK)
+            else:
+                return Response({'es_valido': False})
+
+        except Usuario.DoesNotExist:
+            return Response({'message': 'Usuario no encontrado'}, status=status.HTTP_404_NOT_FOUND)
+
+        except Exception as e:
+            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class BuscarAnimalView(APIView):
     def post(self, request, *args, **kwargs):
@@ -106,6 +126,43 @@ class ActualizarPreniesView(APIView):
         except Exception as e:
             return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
+class ActualizarContrasenaView(APIView):
+    def put(self, request, *args, **kwargs):
+        idUsuario = request.data.get('idUsuario')
+        nueva_contrasena = request.data.get('nueva_contrasena')
+
+        try:
+            usuario = Usuario.objects.get(id=idUsuario)
+            usuario.contrasenia = nueva_contrasena  # Asegúrate de usar hashers para la contraseña
+            usuario.save()
+            return Response({'message': 'Contraseña actualizada con éxito'}, status=status.HTTP_200_OK)
+
+        except Usuario.DoesNotExist:
+            return Response({'message': 'Usuario no encontrado'}, status=status.HTTP_404_NOT_FOUND)
+
+        except Exception as e:
+            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ActualizarDetallesUsuarioView(APIView):
+    def put(self, request, *args, **kwargs):
+        idUsuario = request.data.get('idUsuario')
+        nuevo_nombre = request.data.get('nombre')
+        nuevo_correo = request.data.get('correo_electronico')
+
+        try:
+            usuario = Usuario.objects.get(id=idUsuario)
+            usuario.nombre = nuevo_nombre
+            usuario.correo_electronico = nuevo_correo
+            usuario.save()
+            serializer = UsuarioSerializer(usuario)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except Usuario.DoesNotExist:
+            return Response({'message': 'Usuario no encontrado'}, status=status.HTTP_404_NOT_FOUND)
+
+        except Exception as e:
+            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class ActualizarSangradoView(APIView):
     def put(self, request, *args, **kwargs):
