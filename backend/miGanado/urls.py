@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import ActualizarPreniesView,ActualizarNombreLoteView, buscarSanView,buscarTratamView, LoginView, UsuarioViewSet, BuscarAnimalView, LoteViewSet, AnimalViewSet, TratamientoViewSet, SangradoViewSet, NotificacionViewSet, ConfigNotificacionesViewSet,TactoViewSet,VacunacionViewSet, UserNotificationsView
+from .views import ActualizarPreniesView,ActualizarNombreLoteView, EstadisticasView, buscarSanView,buscarTratamView, LoginView, UsuarioViewSet, BuscarAnimalView, LoteViewSet, AnimalViewSet, TratamientoViewSet, SangradoViewSet, NotificacionViewSet, ConfigNotificacionesViewSet,TactoViewSet,VacunacionViewSet, UserNotificationsView
 from .views import ActualizarSangradoView ,ActualizarPreniesView, buscarSanView,buscarTratamView, LoginView, UsuarioViewSet, BuscarAnimalView, LoteViewSet, AnimalViewSet, TratamientoViewSet, SangradoViewSet, NotificacionViewSet, ConfigNotificacionesViewSet,TactoViewSet,VacunacionViewSet, UserNotificationsView
 
 router = DefaultRouter()
@@ -24,4 +24,6 @@ urlpatterns = [
     path('actualizarNombreLote/<int:lote_id>/', ActualizarNombreLoteView.as_view(), name='actualizarNombreLote'),
     path('actualizarSangrado/', ActualizarSangradoView.as_view(), name='actualizar_sangrado'),
     path('user_notifications/<int:user_id>/', UserNotificationsView.as_view(), name='user_notifications'),
+    path('estadisticas/<int:lote_id>/', EstadisticasView.as_view(), name='estadisticas'),
 ]
+

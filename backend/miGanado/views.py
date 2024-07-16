@@ -1,3 +1,4 @@
+import datetime
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -8,6 +9,7 @@ from django.contrib.auth import authenticate
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from django.views import View
+from django.db.models import Count
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -194,3 +196,26 @@ class ConfigNotificacionesViewSet(viewsets.ModelViewSet):
 class VacunacionViewSet(viewsets.ModelViewSet):
     queryset = Vacunacion.objects.all()
     serializer_class=VacunacionSerializer
+
+class EstadisticasView(APIView):
+    def get(self, request, lote_id):
+        try:
+            # Verificar si el lote existe
+            lote = Lote.objects.get(id=lote_id)
+
+            # Calcular estadísticas
+            total_animales = Animal.objects.filter(lote=lote).count()
+            crias_mes = Animal.objects.filter(lote=lote, fecha_nacimiento__month=datetime.now().month).count()
+            preniadas_mes = Animal.objects.filter(lote=lote, preniada=True).count()
+
+            estadisticas = {
+                'total_animales': total_animales,
+                'crias_mes': crias_mes,
+                'preniadas_mes': preniadas_mes,
+            }
+
+            return Response(estadisticas, status=status.HTTP_200_OK)
+        except Lote.DoesNotExist:
+            return Response({'message': 'Lote no encontrado'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
