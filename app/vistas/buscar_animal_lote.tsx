@@ -23,6 +23,9 @@ const AnimalSearchScreen = () => {
   const [newLoteName, setNewLoteName] = useState('');
   const [caravanas, setCaravanas] = useState([]);
 
+  const [animalEncontrado, setAnimalEncontrado] = useState(null);
+  const [tratamientoEncontrado, setTratamientoEncontrado] = useState(null);
+
   const toggleAnimalSelection = (id) => {
     setSelectedAnimals(prevSelectedAnimals => {
       if (prevSelectedAnimals.includes(id)) {
@@ -64,8 +67,15 @@ const AnimalSearchScreen = () => {
 
   const handleSearchAnimal = async () => {
     try {
-      const results = await buscarAnimal(userId, lote.id, caravanaNumber);
-      setAnimals(results);
+      const animal = await buscarAnimal(userId, caravanaNumber);
+      if (animal && animal.numeroCaravana === caravanaNumber) {
+        setAnimalEncontrado(animal);
+        setIsModalVisible(true); // Mostrar el modal al encontrar el animal
+      } else {
+        Alert.alert('Animal no encontrado', 'No se encontró un animal con ese número de caravana. Inténtelo de nuevo.', [
+          { text: 'OK', onPress: () => setCaravanaNumber('') }
+        ]);
+      }
     } catch (error) {
       console.error('Error searching animal:', error);
       Alert.alert('Error', 'Error al buscar el animal. Inténtalo de nuevo más tarde.');
@@ -81,6 +91,21 @@ const AnimalSearchScreen = () => {
     } catch (error) {
       console.error('Error updating lote name:', error);
       Alert.alert('Error', 'No se pudo actualizar el nombre del lote. Inténtalo de nuevo más tarde.');
+    }
+  };
+
+  const handleCaravanaPress = async (numeroCaravana) => {
+    try {
+      const animal = await buscarAnimal(userId, numeroCaravana);
+      if (animal && animal.numeroCaravana === numeroCaravana) {
+        setAnimalEncontrado(animal);
+        setIsModalVisible(true); // Mostrar el modal al seleccionar una caravana
+      } else {
+        Alert.alert('Animal no encontrado', 'No se encontró un animal con ese número de caravana.');
+      }
+    } catch (error) {
+      console.error('Error al buscar animal:', error);
+      Alert.alert('Error', 'Hubo un error al buscar el animal. Por favor, inténtelo de nuevo.');
     }
   };
 
@@ -117,42 +142,25 @@ const AnimalSearchScreen = () => {
       </View>
       <View style={styles.caravanasList}>
         {caravanas.map((numero_caravana, index) => (
-          <View key={index} style={styles.caravanaItem}>
+          <TouchableOpacity key={index} style={styles.caravanaItem} onPress={() => handleCaravanaPress(numero_caravana)}>
             <Text style={styles.caravanaText}>N°: {numero_caravana}</Text>
-          </View>
+          </TouchableOpacity>
         ))}
       </View>
-      <ScrollView contentContainerStyle={styles.animalList}>
-        {animals.map(animal => (
-          <TouchableOpacity
-            key={animal.id}
-            style={[styles.animalItem, selectedAnimals.includes(animal.id) && styles.animalItemSelected]}
-            onPress={() => toggleAnimalSelection(animal.id)}
-          >
-            <Text style={styles.animalTag}>N°: {animal.tag}</Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-      <TouchableOpacity style={styles.selectAllButton} onPress={selectAllAnimals}>
-        <Text style={styles.selectAllText}>
-          {selectedAnimals.length === animals.length ? 'Deseleccionar todo' : 'Seleccionar todo'}
-        </Text>
-      </TouchableOpacity>
-      <Modal isVisible={isModalVisible}>
+      <Modal isVisible={isModalVisible} animationIn="fadeIn" animationOut="fadeOut">
         <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>Actualizar Nombre del Lote</Text>
-          <TextInput
-            style={styles.modalInput}
-            placeholder="Nuevo nombre del lote"
-            value={newLoteName}
-            onChangeText={setNewLoteName}
-            placeholderTextColor="#666666"
-          />
-          <TouchableOpacity style={styles.modalButton} onPress={handleUpdateLoteName}>
-            <Text style={styles.modalButtonText}>Actualizar</Text>
-          </TouchableOpacity>
+          <Text style={styles.modalTitle}>Detalle del Animal</Text>
+          {animalEncontrado && (
+            <View style={styles.animalDetail}>
+              <ThemedText style={styles.detail}>N° {animalEncontrado.numeroCaravana}</ThemedText>
+              <ThemedText style={styles.detail}>Edad: {animalEncontrado.edad} años</ThemedText>
+              <ThemedText style={styles.detail}>Lote: {animalEncontrado.numero_lote}</ThemedText>
+              <ThemedText style={styles.detail}>Peso: {animalEncontrado.peso} kg</ThemedText>
+              <ThemedText style={styles.detail}>Preñada: {animalEncontrado.preniada ? 'Sí' : 'No'}</ThemedText>
+            </View>
+          )}
           <TouchableOpacity style={styles.modalButton} onPress={() => setIsModalVisible(false)}>
-            <Text style={styles.modalButtonText}>Cancelar</Text>
+            <Text style={styles.modalButtonText}>Cerrar</Text>
           </TouchableOpacity>
         </View>
       </Modal>
@@ -232,39 +240,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#407157',
   },
-  animalList: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  animalItem: {
-    width: '48%',
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#CCCCCC',
-    borderRadius: 20,
-    marginBottom: 10,
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-  },
-  animalItemSelected: {
-    backgroundColor: '#D3D3D3',
-  },
-  animalTag: {
-    fontSize: 14,
-    color: '#407157',
-  },
-  selectAllButton: {
-    alignSelf: 'flex-end',
-    padding: 10,
-    backgroundColor: '#407157',
-    borderRadius: 20,
-    marginBottom: 10,
-  },
-  selectAllText: {
-    color: '#FFFFFF',
-    fontWeight: 'bold',
-  },
   modalContent: {
     backgroundColor: 'white',
     padding: 20,
@@ -278,15 +253,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     color: '#407157',
   },
-  modalInput: {
-    width: '100%',
-    height: 40,
-    borderColor: '#CCCCCC',
-    borderWidth: 1,
-    borderRadius: 20,
-    paddingHorizontal: 10,
-    marginBottom: 10,
-  },
   modalButton: {
     backgroundColor: '#407157',
     paddingVertical: 10,
@@ -298,6 +264,14 @@ const styles = StyleSheet.create({
   modalButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
+  },
+  animalDetail: {
+    alignItems: 'center',
+  },
+  detail: {
+    fontSize: 16,
+    marginBottom: 10,
+    color: '#407157',
   },
 });
 
