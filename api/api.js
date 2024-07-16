@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseURL = 'http://192.168.0.182:8000/miGanado'; // Ajusta la URL a la de tu servidor
+const baseURL = 'http://192.168.0.209:8000/miGanado'; // Ajusta la URL a la de tu servidor
 
 const registerUser = async (userData) => {
   try {
@@ -35,6 +35,21 @@ const loginUser = async (email, password) => {
 const buscarAnimal = async (idUsuario, numeroCaravana) => {
   try {
     const response = await axios.post(`${baseURL}/buscarAnimal/`, { idUsuario, numeroCaravana });
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error('Error al buscar el animal:', error.response.data);
+    } else if (error.request) {
+      console.error('Error al buscar el animal - No se recibió respuesta:', error.request);
+    } else {
+      console.error('Error al buscar el animal:', error.message);
+    }
+    throw error;
+  }
+};
+const buscarAnimalLote = async (idUsuario, numero_lote) => {
+  try {
+    const response = await axios.post(`${baseURL}/buscarAnimalLote/`, { idUsuario, numero_lote });
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -334,4 +349,4 @@ const getTasaPrenez = async (loteId) => {
 
 
 
-export { baseURL ,actualizarPrenies,actualizarNombreLote ,buscarSan ,buscarTratam ,registerUser, loginUser, buscarAnimal, getUserLotes, getUserNotificaciones,createSangrado,createTacto,createVacunacion, createTratamiento, registerAnimal,createLote,deleteLote,getTasaNatalidad,getPesoPromedio,getTasaPrenez};
+export { baseURL ,buscarAnimalLote,actualizarPrenies,actualizarNombreLote ,buscarSan ,buscarTratam ,registerUser, loginUser, buscarAnimal, getUserLotes, getUserNotificaciones,createSangrado,createTacto,createVacunacion, createTratamiento, registerAnimal,createLote,deleteLote,getTasaNatalidad,getPesoPromedio,getTasaPrenez};
