@@ -99,7 +99,7 @@ const LoginScreen = () => {
       <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
         <Text style={styles.loginButtonText}>Iniciar Sesión</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.registerButton} onPress={() => navigation.navigate('ingresarvia')}>
+      <TouchableOpacity style={styles.registerButton} onPress={() => navigation.navigate('singup')}>
         <Text style={styles.registerButtonText}>Registrarse</Text>
       </TouchableOpacity>
       <ThemedText type="title" style={styles.logoText}>MiGanado</ThemedText>
