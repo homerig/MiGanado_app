@@ -1,3 +1,4 @@
+import datetime
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -8,6 +9,7 @@ from django.contrib.auth import authenticate
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from django.views import View
+from django.db.models import Count
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -50,6 +52,23 @@ class BuscarAnimalView(APIView):
         except Animal.DoesNotExist:
             return Response({'message': 'Animal no encontrado'})
         
+class BuscarAnimalLoteView(APIView):
+    def post(self, request, *args, **kwargs):
+        idUsuario = request.data.get('idUsuario')
+        numLote = request.data.get('numero_lote')
+
+        try:
+            # Filtrar los animales por número de lote y usuario
+            animales = Animal.objects.filter(numero_lote=numLote, userId=idUsuario)
+            
+            # Serializar los animales encontrados
+            serializer = AnimalSerializer(animales, many=True)
+            
+            # Retornar los datos serializados
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except Animal.DoesNotExist:
+            return Response({'message': 'Animales no encontrados'}, status=status.HTTP_404_NOT_FOUND)
 class ActualizarNombreLoteView(APIView):
     def put(self, request, *args, **kwargs):
         lote_id = kwargs.get('lote_id')
@@ -142,7 +161,18 @@ class UserNotificationsView(APIView):
         notificaciones_data = list(notificaciones.values('tipo', 'mensaje', 'fecha', 'id'))
         return JsonResponse(notificaciones_data, safe=False)
     
+class UserLotesView(viewsets.ModelViewSet):
+    queryset = Lote.objects.all()
+    serializer_class = LoteSerializer
 
+    @action(detail=False, methods=['get'])
+    def user_lotes(self, request, user_id=None):
+        user_id = request.query_params.get('userId', None)
+        if user_id is not None:
+            lotes = Lote.objects.filter(usuario=user_id)
+            serializer = self.get_serializer(lotes, many=True)
+            return Response(serializer.data)
+        return Response({"error": "User ID not provided"}, status=400)        
 
 class CrearLoteView(APIView):
     def post(self, request, *args, **kwargs):
@@ -166,6 +196,9 @@ class UsuarioViewSet(viewsets.ModelViewSet):
 class LoteViewSet(viewsets.ModelViewSet):
     queryset = Lote.objects.all()
     serializer_class = LoteSerializer
+
+
+    
 
 class AnimalViewSet(viewsets.ModelViewSet):
     queryset = Animal.objects.all()
@@ -194,3 +227,26 @@ class ConfigNotificacionesViewSet(viewsets.ModelViewSet):
 class VacunacionViewSet(viewsets.ModelViewSet):
     queryset = Vacunacion.objects.all()
     serializer_class=VacunacionSerializer
+
+class EstadisticasView(APIView):
+    def get(self, request, lote_id):
+        try:
+            # Verificar si el lote existe
+            lote = Lote.objects.get(id=lote_id)
+
+            # Calcular estadísticas
+            total_animales = Animal.objects.filter(lote=lote).count()
+            crias_mes = Animal.objects.filter(lote=lote, fecha_nacimiento__month=datetime.now().month).count()
+            preniadas_mes = Animal.objects.filter(lote=lote, preniada=True).count()
+
+            estadisticas = {
+                'total_animales': total_animales,
+                'crias_mes': crias_mes,
+                'preniadas_mes': preniadas_mes,
+            }
+
+            return Response(estadisticas, status=status.HTTP_200_OK)
+        except Lote.DoesNotExist:
+            return Response({'message': 'Lote no encontrado'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)

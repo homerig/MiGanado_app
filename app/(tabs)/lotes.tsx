@@ -11,7 +11,10 @@ const ListItem = ({ item, onPress, isSelected, isDeleting, onDelete }) => (
     style={[styles.itemContainer, isSelected && styles.selectedItem]}
     onPress={() => (isDeleting ? onDelete(item) : onPress(item))}
   >
-    <Text style={styles.itemName}>{item.nombre_lote}</Text>
+    <View>
+    <Text style={styles.numName}>Lote N: {item.numero}</Text>
+    <Text style={styles.itemName}>{item.nombre_lote}</Text>    
+    </View>
     <View>
       <Text style={styles.itemCount}>{item.capacidad}/{item.capacidad_max} animales</Text>
     </View>
@@ -43,20 +46,25 @@ export default function TabTwoScreen() {
   useFocusEffect(
     useCallback(() => {
       fetchLotes();
-      setSelectedLote(null); // Limpiar la selección al enfocar la pantalla
+      setSelectedLote(null); 
     }, [fetchLotes])
   );
 
   const handleCreateLote = async () => {
+    
+    //Limitador Lotes
+    /*
     if (lotes && lotes.length >= 4) {
       Alert.alert('Límite de lotes', 'Cada usuario solo puede tener un máximo de 4 lotes.');
       return;
     }
+    */
 
     try {
+      const highestNumero = lotes.reduce((max, lote) => (lote.numero > max ? lote.numero : max), 0);
       const newLote = {
-        nombre_lote: "Lote nuevo "+ (lotes.length + 1),
-        numero: lotes ? lotes.length + 1 : 1,
+        nombre_lote: "Lote nuevo "+ (highestNumero + 1),
+        numero: highestNumero + 1,
         capacidad: 0,
         capacidad_max: 100,
         tipo_animal: 'vaca',
@@ -174,6 +182,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     fontFamily: 'JostBold',
+  },
+  numName: {
+    fontSize: 12,    
+    fontFamily: 'JostRegular',
+    alignItems: 'center',
+    marginLeft: 15,
   },
   itemCount: {
     fontSize: 14,
