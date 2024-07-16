@@ -5,10 +5,15 @@ import { ThemedText } from '@/components/ThemedText'; // Asegúrate de que la ru
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { ThemedView } from '@/components/ThemedView'; // Asegúrate de que la ruta es correcta
-import { registerAnimal } from '../../api/api';
+import { registerAnimal, getUserLotes } from '../../api/api';
 import { UserContext } from '../../api/UserContext';
 import { useNavigation } from 'expo-router';
 
+const ErrorIcon = ({ onPress }) => (
+  <TouchableOpacity onPress={onPress} style={styles.errorIcon}>
+    <FontAwesomeIcon icon={faTimesCircle} size={24} color="#d44648" />
+  </TouchableOpacity>
+);
 
 const IngresarAnimalScreen = () => {
   const [numeroCaravana, setNumeroCaravana] = useState('');
@@ -21,11 +26,67 @@ const IngresarAnimalScreen = () => {
   const [tipos, setTipos] = useState(''); 
   const [numero_lote, setLotes] = useState(''); 
   const { userId } = useContext(UserContext);
+  const [numero_loteError, setNumeroLoteError] = useState(false);
+  const [numeroCaravanaError, setnumeroCaravanaError] = useState(false);
+  const [pesoError, setPesoError] = useState(false);
+  const [edadError, setEdadError] = useState(false);
+  const [tiposError, setTiposError] = useState(false);
 
-
+  const validateFields = () => {
+    let isValid = true;
+    if (!numero_lote) {
+      setNumeroLoteError(true);
+      isValid = false;
+    } else {
+      setNumeroLoteError(false);
+    }
+    if (!numeroCaravana) {
+      setnumeroCaravanaError(true);
+      isValid = false;
+    } else {
+      setnumeroCaravanaError(false);
+    }
+    if (!peso) {
+      setPesoError(true);
+      isValid = false;
+    } else {
+      setPesoError(false);
+    }
+    if (!edad) {
+      setEdadError(true);
+      isValid = false;
+    } else {
+      setEdadError(false);
+    }
+    if (!tipos) {
+      setTiposError(true);
+      isValid = false;
+    } else {
+      setTiposError(false);
+    }
+    return isValid;
+  };
   const navigation = useNavigation();
   const handleGuardarAnimal = async () => {
+    if (!validateFields()) {
+      return;
+    }
     try {
+      const lotes = await getUserLotes(userId);
+    console.log('Lotes:', lotes);
+
+    const numeroLoteInt = parseInt(numero_lote, 10);
+    const loteExiste = lotes.some(lote => {
+      console.log(`Comparando ${lote.numero} con ${numeroLoteInt}`); 
+      return lote.numero === numeroLoteInt;
+    });
+    
+      
+      if (!loteExiste) {
+        Alert.alert('Error', 'El lote especificado no existe.');
+        return;
+      }
+
       const animal = await registerAnimal({ numeroCaravana, numero_lote, tipos, peso, edad, preniada, reciennacida, userId});
       console.log("Animal registrado:", animal);
       setNumeroCaravana('');
@@ -47,40 +108,57 @@ const IngresarAnimalScreen = () => {
     <ThemedView style={styles.container}>
       <ThemedText style={styles.label}>Ingresar Animal</ThemedText>
 
+
+      <View style={styles.inputContainer}>
       <TextInput
         style={styles.input}
         placeholder="Seleccione Tipo"
         value={tipos}
         onChangeText={setTipos}
       />
+      {tiposError && <ErrorIcon onPress={() => Alert.alert('Error', 'El campo Lote no puede estar vacío')} />}
+      </View>
+
+      <View style={styles.inputContainer}>
       <TextInput
         style={styles.input}
-        placeholder="Seleccione Lote"
+        placeholder="Ingresar número de Lote"
         value={numero_lote}
         onChangeText={setLotes}
       />
+      {numero_loteError && <ErrorIcon onPress={() => Alert.alert('Error', 'El campo Lote no puede estar vacío')} />}
+      </View>
 
+      <View style={styles.inputContainer}>
       <TextInput
         style={styles.input}
         placeholder="Número de caravana"
         value={numeroCaravana}
         onChangeText={setNumeroCaravana}
       />
+      {numeroCaravanaError && <ErrorIcon onPress={() => Alert.alert('Error', 'El campo Lote no puede estar vacío')} />}
+      </View>
 
       <ThemedText style={styles.subLabel}>Historial Médico</ThemedText>
+      <View style={styles.inputContainer}>
       <TextInput
         style={styles.input}
         placeholder="Peso"
         value={peso}
         onChangeText={setPeso}
       />
+      {pesoError && <ErrorIcon onPress={() => Alert.alert('Error', 'El campo Lote no puede estar vacío')} />}
+      </View>
 
+      <View style={styles.inputContainer}>
       <TextInput
         style={styles.input}
         placeholder="Edad"
         value={edad}
         onChangeText={setEdad}
       />
+      {edadError &&  <ErrorIcon onPress={() => Alert.alert('Error', 'El campo Edad no puede estar vacío')} />}
+      </View>
 
       <View style={styles.checkboxContainer}>
         <Text style={styles.checkboxLabel}>Recién nacido</Text>
@@ -150,6 +228,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     justifyContent: 'center',
     backgroundColor: '#F1F1F1',
+  },
+  inputContainer: {
+    position: 'relative',
+    marginBottom: 16,
   },
   inputError: {
     borderColor: '#d44648',
