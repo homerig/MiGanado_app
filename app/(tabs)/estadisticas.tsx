@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import { StyleSheet, ScrollView, View, Dimensions, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { BarChart, PieChart } from 'react-native-chart-kit';
+import { LineChart, PieChart } from 'react-native-chart-kit';
 import { UserContext } from '../../api/UserContext';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
@@ -94,22 +94,13 @@ const EstadisticasScreen = () => {
     return `${promedio.toFixed(2)} kg`;
   };
 
-  const barChartData1 = {
-    labels: ["Ene", "Feb", "Mar", "Abr"],
-    datasets: [
-      {
-        data: [5, 10, 15, 20]
-      }
-    ]
-  };
-
   const pieChartDataPrenez = [
     { name: "Preñadas", population: porcentajePrenez, color: "#407157", legendFontColor: "#7F7F7F", legendFontSize: 15 },
     { name: "No preñadas", population: 100 - porcentajePrenez, color: "#e0e0e0", legendFontColor: "#7F7F7F", legendFontSize: 15 }
   ];
 
-  const barChartData2 = {
-    labels: animalesEncontrado ? animalesEncontrado.map((_, index) => `${index + 1}`) : [],
+  const lineChartData = {
+    labels: animalesEncontrado ? animalesEncontrado.map((_, index) => (index % Math.ceil(animalesEncontrado.length / 5) === 0 ? `${index + 1}` : '')) : [],
     datasets: [
       {
         data: animalesEncontrado ? animalesEncontrado.map(animal => animal.peso) : []
@@ -178,16 +169,16 @@ const EstadisticasScreen = () => {
       </StatisticsCard>
 
       <StatisticsCard title={calcularPromedioPeso()} value="Promedio de peso" subTitle="del lote">
-        <BarChart
-          data={barChartData2}
+        <LineChart
+          data={lineChartData}
           width={Dimensions.get("window").width - 40}
           height={220}
           chartConfig={chartConfig}
+          bezier
+          style={styles.chartStyle}
           verticalLabelRotation={30}
-          yAxisLabel=""
           yAxisSuffix=" kg"
           fromZero={true}
-          style={styles.chartStyle}
         />
       </StatisticsCard>
     </ScrollView>
@@ -198,7 +189,7 @@ const chartConfig = {
   backgroundColor: "#407157",
   backgroundGradientFrom: "#407157",
   backgroundGradientTo: "#407157",
-  decimalPlaces: 0,
+  decimalPlaces: 2,
   color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
   labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
   style: {

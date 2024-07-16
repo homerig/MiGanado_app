@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const baseURL = 'http://192.168.0.181:8000/miGanado'; // Ajusta la URL a la de tu servidor
+
+const baseURL = 'http://192.168.0.10:8000/miGanado'; // Ajusta la URL a la de tu servidor
 
 const registerUser = async (userData) => {
   try {
@@ -349,5 +350,5 @@ const getTasaPrenez = async (loteId) => {
 
 
 
-
 export { baseURL ,deleteNotificacion,actualizarSangrado,buscarAnimalLote,actualizarPrenies,actualizarNombreLote ,buscarSan ,buscarTratam ,registerUser, loginUser, buscarAnimal, getUserLotes, getUserNotificaciones,createSangrado,createTacto,createVacunacion, createTratamiento, registerAnimal,createLote,deleteLote,getTasaNatalidad,getPesoPromedio,getTasaPrenez};
+
