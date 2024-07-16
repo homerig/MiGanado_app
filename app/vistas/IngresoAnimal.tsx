@@ -122,7 +122,7 @@ const IngresarAnimalScreen = () => {
       <View style={styles.inputContainer}>
       <TextInput
         style={styles.input}
-        placeholder="Ingresar numero de Lote"
+        placeholder="Ingresar número de Lote"
         value={numero_lote}
         onChangeText={setLotes}
       />
