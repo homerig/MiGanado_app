@@ -19,6 +19,7 @@ const TratamientosScreen = () => {
 
   const handleGuardar = async () => {
     try {
+      
       const Nuevotratamiento = await createTratamiento({ numeroCaravana, tratamiento , medicacion, fechaInicio, cada, durante, userId });
       console.log("Tratamiento registrado:", Nuevotratamiento);
       setNumeroCaravana('');
