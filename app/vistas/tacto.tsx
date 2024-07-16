@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { UserContext } from '../../api/UserContext';
-import { createTacto, buscarAnimal, actualizarPrenies } from '../../api/api';
+import { createTacto, buscarAnimal, actualizarPrenies, getUserLotes } from '../../api/api';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 
@@ -92,6 +92,19 @@ const TactoScreen = () => {
     const valid = await validar();
     if (valid) {
       try {
+        const lotes = await getUserLotes(userId);
+        console.log('Lotes:', lotes);
+        const numeroLoteInt = parseInt(numero_lote, 10);
+        const loteExiste = lotes.some(lote => {
+          console.log(`Comparando ${lote.numero} con ${numeroLoteInt}`); 
+          return lote.numero === numeroLoteInt;
+        });
+        
+          
+          if (!loteExiste) {
+            Alert.alert('Error', 'El lote especificado no existe.');
+            return;
+          }
         const tacto = await createTacto({ numero_lote, numeroCaravana, fecha, prenada, userId });
         console.log("Tacto registrado:", tacto);
         

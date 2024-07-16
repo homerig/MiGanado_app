@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import { UserContext } from '../../api/UserContext';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
-import { createVacunacion } from '@/api/api';
+import { createVacunacion, getUserLotes } from '@/api/api';
 
 const ErrorIcon = ({ onPress }) => (
   <TouchableOpacity onPress={onPress} style={styles.errorIcon}>
@@ -69,6 +69,20 @@ const VacunacionScreen = () => {
       return;
     }
     try {
+      const lotes = await getUserLotes(userId);
+      console.log('Lotes:', lotes);
+  
+      const numeroLoteInt = parseInt(numero_lote, 10);
+      const loteExiste = lotes.some(lote => {
+        console.log(`Comparando ${lote.numero} con ${numeroLoteInt}`); 
+        return lote.numero === numeroLoteInt;
+      });
+      
+        
+        if (!loteExiste) {
+          Alert.alert('Error', 'El lote especificado no existe.');
+          return;
+        }
       const Nuevotratamiento = await createVacunacion({ numero_lote, nombre_vacuna, fechaInicio, durante, cada, userId });
       console.log("Tratamiento registrado:", Nuevotratamiento);
       setNumeroLote('');
