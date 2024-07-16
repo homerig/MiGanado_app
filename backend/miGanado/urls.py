@@ -1,8 +1,13 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
+<<<<<<< HEAD
+from .views import BuscarAnimalLoteView,ActualizarPreniesView,ActualizarNombreLoteView, EstadisticasView, buscarSanView,buscarTratamView, LoginView, UsuarioViewSet, BuscarAnimalView, LoteViewSet, AnimalViewSet, TratamientoViewSet, SangradoViewSet, NotificacionViewSet, ConfigNotificacionesViewSet,TactoViewSet,VacunacionViewSet, UserNotificationsView
+from .views import BuscarAnimalLoteView,ActualizarSangradoView ,ActualizarPreniesView, buscarSanView,buscarTratamView, LoginView, UsuarioViewSet, BuscarAnimalView, LoteViewSet, AnimalViewSet, TratamientoViewSet, SangradoViewSet, NotificacionViewSet, ConfigNotificacionesViewSet,TactoViewSet,VacunacionViewSet, UserNotificationsView
+=======
 from .views import ActualizarPreniesView,ActualizarNombreLoteView, EstadisticasView, buscarSanView,buscarTratamView, LoginView, UsuarioViewSet, BuscarAnimalView, LoteViewSet, AnimalViewSet, TratamientoViewSet, SangradoViewSet, NotificacionViewSet, ConfigNotificacionesViewSet,TactoViewSet,VacunacionViewSet, UserNotificationsView
 from .views import ActualizarSangradoView ,UserLotesView,ActualizarPreniesView, buscarSanView,buscarTratamView, LoginView, UsuarioViewSet, BuscarAnimalView, LoteViewSet, AnimalViewSet, TratamientoViewSet, SangradoViewSet, NotificacionViewSet, ConfigNotificacionesViewSet,TactoViewSet,VacunacionViewSet, UserNotificationsView
 
+>>>>>>> 92eb42d25ccd0a5deb316d99ccb0b0ebe977ba1e
 
 router = DefaultRouter()
 router.register(r'usuarios', UsuarioViewSet, basename='usuario')
@@ -19,6 +24,7 @@ urlpatterns = [
     path('', include(router.urls)),
     path('login/', LoginView.as_view(), name='login'),
     path('buscarAnimal/', BuscarAnimalView.as_view(), name='buscarAnimal'),
+    path('buscarAnimalLote/', BuscarAnimalLoteView.as_view(), name='buscarAnimalLote'),
     path('buscarTratam/', buscarTratamView.as_view(), name='buscarTratam'),
     path('buscarSan/', buscarSanView.as_view(), name='buscarSan'),
     path('actualizarPrenies/', ActualizarPreniesView.as_view(), name='actualizarPrenies'),
