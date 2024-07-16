@@ -42,8 +42,53 @@ const UserProvider = ({ children }) => {
     }
   };
 
+  const updateUserPassword = async (id, newPassword) => {
+    try {
+      const response = await axios.put(`${baseURL}/actualizarContrasena/`, {
+        idUsuario: id,
+        nueva_contrasena: newPassword,
+      });
+      if (response.status === 200) {
+        console.log('Contraseña actualizada con éxito');
+      }
+    } catch (error) {
+      console.error('Error updating user password:', error.message);
+    }
+  };
+
+  // Función para verificar la contraseña actual del usuario
+  const verifyCurrentPassword = async (id, currentPassword) => {
+    try {
+      const response = await axios.post(`${baseURL}/verifyCurrentPassword/`, {
+        idUsuario: id,
+        current_password: currentPassword,  
+      });
+      return response.data.es_valido; 
+    } catch (error) {
+      console.error('Error verifying current password:', error.message);
+      return false;
+    }
+  };
+
+  // Función para actualizar los detalles del usuario
+  const updateUserDetails = async (id, newName, newEmail) => {
+    try {
+      const response = await axios.put(`${baseURL}/actualizarDetallesUsuario/`, {
+        idUsuario: id,
+        nombre: newName,
+        correo_electronico: newEmail,
+      });
+      if (response.status === 200) {
+        setUserName(newName);
+        setUserEmail(newEmail);
+      }
+    } catch (error) {
+      console.error('Error updating user details:', error.message);
+    }
+  };
+
   return (
-    <UserContext.Provider value={{ userId, setUserId: saveUserId, userName, userEmail, fetchUserName, fetchUserEmail }}>
+    <UserContext.Provider value={{ userId, setUserId: saveUserId, userName, userEmail, fetchUserName, fetchUserEmail, verifyCurrentPassword, updateUserPassword,updateUserDetails }}>
       {children}
     </UserContext.Provider>
   );
