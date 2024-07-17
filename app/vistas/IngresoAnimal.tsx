@@ -121,7 +121,7 @@ const IngresarAnimalScreen = () => {
       <View style={styles.inputContainer}>
       <TextInput
         style={styles.input}
-        placeholder="Seleccione Tipo"
+        placeholder="Ingrese Tipo"
         value={tipos}
         onChangeText={setTipos}
       />
@@ -189,11 +189,7 @@ const IngresarAnimalScreen = () => {
         </TouchableOpacity>
       </View>
 
-      <View style={styles.buttonContainer}>
-      <TouchableOpacity style={styles.button} onPress={handleFinalizar}>
-          <ThemedText style={styles.buttonText}>Finalizar</ThemedText>
-        </TouchableOpacity>
-      </View>
+      
 
       <TouchableOpacity
         style={styles.greenButton}
@@ -201,6 +197,11 @@ const IngresarAnimalScreen = () => {
       >
         <ThemedText style={styles.greenButtonText}>Guardar</ThemedText>
       </TouchableOpacity>
+
+      <TouchableOpacity style={styles.greenButton} onPress={handleFinalizar}>
+          <ThemedText style={styles.buttonText}>Finalizar</ThemedText>
+        </TouchableOpacity>
+
     </ThemedView>
   );
 }

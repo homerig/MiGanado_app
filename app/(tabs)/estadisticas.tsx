@@ -129,7 +129,7 @@ const EstadisticasScreen = () => {
           <View style={styles.inputContainer}>
             <TextInput
               style={[styles.input, numero_loteError && styles.errorInput]}
-              placeholder="Ingrese Lote"
+              placeholder="Ingrese número de lote"
               value={numero_lote}
               onChangeText={setNumeroLote}
             />

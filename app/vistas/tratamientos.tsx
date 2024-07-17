@@ -80,12 +80,10 @@ const TratamientosScreen = () => {
         value={cada}
         onChangeText={setCada}
       />
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={handleGuardar}>
+
+      <TouchableOpacity style={styles.button} onPress={handleGuardar}>
           <ThemedText style={styles.buttonText}>Agregar al calendario</ThemedText>
         </TouchableOpacity>
-      </View>
-
     </ThemedView>
   );
 }
