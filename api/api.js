@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseURL = 'http://192.168.0.182:8000/miGanado'; // Ajusta la URL a la de tu servidor
+const baseURL = 'http://192.168.0.10:8000/miGanado'; // Ajusta la URL a la de tu servidor
 
 const registerUser = async (userData) => {
   try {
@@ -73,6 +73,21 @@ const actualizarPrenies = async (idUsuario, numeroCaravana, preniada) => {
       console.error('Error al actualizar la preñez del animal - No se recibió respuesta:', error.request);
     } else {
       console.error('Error al actualizar la preñez del animal:', error.message);
+    }
+    throw error;
+  }
+};
+const actualizarAnimal = async (idUsuario, numeroCaravana, numero_lote, peso, edad,reciennacida) => {
+  try {
+    const response = await axios.put(`${baseURL}/actualizarAnimal/`, { idUsuario, numeroCaravana,  numero_lote, peso, edad,reciennacida });
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error('Error al actualizar animal:', error.response.data);
+    } else if (error.request) {
+      console.error('Error al actualizar animal - No se recibió respuesta:', error.request);
+    } else {
+      console.error('Error al actualizar animal:', error.message);
     }
     throw error;
   }
@@ -350,4 +365,4 @@ const getTasaPrenez = async (loteId) => {
 
 
 
-export { baseURL ,deleteNotificacion,actualizarSangrado,buscarAnimalLote,actualizarPrenies,actualizarNombreLote ,buscarSan ,buscarTratam ,registerUser, loginUser, buscarAnimal, getUserLotes, getUserNotificaciones,createSangrado,createTacto,createVacunacion, createTratamiento, registerAnimal,createLote,deleteLote,getTasaNatalidad,getPesoPromedio,getTasaPrenez};
+export { baseURL ,actualizarAnimal ,deleteNotificacion,actualizarSangrado,buscarAnimalLote,actualizarPrenies,actualizarNombreLote ,buscarSan ,buscarTratam ,registerUser, loginUser, buscarAnimal, getUserLotes, getUserNotificaciones,createSangrado,createTacto,createVacunacion, createTratamiento, registerAnimal,createLote,deleteLote,getTasaNatalidad,getPesoPromedio,getTasaPrenez};
