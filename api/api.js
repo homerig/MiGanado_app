@@ -254,7 +254,7 @@ const createTacto = async ({ numero_lote, numeroCaravana, prenada, fecha, userId
 const createTratamiento = async ({ numeroCaravana, tratamiento, medicacion, fechaInicio, cada, durante, userId }) => {
   try {
     const response = await axios.post(`${baseURL}/tratamientos/`, { numeroCaravana, tratamiento, medicacion, fechaInicio, cada, durante, userId });
-    
+    const dayjs = require('dayjs'); 
     //Creación de notificación
     var tipo = "Tratamiento";
     var animal = await buscarAnimal(userId, numeroCaravana);
@@ -262,13 +262,12 @@ const createTratamiento = async ({ numeroCaravana, tratamiento, medicacion, fech
     var mensaje = tratamiento + " de Caravana Nº"+ numeroCaravana +" en el lote N°" + animal.numero_lote;
     const notificacion = await createNotificacion(userId, tipo, mensaje, fecha);
 
-    // Crear las notificaciones adicionales cada 'cada' días durante 'durante' veces
-    for (let i = 1; i < durante / cada; i++) {
-      fecha = new Date(fecha.getTime() + (cada * 24 * 60 * 60 * 1000)); 
-      fecha.setUTCHours(0, 0, 0, 0); 
-      await createNotificacion(userId, tipo, mensaje, fecha);
-    } 
-
+    var nuevaFecha = dayjs(fechaInicio);
+      // Crear las notificaciones cada 'cada' días durante 'durante' veces
+      for (let i = 1; i < durante / cada; i++) {
+        nuevaFecha = nuevaFecha.add(cada, 'day'); // Sumar 1 día
+        await createNotificacion(userId, tipo, mensaje, nuevaFecha);
+      }
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -301,11 +300,18 @@ const createVacunacion = async ({ numero_lote, nombre_vacuna, fechaInicio, duran
     const response = await axios.post(`${baseURL}/vacunaciones/`, { numero_lote, nombre_vacuna, fechaInicio,durante,cada, userId });
     
     //Creación de notificación
-    var tipo = "Vacunación";
+    var tipo = "Tratamiento";
+    var animal = await buscarAnimal(userId, numeroCaravana);
     var fecha = fechaInicio;
-    var mensaje = "Vacunación del lote N°" + numero_lote +" con la vacuna "+ nombre_vacuna;
+    var mensaje = tratamiento + " de Caravana Nº"+ numeroCaravana +" en el lote N°" + animal.numero_lote;
     const notificacion = await createNotificacion(userId, tipo, mensaje, fecha);
 
+    var nuevaFecha = dayjs(fechaInicio);
+      // Crear las notificaciones cada 'cada' días durante 'durante' veces
+      for (let i = 1; i < durante / cada; i++) {
+        nuevaFecha = nuevaFecha.add(cada, 'day'); // Sumar 1 día
+        await createNotificacion(userId, tipo, mensaje, nuevaFecha);
+      }
     return response.data;
   } catch (error) {
     if (error.response) {
