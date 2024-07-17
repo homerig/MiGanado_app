@@ -9,7 +9,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 const CustomHeader = () => {
   return (
     <View style={styles.headerContainer}>
-      <ThemedText type='subtitle'>MiGanado</ThemedText>
+      <ThemedText type='subtitle' style={styles.title}>MiGanado</ThemedText>
       <Image
         source={require('@/assets/images/MiGanado_logo.png')}
         style={styles.logo}
@@ -22,7 +22,10 @@ const CustomHeader = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: '#FF5733', // Cambia el color aquí
+    backgroundColor: '#407157', // Cambia el color aquí
+  },
+  title:{
+    color: '#fff'
   },
   headerContainer: {
     flexDirection: 'row',
@@ -31,7 +34,7 @@ const styles = StyleSheet.create({
     height: 95,
     padding: 12,
     gap: 10,
-    // backgroundColor: '#FF5733',
+    backgroundColor: '#407157',
   },
   logo: {
     width: 30,

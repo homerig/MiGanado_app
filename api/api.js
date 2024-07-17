@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseURL = 'http://192.168.0.10:8000/miGanado'; // Ajusta la URL a la de tu servidor
+const baseURL = 'http://192.168.0.182:8000/miGanado'; 
 
 const registerUser = async (userData) => {
   try {
@@ -222,7 +222,19 @@ const createLote = async (loteData, userId) => {
 };
 
 
-
+export const deleteAnimal = async (animalId) => {
+  try {
+    const response = await axios.delete(`${baseURL}/animales/${animalId}/`);
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error('Error al eliminar el animal:', error.response.data);
+    } else {
+      console.error('Error al eliminar el animal:', error.message);
+    }
+    throw error;
+  }
+};
 
 const deleteLote = async (loteId) => {
   try {
@@ -276,6 +288,13 @@ const createTratamiento = async ({ numeroCaravana, tratamiento, medicacion, fech
     var fecha = fechaInicio;
     var mensaje = tratamiento + " de Caravana Nº"+ numeroCaravana +" en el lote N°" + animal.numero_lote;
     const notificacion = await createNotificacion(userId, tipo, mensaje, fecha);
+
+    // Crear las notificaciones adicionales cada 'cada' días durante 'durante' veces
+    for (let i = 1; i < durante / cada; i++) {
+      fecha = new Date(fecha.getTime() + (cada * 24 * 60 * 60 * 1000)); 
+      fecha.setUTCHours(0, 0, 0, 0); 
+      await createNotificacion(userId, tipo, mensaje, fecha);
+    } 
 
     return response.data;
   } catch (error) {
