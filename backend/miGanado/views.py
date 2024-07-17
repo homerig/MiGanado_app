@@ -89,6 +89,7 @@ class BuscarAnimalLoteView(APIView):
 
         except Animal.DoesNotExist:
             return Response({'message': 'Animales no encontrados'}, status=status.HTTP_404_NOT_FOUND)
+        
 class ActualizarNombreLoteView(APIView):
     def put(self, request, *args, **kwargs):
         lote_id = kwargs.get('lote_id')
@@ -116,6 +117,32 @@ class ActualizarPreniesView(APIView):
         try:
             animal = Animal.objects.get(numeroCaravana=numeroCaravana, userId=idUsuario)
             animal.preniada = preniada
+            animal.save()
+            serializer = AnimalSerializer(animal)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except Animal.DoesNotExist:
+            return Response({'message': 'Animal no encontrado'}, status=status.HTTP_404_NOT_FOUND)
+
+        except Exception as e:
+            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class actualizarAnimalView(APIView):
+    def put(self, request, *args, **kwargs):
+        idUsuario = request.data.get('idUsuario')
+        numeroCaravana = request.data.get('numeroCaravana')
+        numero_lote = request.data.get('numero_lote')
+        peso = request.data.get('peso')
+        edad = request.data.get('edad')
+        reciennacida = request.data.get('reciennacida')
+
+        try:
+            animal = Animal.objects.get(numeroCaravana=numeroCaravana, userId=idUsuario)
+            animal.numero_lote= numero_lote
+            animal.peso = peso
+            animal.reciennacida= reciennacida
+            animal.edad= edad
             animal.save()
             serializer = AnimalSerializer(animal)
             return Response(serializer.data, status=status.HTTP_200_OK)

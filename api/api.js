@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseURL = 'http://192.168.0.71:8000/miGanado'; // Ajusta la URL a la de tu servidor
+const baseURL = 'http://192.168.0.182:8000/miGanado'; 
 
 const registerUser = async (userData) => {
   try {
@@ -73,6 +73,21 @@ const actualizarPrenies = async (idUsuario, numeroCaravana, preniada) => {
       console.error('Error al actualizar la preñez del animal - No se recibió respuesta:', error.request);
     } else {
       console.error('Error al actualizar la preñez del animal:', error.message);
+    }
+    throw error;
+  }
+};
+const actualizarAnimal = async (idUsuario, numeroCaravana, numero_lote, peso, edad,reciennacida) => {
+  try {
+    const response = await axios.put(`${baseURL}/actualizarAnimal/`, { idUsuario, numeroCaravana,  numero_lote, peso, edad,reciennacida });
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error('Error al actualizar animal:', error.response.data);
+    } else if (error.request) {
+      console.error('Error al actualizar animal - No se recibió respuesta:', error.request);
+    } else {
+      console.error('Error al actualizar animal:', error.message);
     }
     throw error;
   }
@@ -207,7 +222,19 @@ const createLote = async (loteData, userId) => {
 };
 
 
-
+export const deleteAnimal = async (animalId) => {
+  try {
+    const response = await axios.delete(`${baseURL}/animales/${animalId}/`);
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error('Error al eliminar el animal:', error.response.data);
+    } else {
+      console.error('Error al eliminar el animal:', error.message);
+    }
+    throw error;
+  }
+};
 
 const deleteLote = async (loteId) => {
   try {
@@ -363,4 +390,4 @@ const getTasaPrenez = async (loteId) => {
 
 
 
-export { baseURL ,deleteNotificacion,actualizarSangrado,buscarAnimalLote,actualizarPrenies,actualizarNombreLote ,buscarSan ,buscarTratam ,registerUser, loginUser, buscarAnimal, getUserLotes, getUserNotificaciones,createSangrado,createTacto,createVacunacion, createTratamiento, registerAnimal,createLote,deleteLote,getTasaNatalidad,getPesoPromedio,getTasaPrenez};
+export { baseURL ,actualizarAnimal ,deleteNotificacion,actualizarSangrado,buscarAnimalLote,actualizarPrenies,actualizarNombreLote ,buscarSan ,buscarTratam ,registerUser, loginUser, buscarAnimal, getUserLotes, getUserNotificaciones,createSangrado,createTacto,createVacunacion, createTratamiento, registerAnimal,createLote,deleteLote,getTasaNatalidad,getPesoPromedio,getTasaPrenez};
