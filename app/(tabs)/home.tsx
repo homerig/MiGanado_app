@@ -69,10 +69,16 @@ export default function HomeScreen() {
         // Crear un objeto para marcar las fechas con notificaciones
         const marked = {};
         data.forEach(notificacion => {
-          const notificacionDate = dayjs(notificacion.fecha).add(1, 'day');
-          const notificacionDateStr = notificacionDate.format('YYYY-MM-DD');
+          const fechaNotificacion = dayjs(notificacion.fecha).startOf('day');
 
-          marked[notificacionDateStr] = { 
+          var notificacionDate = dayjs(notificacion.fecha).startOf('day').format("YYYY-MM-DD");
+          // Comparación de fechas
+          if (fechaNotificacion.format("YYYY-MM-DD'T'HH:mm:ss'Z'") !== dayjs(notificacion.fecha).format("YYYY-MM-DD'T'HH:mm:ss'Z'")) {
+             notificacionDate = dayjs(notificacion.fecha).startOf('day').add(1, 'day').format("YYYY-MM-DD");
+          } 
+         
+          console.log(notificacionDate);
+          marked[notificacionDate] = { 
             selected: true,
             selectedColor: '#d3d3d3',
             // Opcional: añadir un borde gris alrededor del número del día
@@ -112,8 +118,18 @@ export default function HomeScreen() {
     const filterNotificaciones = () => {
       const selectedDateStr = dayjs(selectedDate).format('YYYY-MM-DD');
       const filtered = notificaciones.filter((notificacion) => {
-        const notificacionDateStr = dayjs(notificacion.fecha).format('YYYY-MM-DD');
-        return notificacionDateStr === selectedDateStr;
+        // const notificacionDateStr = dayjs(notificacion.fecha).format('YYYY-MM-DD');
+        
+
+        const fechaNotificacion = dayjs(notificacion.fecha).startOf('day');
+
+          var notificacionDate = dayjs(notificacion.fecha).format("YYYY-MM-DD");
+          // Comparación de fechas
+          if (fechaNotificacion.format("YYYY-MM-DD'T'HH:mm:ss'Z'") == dayjs(notificacion.fecha).format("YYYY-MM-DD'T'HH:mm:ss'Z'")) {
+             notificacionDate = dayjs(notificacion.fecha).startOf('day').add(-1, 'day').format("YYYY-MM-DD");
+          } 
+          
+        return notificacionDate === selectedDateStr;
       });
       setFilteredNotificaciones(filtered);
     };
