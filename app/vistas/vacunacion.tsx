@@ -151,11 +151,11 @@ const VacunacionScreen = () => {
         {cadaError && <ErrorIcon onPress={() => Alert.alert('Error', 'El campo Cada no puede estar vacío')} />}
       </View>
 
-      <View style={styles.button}>
+
         <TouchableOpacity style={styles.button} onPress={handleGuardar}>
           <ThemedText style={styles.buttonText}>Agregar al calendario</ThemedText>
         </TouchableOpacity>
-      </View>
+
     </ThemedView>
   );
 }

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseURL = 'http://192.168.0.182:8000/miGanado'; 
+const baseURL = 'http://192.168.0.71:8000/miGanado'; 
 
 const registerUser = async (userData) => {
   try {
@@ -333,10 +333,10 @@ const createVacunacion = async ({ numero_lote, nombre_vacuna, fechaInicio, duran
     const response = await axios.post(`${baseURL}/vacunaciones/`, { numero_lote, nombre_vacuna, fechaInicio,durante,cada, userId });
     
     //Creación de notificación
-    var tipo = "Tratamiento";
-    var animal = await buscarAnimal(userId, numeroCaravana);
+    const dayjs = require('dayjs'); 
+    var tipo = "Vacunación";
     var fecha = fechaInicio;
-    var mensaje = tratamiento + " de Caravana Nº"+ numeroCaravana +" en el lote N°" + animal.numero_lote;
+    var mensaje = "Vacunación del lote N°" + numero_lote +" con la vacuna "+ nombre_vacuna;
     const notificacion = await createNotificacion(userId, tipo, mensaje, fecha);
 
     var nuevaFecha = dayjs(fechaInicio);
