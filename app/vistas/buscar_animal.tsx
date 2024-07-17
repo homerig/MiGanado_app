@@ -1,10 +1,10 @@
 import React, { useState, useContext } from 'react';
-import { View, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, TextInput, TouchableOpacity, StyleSheet, Modal, Alert, Switch } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
+import { faChevronLeft, faPencilAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { buscarAnimal, buscarTratam,buscarSan } from '../../api/api';
+import { buscarAnimal, buscarTratam, buscarSan, actualizarAnimal } from '../../api/api';
 import { UserContext } from '../../api/UserContext';
 
 const BuscarAnimalScreen = () => {
@@ -14,6 +14,8 @@ const BuscarAnimalScreen = () => {
   const [tratamientoBuscado, setTratamientoBuscado] = useState(false);
   const [sangradoEncontrado, setSangradoEncontrado] = useState(null);
   const [sangradobuscado, setsangradobuscado] = useState(false);
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [editedAnimal, setEditedAnimal] = useState({});
   const { userId } = useContext(UserContext);
 
   const buscar = async () => {
@@ -71,6 +73,22 @@ const BuscarAnimalScreen = () => {
     }
   };
 
+  const handleEdit = () => {
+    setEditedAnimal(animalEncontrado);
+    setEditModalVisible(true);
+  };
+
+  const handleUpdate = async () => {
+    try {
+      await actualizarAnimal(userId, editedAnimal.numeroCaravana, editedAnimal.numero_lote, editedAnimal.peso, editedAnimal.edad, editedAnimal.reciennacida);
+      setAnimalEncontrado(editedAnimal);
+      setEditModalVisible(false);
+    } catch (error) {
+      console.error('Error al actualizar animal:', error);
+      Alert.alert('Error', 'Hubo un problema al actualizar el animal. Inténtelo de nuevo.');
+    }
+  };
+
   return (
     <ThemedView style={styles.container}>
       {!animalEncontrado ? (
@@ -99,12 +117,18 @@ const BuscarAnimalScreen = () => {
             </ThemedText>
           </TouchableOpacity>
           <View style={styles.animalDetailContainer}>
-            <ThemedText style={styles.detail}>N° {animalEncontrado.numeroCaravana}</ThemedText>
+            <View style={styles.headerContainer}>
+              <ThemedText style={styles.detail}>N° {animalEncontrado.numeroCaravana}</ThemedText>
+              <TouchableOpacity onPress={handleEdit}>
+                <FontAwesomeIcon icon={faPencilAlt} size={20} style={styles.iconEdit} />
+              </TouchableOpacity>
+            </View>
             <ThemedText style={styles.detail}>Edad: {animalEncontrado.edad} años</ThemedText>
             <ThemedText style={styles.detail}>Lote: {animalEncontrado.numero_lote}</ThemedText>
             <ThemedText style={styles.detail}>Peso: {animalEncontrado.peso} kg</ThemedText>
             <ThemedText style={styles.detail}>Preñada: {animalEncontrado.preniada ? 'Sí' : 'No'}</ThemedText>
-
+            <ThemedText style={styles.detail}>Recien Nacido: {animalEncontrado.reciennacida ? 'Sí' : 'No'}</ThemedText>
+            
             <View style={styles.tratamientosContainer}>
               {!tratamientoBuscado ? (
                 <View style={styles.buttonContainer}>
@@ -150,10 +174,56 @@ const BuscarAnimalScreen = () => {
                 </>
               )}
             </View>
-
-
           </View>
 
+          <Modal
+            visible={editModalVisible}
+            transparent={true}
+            animationType="slide"
+            onRequestClose={() => setEditModalVisible(false)}
+          >
+            <View style={styles.modalContainer}>
+              <View style={styles.modalContent}>
+                <ThemedText style={styles.title}>Editar Animal</ThemedText>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Número de lote"
+                  placeholderTextColor="#666666"
+                  value={editedAnimal.numero_lote}
+                  onChangeText={(text) => setEditedAnimal({ ...editedAnimal, numero_lote: text })}
+                />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Peso"
+                  placeholderTextColor="#666666"
+                  value={editedAnimal.peso}
+                  onChangeText={(text) => setEditedAnimal({ ...editedAnimal, peso: text })}
+                />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Edad"
+                  placeholderTextColor="#666666"
+                  value={editedAnimal.edad}
+                  onChangeText={(text) => setEditedAnimal({ ...editedAnimal, edad: text })}
+                />
+                <View style={styles.switchContainer}>
+                  <ThemedText style={styles.switchLabel}>Recien Nacida</ThemedText>
+                  <Switch
+                    value={editedAnimal.reciennacida}
+                    onValueChange={(value) => setEditedAnimal({ ...editedAnimal, reciennacida: value })}
+                  />
+                </View>
+                <View style={styles.buttonContainer}>
+                  <TouchableOpacity style={styles.button} onPress={handleUpdate}>
+                    <ThemedText style={styles.buttonText}>Actualizar</ThemedText>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={[styles.button, styles.buttonCancel]} onPress={() => setEditModalVisible(false)}>
+                    <ThemedText style={styles.buttonText}>Cancelar</ThemedText>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </Modal>
         </>
       )}
     </ThemedView>
@@ -194,6 +264,9 @@ const styles = StyleSheet.create({
     width: '50%',
     marginBottom: 10,
   },
+  buttonCancel: {
+    backgroundColor: '#777777',
+  },
   buttonVolver: {
     paddingVertical: 8,
     paddingHorizontal: 10,
@@ -218,6 +291,9 @@ const styles = StyleSheet.create({
   iconVolver: {
     marginRight: 8,
   },
+  iconEdit: {
+    marginLeft: 'auto',
+  },
   tratamientosContainer: {
     marginLeft: 20,
   },
@@ -228,6 +304,27 @@ const styles = StyleSheet.create({
   sangrado: {
     fontSize: 16,
     marginBottom: 5,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  modalContent: {
+    width: '80%',
+    padding: 20,
+    backgroundColor: '#ffffff',
+    borderRadius: 10,
+  },
+  switchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginVertical: 10,
+  },
+  switchLabel: {
+    fontSize: 16,
   },
 });
 

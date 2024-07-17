@@ -77,6 +77,21 @@ const actualizarPrenies = async (idUsuario, numeroCaravana, preniada) => {
     throw error;
   }
 };
+const actualizarAnimal = async (idUsuario, numeroCaravana, numero_lote, peso, edad,reciennacida) => {
+  try {
+    const response = await axios.put(`${baseURL}/actualizarAnimal/`, { idUsuario, numeroCaravana,  numero_lote, peso, edad,reciennacida });
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error('Error al actualizar animal:', error.response.data);
+    } else if (error.request) {
+      console.error('Error al actualizar animal - No se recibió respuesta:', error.request);
+    } else {
+      console.error('Error al actualizar animal:', error.message);
+    }
+    throw error;
+  }
+};
 
 const actualizarNombreLote = async (loteId, nombre_lote) => {
   try {
@@ -375,4 +390,4 @@ const getTasaPrenez = async (loteId) => {
 
 
 
-export { baseURL ,deleteNotificacion,actualizarSangrado,buscarAnimalLote,actualizarPrenies,actualizarNombreLote ,buscarSan ,buscarTratam ,registerUser, loginUser, buscarAnimal, getUserLotes, getUserNotificaciones,createSangrado,createTacto,createVacunacion, createTratamiento, registerAnimal,createLote,deleteLote,getTasaNatalidad,getPesoPromedio,getTasaPrenez};
+export { baseURL ,actualizarAnimal ,deleteNotificacion,actualizarSangrado,buscarAnimalLote,actualizarPrenies,actualizarNombreLote ,buscarSan ,buscarTratam ,registerUser, loginUser, buscarAnimal, getUserLotes, getUserNotificaciones,createSangrado,createTacto,createVacunacion, createTratamiento, registerAnimal,createLote,deleteLote,getTasaNatalidad,getPesoPromedio,getTasaPrenez};
