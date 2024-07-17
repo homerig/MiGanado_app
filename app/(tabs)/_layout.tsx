@@ -11,7 +11,7 @@ const CustomHeader = () => {
     <View style={styles.headerContainer}>
       <ThemedText type='subtitle' style={styles.title}>MiGanado</ThemedText>
       <Image
-        source={require('@/assets/images/MiGanado_logo.png')}
+        source={require('@/assets/images/MiGanado_logo_blanco.png')}
         style={styles.logo}
         resizeMode="contain"
       />
