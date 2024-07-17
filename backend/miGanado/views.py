@@ -89,6 +89,7 @@ class BuscarAnimalLoteView(APIView):
 
         except Animal.DoesNotExist:
             return Response({'message': 'Animales no encontrados'}, status=status.HTTP_404_NOT_FOUND)
+        
 class ActualizarNombreLoteView(APIView):
     def put(self, request, *args, **kwargs):
         lote_id = kwargs.get('lote_id')
