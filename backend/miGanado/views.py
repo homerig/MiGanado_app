@@ -40,6 +40,15 @@ class LoginView(APIView):
             # No se encontró un usuario con el correo electrónico proporcionado
             return Response({'message': 'Credenciales inválidas'}, status=status.HTTP_401_UNAUTHORIZED)
 
+class AnimalDelete(APIView):
+    def delete(self, request, userId, numeroCaravana):
+        try:
+            animal = Animal.objects.get(user_id=userId, numero_caravana=numeroCaravana)
+            animal.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Animal.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
 class VerifyCurrentPasswordView(APIView):
     def post(self, request, *args, **kwargs):
         idUsuario = request.data.get('idUsuario')

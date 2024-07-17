@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
-from .views import VerifyCurrentPasswordView,ActualizarContrasenaView,ActualizarDetallesUsuarioView,EstadisticasView,ActualizarNombreLoteView,BuscarAnimalLoteView,ActualizarSangradoView ,UserLotesView,ActualizarPreniesView, buscarSanView,buscarTratamView, LoginView, UsuarioViewSet, BuscarAnimalView, LoteViewSet, AnimalViewSet, TratamientoViewSet, SangradoViewSet, NotificacionViewSet, ConfigNotificacionesViewSet,TactoViewSet,VacunacionViewSet, UserNotificationsView
+from .views import AnimalDelete,VerifyCurrentPasswordView,ActualizarContrasenaView,ActualizarDetallesUsuarioView,EstadisticasView,ActualizarNombreLoteView,BuscarAnimalLoteView,ActualizarSangradoView ,UserLotesView,ActualizarPreniesView, buscarSanView,buscarTratamView, LoginView, UsuarioViewSet, BuscarAnimalView, LoteViewSet, AnimalViewSet, TratamientoViewSet, SangradoViewSet, NotificacionViewSet, ConfigNotificacionesViewSet,TactoViewSet,VacunacionViewSet, UserNotificationsView
 
 
 router = DefaultRouter()
@@ -31,5 +31,6 @@ urlpatterns = [
     path('actualizarContrasena/', ActualizarContrasenaView.as_view(), name='actualizar_contrasena'),
     path('actualizarDetallesUsuario/', ActualizarDetallesUsuarioView.as_view(), name='actualizar_detalles_usuario'),
     path('verifyCurrentPassword/', VerifyCurrentPasswordView.as_view(), name='verify_current_password'),
+    path('animal_delete/', AnimalDelete.as_view(), name='animal_delete'),
 ]
 
