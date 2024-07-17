@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import { View, TextInput, TouchableOpacity, StyleSheet, Modal, Alert, Switch } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { faChevronLeft, faPencilAlt } from '@fortawesome/free-solid-svg-icons';
+import { faChevronLeft, faPen } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { buscarAnimal, buscarTratam, buscarSan, actualizarAnimal } from '../../api/api';
 import { UserContext } from '../../api/UserContext';
@@ -120,7 +120,7 @@ const BuscarAnimalScreen = () => {
             <View style={styles.headerContainer}>
               <ThemedText style={styles.detail}>N° {animalEncontrado.numeroCaravana}</ThemedText>
               <TouchableOpacity onPress={handleEdit}>
-                <FontAwesomeIcon icon={faPencilAlt} size={20} style={styles.iconEdit} />
+                <FontAwesomeIcon icon={faPen} size={20} style={styles.iconEdit} />
               </TouchableOpacity>
             </View>
             <ThemedText style={styles.detail}>Edad: {animalEncontrado.edad} años</ThemedText>
