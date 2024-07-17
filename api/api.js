@@ -262,6 +262,13 @@ const createTratamiento = async ({ numeroCaravana, tratamiento, medicacion, fech
     var mensaje = tratamiento + " de Caravana Nº"+ numeroCaravana +" en el lote N°" + animal.numero_lote;
     const notificacion = await createNotificacion(userId, tipo, mensaje, fecha);
 
+    // Crear las notificaciones adicionales cada 'cada' días durante 'durante' veces
+    for (let i = 1; i < durante / cada; i++) {
+      fecha = new Date(fecha.getTime() + (cada * 24 * 60 * 60 * 1000)); 
+      fecha.setUTCHours(0, 0, 0, 0); 
+      await createNotificacion(userId, tipo, mensaje, fecha);
+    } 
+
     return response.data;
   } catch (error) {
     if (error.response) {

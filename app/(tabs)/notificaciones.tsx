@@ -87,7 +87,8 @@ const NotificacionScreen = () => {
   }
 
   return (
-    <ThemedView style={styles.container}>
+    <View style={styles.containerColor}>
+      <ThemedView style={styles.container}>
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Notificaciones</ThemedText>
         <TouchableOpacity onPress={() => navigation.navigate('vistas/ConfiguracionNotificaciones')}>
@@ -112,13 +113,19 @@ const NotificacionScreen = () => {
         />
       )}
     </ThemedView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  containerColor:{
+    flex: 1,
+    backgroundColor: '#407157',
+  },
   container: {
     flex: 1,
     padding: 15,
+    paddingTop: 25,
     borderTopRightRadius: 40,
     borderTopLeftRadius: 40,
   },

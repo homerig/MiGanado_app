@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faAngleRight, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { getUserLotes, createLote, deleteLote, buscarAnimalLote } from '../../api/api'; // Importar la función buscarAnimalLote
 import { UserContext } from '../../api/UserContext';
+import { ThemedText } from '@/components/ThemedText';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
 const ListItem = ({ item, onPress, isSelected, isDeleting, onDelete }) => (
@@ -11,12 +12,13 @@ const ListItem = ({ item, onPress, isSelected, isDeleting, onDelete }) => (
     style={[styles.itemContainer, isSelected && styles.selectedItem]}
     onPress={() => (isDeleting ? onDelete(item) : onPress(item))}
   >
-    <View>
-      <Text style={styles.numName}>Lote N: {item.numero}</Text>
-      <Text style={styles.itemName}>{item.nombre_lote}</Text>
+    <View style={{flexDirection: 'column',
+    alignItems: 'center',paddingHorizontal: 10}}>
+      <ThemedText type="caption">Lote N°{item.numero}</ThemedText>
+      <ThemedText type='subtitle'>{item.nombre_lote}</ThemedText>
     </View>
     <View>
-      <Text style={styles.itemCount}>{item.animalCount || 0}/{item.capacidad_max} animales</Text>
+      <ThemedText style={styles.itemCount}>{item.animalCount || 0}/{item.capacidad_max} animales</ThemedText>
     </View>
     <FontAwesomeIcon
       icon={isDeleting ? faTrash : faAngleRight}
@@ -99,9 +101,10 @@ export default function TabTwoScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={styles.containerColor}>
+      <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Mis lotes</Text>
+        <ThemedText type='title' style={styles.title}>Mis lotes</ThemedText>
         <View style={styles.icons}>
           <TouchableOpacity style={styles.iconButton} onPress={handleCreateLote}>
             <FontAwesomeIcon icon={faPlus} size={24} color="#000000" style={styles.icon} />
@@ -126,14 +129,21 @@ export default function TabTwoScreen() {
         contentContainerStyle={styles.list}
       />
     </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  containerColor:{
+    flex: 1,
+    backgroundColor: '#407157',
+  },
   container: {
     flex: 1,
-    backgroundColor: '#f8f8f8',
+    backgroundColor: '#fff',
     paddingTop: 50,
+    borderTopRightRadius: 40,
+    borderTopLeftRadius: 40,
   },
   header: {
     flexDirection: 'row',
@@ -144,7 +154,6 @@ const styles = StyleSheet.create({
   },
   title: {
     marginLeft: 20,
-    fontSize: 24,
     fontWeight: 'bold',
     fontFamily: 'JostRegular',
   },

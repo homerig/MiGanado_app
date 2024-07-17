@@ -20,7 +20,9 @@ const AnimalSearchScreen = () => {
   const [selectedAnimals, setSelectedAnimals] = useState([]);
   const [animals, setAnimals] = useState(lote.animales || []);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
   const [newLoteName, setNewLoteName] = useState('');
+
   const [caravanas, setCaravanas] = useState([]);
 
   const [animalEncontrado, setAnimalEncontrado] = useState(null);
@@ -93,7 +95,7 @@ const AnimalSearchScreen = () => {
       const animal = await buscarAnimal(userId, numeroCaravana);
       if (animal && animal.numeroCaravana === numeroCaravana) {
         setAnimalEncontrado(animal);
-        setIsModalVisible(true); // Mostrar el modal al seleccionar una caravana
+        setIsUpdateModalVisible(true); // Mostrar el modal al seleccionar una caravana
 
         // Buscar tratamiento y sangrado al seleccionar una caravana
         const [tratamiento, sangrado] = await Promise.all([
@@ -110,9 +112,10 @@ const AnimalSearchScreen = () => {
       <View style={styles.header}>
         <View style={styles.leftHeader}>
           <ThemedText type='title' style={styles.title}>{lote.nombre_lote}</ThemedText>
-          <TouchableOpacity style={styles.iconButton} onPress={() => setIsModalVisible(true)}>
-            <FontAwesomeIcon icon={faPen} size={20} color="#407157" />
-          </TouchableOpacity>
+          <TouchableOpacity style={styles.iconButton} onPress={() => setIsUpdateModalVisible(true)}>
+          <FontAwesomeIcon icon={faPen} size={20} color="#407157" />
+        </TouchableOpacity>
+
         </View>
         <View style={styles.rightHeader}>
           <TouchableOpacity style={styles.iconButton} onPress={() => navigation.navigate('vistas/IngresoAnimal')}>
@@ -133,7 +136,7 @@ const AnimalSearchScreen = () => {
           placeholderTextColor="#666666"
         />
         <TouchableOpacity style={styles.button} onPress={handleSearchAnimal}>
-          <Text style={styles.buttonText}>Buscar</Text>
+          <ThemedText style={styles.buttonText}>Buscar</ThemedText>
         </TouchableOpacity>
       </View>
       <ThemedText type='subtitle' style={styles.subtitle}>Animales en el lote</ThemedText>
@@ -184,6 +187,29 @@ const AnimalSearchScreen = () => {
           </TouchableOpacity>
         </View>
       </Modal>
+      <Modal isVisible={isUpdateModalVisible} animationIn="fadeIn" animationOut="fadeOut">
+        <View style={styles.modalContent}>
+          <ThemedText type='subtitle' style={styles.modalTitle}>Actualizar Nombre del Lote</ThemedText>
+          <TextInput
+            style={styles.modalInput}
+            placeholder="Nuevo nombre del lote"
+            value={newLoteName}
+            onChangeText={setNewLoteName}
+            placeholderTextColor="#666666"
+          />
+
+        <View style={{flexDirection: 'row',alignItems: 'center', gap: 20, justifyContent: 'center', marginTop: 10}}>
+
+          <TouchableOpacity style={styles.modalButton} onPress={handleUpdateLoteName}>
+            <ThemedText style={styles.modalButtonText}>Actualizar</ThemedText>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.closeButton} onPress={() => setIsUpdateModalVisible(false)}>
+            <ThemedText style={styles.buttonText}>Cancelar</ThemedText>
+          </TouchableOpacity>   
+        </View>
+        </View>
+      </Modal>
+
     </ThemedView>
   );
 };
@@ -249,8 +275,6 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: 'bold',
   },
   caravanasList: {
     flexDirection: 'row',
@@ -300,11 +324,11 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     backgroundColor: '#407157',
-    borderRadius: 99,
-    paddingVertical: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginBottom: 10,
     alignItems: 'center',
-    marginTop: 10,
-    marginHorizontal: '30%',
   },
   logo: {
     width: 30,
@@ -313,7 +337,27 @@ const styles = StyleSheet.create({
   },
   subtitle:{
     padding: 10,
-  }
+  },
+  modalInput: {
+    width: '100%',
+    height: 40,
+    borderColor: '#CCCCCC',
+    borderWidth: 1,
+    borderRadius: 20,
+    paddingHorizontal: 10,
+    marginBottom: 10,
+  },
+  modalButton: {
+    backgroundColor: '#407157',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginBottom: 10,
+    alignItems: 'center',
+  },
+  modalButtonText: {
+    color: '#FFFFFF',
+  },
 });
 
 export default AnimalSearchScreen;

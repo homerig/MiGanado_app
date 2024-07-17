@@ -68,7 +68,8 @@ export default function HomeScreen() {
   };
 
   return (
-    <ThemedView style={styles.container}>
+    <View style={styles.containerColor}>
+      <ThemedView style={styles.container}>
       <ThemedView style={styles.titleContainer}>
         <ThemedView style={styles.container}>
         <View style={styles.profileImageContainer}>
@@ -115,12 +116,15 @@ export default function HomeScreen() {
             onChangeText={setEmail}
             placeholderTextColor="#666666"
           />
-          <TouchableOpacity style={styles.modalButton} onPress={handleSaveProfile}>
-            <ThemedText style={styles.modalButtonText}>Guardar</ThemedText>
-          </TouchableOpacity>
+          <View style={{flexDirection: 'row',alignItems: 'center', gap: 20}}>
           <TouchableOpacity style={styles.modalButton} onPress={() => setEditProfileModalVisible(false)}>
-            <ThemedText style={styles.modalButtonText}>Cancelar</ThemedText>
-          </TouchableOpacity>
+              <ThemedText style={styles.modalButtonText}>Cancelar</ThemedText>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.modalButton} onPress={handleSaveProfile}>
+              <ThemedText style={styles.modalButtonText}>Guardar</ThemedText>
+            </TouchableOpacity>
+            
+          </View>
         </View>
       </Modal>
 
@@ -152,22 +156,35 @@ export default function HomeScreen() {
             onChangeText={setRepeatNewPassword}
             placeholderTextColor="#666666"
           />
-          <TouchableOpacity style={styles.modalButton} onPress={handleChangePassword}>
-            <ThemedText style={styles.modalButtonText}>Guardar</ThemedText>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.modalButton} onPress={handleCloseChangePasswordModal}>
-            <ThemedText style={styles.modalButtonText}>Cancelar</ThemedText>
-          </TouchableOpacity>
+           <View style={{flexDirection: 'row',alignItems: 'center', gap: 20}}>
+
+           <TouchableOpacity style={styles.modalButton} onPress={handleCloseChangePasswordModal}>
+              <ThemedText style={styles.modalButtonText}>Cancelar</ThemedText>
+            </TouchableOpacity>
+            
+            <TouchableOpacity style={styles.modalButton} onPress={handleChangePassword}>
+              <ThemedText style={styles.modalButtonText}>Guardar</ThemedText>
+            </TouchableOpacity>
+            
+           </View>
         </View>
       </Modal>
     </ThemedView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  containerColor:{
+    flex: 1,
+    backgroundColor: '#407157',
+  },
   container: {
     flex: 1,
     padding: 15,
+    backgroundColor: '#fff',
+    borderTopRightRadius: 40,
+    borderTopLeftRadius: 40,
   },
   titleContainer: {
     flexDirection: 'row',

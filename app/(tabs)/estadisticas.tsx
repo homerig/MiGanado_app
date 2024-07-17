@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import { StyleSheet, ScrollView, View, Dimensions, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { BarChart, PieChart } from 'react-native-chart-kit';
+import { LineChart, PieChart } from 'react-native-chart-kit';
 import { UserContext } from '../../api/UserContext';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
@@ -24,9 +24,9 @@ type StatisticsCardProps = {
 const StatisticsCard: React.FC<StatisticsCardProps> = ({ title, value, subTitle, children }) => {
   return (
     <ThemedView style={styles.card}>
-      <ThemedText style={styles.title}>{title}</ThemedText>
-      <ThemedText style={styles.value}>{value}</ThemedText>
-      <ThemedText style={styles.subTitle}>{subTitle}</ThemedText>
+      <ThemedText type='title' style={styles.title}>{title}</ThemedText>
+      <ThemedText type='subtitle' style={styles.value}>{value}</ThemedText>
+      <ThemedText type='subtitle' style={styles.subTitle}>{subTitle}</ThemedText>
       {children}
     </ThemedView>
   );
@@ -65,7 +65,6 @@ const EstadisticasScreen = () => {
 
       if (Array.isArray(animales) && animales.length > 0) {
         setAnimalesEncontrado(animales);
-        
       } else {
         setAnimalesEncontrado(null);
         Alert.alert('Animales no encontrados', 'No se encontraron animales con ese número de lote. Inténtelo de nuevo.', [
@@ -76,11 +75,6 @@ const EstadisticasScreen = () => {
       console.error('Error al buscar animales:', error);
       Alert.alert('Error', 'Hubo un error al buscar los animales. Por favor, inténtelo de nuevo.');
     }
-  };
-
-  const resetForm = () => {
-    setNumeroLote('');
-    setAnimalesEncontrado(null);
   };
 
   const calcularPromedioPeso = () => {
@@ -96,21 +90,24 @@ const EstadisticasScreen = () => {
 
   const pieChartDataPrenez = [
     { name: "Preñadas", population: porcentajePrenez, color: "#407157", legendFontColor: "#7F7F7F", legendFontSize: 15 },
-    { name: "No preñadas", population: 100 - porcentajePrenez, color: "#e0e0e0", legendFontColor: "#7F7F7F", legendFontSize: 15 }
+    { name: "Vacias", population: 100 - porcentajePrenez, color: "#e0e0e0", legendFontColor: "#7F7F7F", legendFontSize: 15 }
   ];
 
-  const barChartData2 = {
-    labels: animalesEncontrado ? animalesEncontrado.map((_, index) => `${index + 1}`) : [],
+  const lineChartData = {
+    labels: animalesEncontrado ? animalesEncontrado.map((_, index) => (index % Math.ceil(animalesEncontrado.length / 5) === 0 ? `${index + 1}` : '')) : [],
     datasets: [
       {
-        data: animalesEncontrado ? animalesEncontrado.map(animal => animal.peso) : []
+        data: animalesEncontrado ? animalesEncontrado.map(animal => animal.peso) : []  // Asegúrate de manejar animalesEncontrado cuando es null o vacío
       }
     ]
   };
 
+  // Debugging logs
+  console.log('Line Chart Data:', lineChartData.datasets[0].data);
+
   const pieChartDataCrias = [
-    { name: "Recién Nacidas", population: cantidadCrias, color: "#407157", legendFontColor: "#7F7F7F", legendFontSize: 15 },
-    { name: "No Recién Nacidas", population: animalesEncontrado ? animalesEncontrado.length - cantidadCrias : 0, color: "#e0e0e0", legendFontColor: "#7F7F7F", legendFontSize: 15 }
+    { name:  "Crías", population: cantidadCrias, color: "#407157", legendFontColor: "#7F7F7F", legendFontSize: 15 },
+    { name: "Adultas", population: animalesEncontrado ? animalesEncontrado.length - cantidadCrias : 0, color: "#e0e0e0", legendFontColor: "#7F7F7F", legendFontSize: 15 }
   ];
 
   const validateFields = () => {
@@ -125,63 +122,72 @@ const EstadisticasScreen = () => {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <ThemedView style={styles.header}>
-        <ThemedText style={styles.headerTitle}>Estadísticas</ThemedText>
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={[styles.input, numero_loteError && styles.errorInput]}
-            placeholder="Ingrese Lote"
-            value={numero_lote}
-            onChangeText={setNumeroLote}
-          />
-          {numero_loteError && <ErrorIcon onPress={() => Alert.alert('Error', 'El campo Lote no puede estar vacío')} />}
+    <View style={styles.containerColor}>
+      <ScrollView style={styles.container}>
+        <ThemedView style={styles.header}>
+          <ThemedText type='title' style={styles.headerTitle}>Estadísticas</ThemedText>
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={[styles.input, numero_loteError && styles.errorInput]}
+              placeholder="Ingrese Lote"
+              value={numero_lote}
+              onChangeText={setNumeroLote}
+            />
+            {numero_loteError && <ErrorIcon onPress={() => Alert.alert('Error', 'El campo Lote no puede estar vacío')} />}
+          </View>
+          <TouchableOpacity style={styles.button} onPress={buscar}>
+            <ThemedText style={styles.buttonText}>Buscar</ThemedText>
+          </TouchableOpacity>
+        </ThemedView>
+
+        <View style={styles.body}>
+          <StatisticsCard title={`${cantidadCrias} crías`} value="En el último mes" subTitle="Cantidad de Crías Recién Nacidas">
+            <PieChart
+              data={pieChartDataCrias}
+              width={Dimensions.get("window").width - 120}
+              height={150}
+              chartConfig={chartConfig}
+              accessor={"population"}
+              backgroundColor={"transparent"}
+              paddingLeft={"0"}
+              style={styles.chartStyle3}
+            />
+          </StatisticsCard>
+
+          <StatisticsCard title={`${porcentajePrenez.toFixed(2)}%`} value="En el último mes" subTitle="Tasa de Preñez">
+            <PieChart
+              data={pieChartDataPrenez}
+              width={Dimensions.get("window").width - 60}
+              height={150}
+              chartConfig={chartConfig}
+              accessor={"population"}
+              backgroundColor={"transparent"}
+              paddingLeft={"0"}
+              style={styles.chartStyle2}
+            />
+          </StatisticsCard>
+
+          <StatisticsCard title={calcularPromedioPeso()} value="Promedio de peso" subTitle="En el lote">
+            {animalesEncontrado && animalesEncontrado.length > 0 ? (
+              <LineChart
+                data={lineChartData}
+                width={Dimensions.get("window").width - 40}
+                height={220}
+                chartConfig={chartConfig}
+                bezier
+                style={styles.chartStyle}
+                verticalLabelRotation={30}
+                yAxisSuffix=" kg"
+                fromZero={true}
+              />
+            ) : (
+              <ThemedText>No hay datos disponibles para mostrar el gráfico.</ThemedText>
+            )}
+          </StatisticsCard>
         </View>
-        <TouchableOpacity style={styles.button} onPress={buscar}>
-          <ThemedText style={styles.buttonText}>Buscar</ThemedText>
-        </TouchableOpacity>
-      </ThemedView>
-
-      <StatisticsCard title={`${cantidadCrias} crías`} value="En el último mes" subTitle="Cantidad de Crías Recién Nacidas">
-        <PieChart
-          data={pieChartDataCrias}
-          width={Dimensions.get("window").width - 70}
-          height={220}
-          chartConfig={chartConfig}
-          accessor={"population"}
-          backgroundColor={"transparent"}
-          paddingLeft={"15"}
-          style={styles.chartStyle}
-        />
-      </StatisticsCard>
-
-      <StatisticsCard title={`${porcentajePrenez.toFixed(2)}%`} value="En el último mes" subTitle="Tasa de Preñez">
-        <PieChart
-          data={pieChartDataPrenez}
-          width={Dimensions.get("window").width - 40}
-          height={220}
-          chartConfig={chartConfig}
-          accessor={"population"}
-          backgroundColor={"transparent"}
-          paddingLeft={"15"}
-          style={styles.chartStyle}
-        />
-      </StatisticsCard>
-
-      <StatisticsCard title={calcularPromedioPeso()} value="Promedio de peso" subTitle="del lote">
-        <BarChart
-          data={barChartData2}
-          width={Dimensions.get("window").width - 40}
-          height={220}
-          chartConfig={chartConfig}
-          verticalLabelRotation={30}
-          yAxisLabel=""
-          yAxisSuffix=" kg"
-          fromZero={true}
-          style={styles.chartStyle}
-        />
-      </StatisticsCard>
-    </ScrollView>
+        <View style={{height: 65}}></View>
+      </ScrollView>
+    </View>
   );
 };
 
@@ -189,7 +195,7 @@ const chartConfig = {
   backgroundColor: "#407157",
   backgroundGradientFrom: "#407157",
   backgroundGradientTo: "#407157",
-  decimalPlaces: 0,
+  decimalPlaces: 2,
   color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
   labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
   style: {
@@ -207,9 +213,17 @@ const chartConfig = {
 };
 
 const styles = StyleSheet.create({
+  containerColor: {
+    flex: 1,
+    backgroundColor: '#407157',
+  },
   container: {
     flex: 1,
-    backgroundColor: '#f4f4f4',
+    backgroundColor: '#fff',
+    padding: 15,
+    paddingTop: 25,
+    borderTopRightRadius: 40,
+    borderTopLeftRadius: 40,
   },
   inputContainer: {
     position: 'relative',
@@ -242,8 +256,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
     marginBottom: 10,
   },
   card: {
@@ -258,8 +270,6 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   title: {
-    fontSize: 18,
-    fontWeight: 'bold',
     marginBottom: 10,
   },
   value: {
@@ -275,12 +285,26 @@ const styles = StyleSheet.create({
   chartStyle: {
     marginVertical: 8,
     borderRadius: 16,
+    overflow: "hidden",
+  },
+  chartStyle2: {
+    marginLeft: -20,
+    borderRadius: 16,
+    overflow: "hidden",
+  },
+  chartStyle3: {
+    marginLeft: 0,
+    borderRadius: 16,
+    overflow: "hidden",
   },
   errorIcon: {
     position: 'absolute',
     right: 10,
     top: 10,
   },
+  body: {
+    paddingHorizontal: 10
+  }
 });
 
 export default EstadisticasScreen;

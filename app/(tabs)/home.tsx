@@ -171,7 +171,8 @@ export default function HomeScreen() {
   };
 
   return (
-    <ThemedView style={styles.container}>
+    <View style={styles.containerColor}>
+      <ThemedView style={styles.container}>
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title" style={styles.title}>¡Bienvenido, {userName}!</ThemedText>
       </ThemedView>
@@ -356,13 +357,19 @@ export default function HomeScreen() {
         <View style={{height: 25}}></View>
       </ScrollView>
     </ThemedView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  containerColor:{
+    flex: 1,
+    backgroundColor: '#407157',
+  },
   container: {
     flex: 1,
     padding: 10,
+    paddingTop: 20,
     paddingBottom: 0,
     borderTopRightRadius: 40,
     borderTopLeftRadius: 40,
@@ -437,6 +444,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     marginBottom: 0,
     paddingTop: 20,
+    borderRadius: 99,
     paddingHorizontal: 20,
     flexDirection: 'row', // Para alinear el botón junto al título
     justifyContent: 'space-between', // Para espacio entre título y botón
