@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseURL = 'http://192.168.0.71:8000/miGanado'; // Ajusta la URL a la de tu servidor
+const baseURL = 'http://192.168.0.182:8000/miGanado'; 
 
 const registerUser = async (userData) => {
   try {
@@ -207,7 +207,19 @@ const createLote = async (loteData, userId) => {
 };
 
 
-
+export const deleteAnimal = async (animalId) => {
+  try {
+    const response = await axios.delete(`${baseURL}/animales/${animalId}/`);
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error('Error al eliminar el animal:', error.response.data);
+    } else {
+      console.error('Error al eliminar el animal:', error.message);
+    }
+    throw error;
+  }
+};
 
 const deleteLote = async (loteId) => {
   try {

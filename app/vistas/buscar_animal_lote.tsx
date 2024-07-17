@@ -95,7 +95,7 @@ const AnimalSearchScreen = () => {
       const animal = await buscarAnimal(userId, numeroCaravana);
       if (animal && animal.numeroCaravana === numeroCaravana) {
         setAnimalEncontrado(animal);
-        setIsUpdateModalVisible(true); // Mostrar el modal al seleccionar una caravana
+        setIsModalVisible(true); // Mostrar el modal al seleccionar una caravana
 
         // Buscar tratamiento y sangrado al seleccionar una caravana
         const [tratamiento, sangrado] = await Promise.all([
