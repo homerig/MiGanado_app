@@ -222,9 +222,14 @@ const createLote = async (loteData, userId) => {
 };
 
 
-export const deleteAnimal = async (animalId) => {
+export const deleteAnimal = async (userId, numeroCaravana) => {
   try {
-    const response = await axios.delete(`${baseURL}/animales/${animalId}/`);
+    const response = await axios.delete(`${baseURL}/animale_delete/`, {
+      data: {
+        userId: userId,
+        numeroCaravana: numeroCaravana
+      }
+    });
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -235,6 +240,7 @@ export const deleteAnimal = async (animalId) => {
     throw error;
   }
 };
+
 
 const deleteLote = async (loteId) => {
   try {
