@@ -267,10 +267,6 @@ const IngresarAnimalScreen = () => {
         <ThemedText style={styles.greenButtonText}>Guardar</ThemedText>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.greenButton} onPress={handleFinalizar}>
-          <ThemedText style={styles.buttonText}>Finalizar</ThemedText>
-        </TouchableOpacity>
-
     </ThemedView>
   );
 }
