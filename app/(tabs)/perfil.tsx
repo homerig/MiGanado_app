@@ -117,7 +117,7 @@ export default function HomeScreen() {
             placeholderTextColor="#666666"
           />
           <View style={{flexDirection: 'row',alignItems: 'center', gap: 20}}>
-          <TouchableOpacity style={styles.modalButton} onPress={() => setEditProfileModalVisible(false)}>
+          <TouchableOpacity style={styles.modalButtonCancel} onPress={() => setEditProfileModalVisible(false)}>
               <ThemedText style={styles.modalButtonText}>Cancelar</ThemedText>
             </TouchableOpacity>
             <TouchableOpacity style={styles.modalButton} onPress={handleSaveProfile}>
@@ -158,7 +158,7 @@ export default function HomeScreen() {
           />
            <View style={{flexDirection: 'row',alignItems: 'center', gap: 20}}>
 
-           <TouchableOpacity style={styles.modalButton} onPress={handleCloseChangePasswordModal}>
+           <TouchableOpacity style={styles.modalButtonCancel} onPress={handleCloseChangePasswordModal}>
               <ThemedText style={styles.modalButtonText}>Cancelar</ThemedText>
             </TouchableOpacity>
             
@@ -263,6 +263,14 @@ const styles = StyleSheet.create({
   },
   modalButton: {
     backgroundColor: '#407157',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginBottom: 10,
+    alignItems: 'center',
+  },
+  modalButtonCancel: {
+    backgroundColor: '#bdbdbd',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 20,

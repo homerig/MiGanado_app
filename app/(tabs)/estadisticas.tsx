@@ -1,12 +1,16 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { StyleSheet, ScrollView, View, Dimensions, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, ScrollView, View, Dimensions, TextInput, Text, TouchableOpacity, Alert } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { LineChart, PieChart } from 'react-native-chart-kit';
 import { UserContext } from '../../api/UserContext';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
-import { buscarAnimalLote } from '../../api/api';
+import { buscarAnimalLote, getUserLotes } from '../../api/api';
+
+
+import SelectDropdown from 'react-native-select-dropdown'
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const ErrorIcon = ({ onPress }) => (
   <TouchableOpacity onPress={onPress} style={styles.errorIcon}>
@@ -39,6 +43,8 @@ const EstadisticasScreen = () => {
   const { userId } = useContext(UserContext);
   const [porcentajePrenez, setPorcentajePrenez] = useState(0);
   const [cantidadCrias, setCantidadCrias] = useState(0);
+  const [lotes, setLotes] = useState([]);
+
 
   useEffect(() => {
     if (animalesEncontrado && animalesEncontrado.length > 0) {
@@ -54,6 +60,25 @@ const EstadisticasScreen = () => {
       setCantidadCrias(0);
     }
   }, [animalesEncontrado]);
+
+  useEffect(() => {
+    // Define the async function
+    const fetchLotes = async () => {
+      try {
+        const response = await getUserLotes(userId); // Replace with your API call
+        if (Array.isArray(response)) {
+          setLotes(response);
+        } else {
+          console.error('Unexpected response structure:', response);
+        }
+      } catch (error) {
+        console.error('Error fetching lotes:', error);
+      }
+    };
+    fetchLotes();
+  }, [userId]); // Re-run effect if userId changes
+
+  const opcionesLotes = Array.isArray(lotes) ? lotes.map(lote => ({ title: lote.numero })) : [];
 
   const buscar = async () => {
     if (!validateFields()) {
@@ -126,20 +151,42 @@ const EstadisticasScreen = () => {
       <ScrollView style={styles.container}>
         <ThemedView style={styles.header}>
           <ThemedText type='title' style={styles.headerTitle}>Estadísticas</ThemedText>
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={[styles.input, numero_loteError && styles.errorInput]}
-              placeholder="Ingrese número de lote"
-              value={numero_lote}
-              onChangeText={setNumeroLote}
-            />
-            {numero_loteError && <ErrorIcon onPress={() => Alert.alert('Error', 'El campo Lote no puede estar vacío')} />}
-          </View>
+          <View>
+              <SelectDropdown
+                  data={opcionesLotes}
+                  onSelect={(selectedItem, index) => {
+                    setNumeroLote(selectedItem.title);
+                  }}
+                  renderButton={(selectedItem, isOpened) => {
+                    return (
+                      <View style={styles.dropdownButtonStyle}>
+                        {selectedItem && (
+                          <Icon name={selectedItem.icon} style={styles.dropdownButtonIconStyle} />
+                        )}
+                         <Text style={styles.dropdownButtonTxtStyle}>
+                          {selectedItem ? `Lote ${selectedItem.title}` : 'Número de lote'}
+                        </Text>
+                        <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
+                      </View>
+                    );
+                  }}
+                  renderItem={(item, index, isSelected) => {
+                    return (
+                      <View style={{...styles.dropdownItemStyle, ...(isSelected && {backgroundColor: '#D2D9DF'})}}>
+                        <Text style={styles.dropdownItemTxtStyle}>Lote {item.title}</Text>
+                      </View>
+                    );
+                  }}
+                  showsVerticalScrollIndicator={false}
+                  dropdownStyle={styles.dropdownMenuStyle}
+                />
+              </View>
           <TouchableOpacity style={styles.button} onPress={buscar}>
             <ThemedText style={styles.buttonText}>Buscar</ThemedText>
           </TouchableOpacity>
         </ThemedView>
 
+        
         <View style={styles.body}>
           <StatisticsCard title={`${cantidadCrias} crías`} value="En el último mes" subTitle="Cantidad de Crías Recién Nacidas">
             <PieChart
@@ -176,7 +223,8 @@ const EstadisticasScreen = () => {
                 chartConfig={chartConfig}
                 bezier
                 style={styles.chartStyle}
-                verticalLabelRotation={30}
+                verticalLabelRotation={0}
+                horizontalLabelRotation={-35}
                 yAxisSuffix=" kg"
                 fromZero={true}
               />
@@ -241,10 +289,10 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: '#407157',
-    paddingVertical: 15,
+    paddingVertical: 10,
     borderRadius: 20,
     alignItems: 'center',
-    marginVertical: 10,
+    marginVertical: 5,
   },
   buttonText: {
     color: '#fff',
@@ -285,6 +333,10 @@ const styles = StyleSheet.create({
   chartStyle: {
     marginVertical: 8,
     borderRadius: 16,
+    borderWidth: 4,
+    borderRightWidth: 0,
+    borderColor: '#407157',
+    backgroundColor:'#407157',
     overflow: "hidden",
   },
   chartStyle2: {
@@ -304,7 +356,47 @@ const styles = StyleSheet.create({
   },
   body: {
     paddingHorizontal: 10
-  }
+  },
+  dropdownButtonStyle: {
+    width: '100%',
+    borderColor: '#CCCCCC',
+    borderWidth: 1,
+    height: 50,
+    borderRadius: 20,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    marginBottom: 20,
+  },
+  dropdownButtonTxtStyle: {
+    flex: 1,
+    color: '#565859',
+  },
+  dropdownButtonArrowStyle: {
+    fontSize: 28,
+  },
+  dropdownButtonIconStyle: {
+    fontSize: 28,
+    marginRight: 8,
+  },
+  dropdownMenuStyle: {
+    backgroundColor: '#E9ECEF',
+    borderRadius: 8,
+  },
+  dropdownItemStyle: {
+    width: '100%',
+    flexDirection: 'row',
+    padding: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  dropdownItemTxtStyle: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#565859',
+  },
 });
 
 export default EstadisticasScreen;

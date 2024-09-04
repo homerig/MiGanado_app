@@ -1,5 +1,5 @@
-import React, { useContext, useState } from 'react';
-import { View, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import React, { useContext, useState, useEffect } from 'react';
+import { View, TextInput,  Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { ThemedText } from '@/components/ThemedText'; // Asegúrate de que la ruta es correcta
 import { ThemedView } from '@/components/ThemedView'; // Asegúrate de que la ruta es correcta
 import { useNavigation } from '@react-navigation/native';
@@ -7,6 +7,9 @@ import { UserContext } from '../../api/UserContext';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { createVacunacion, getUserLotes } from '@/api/api';
+
+import SelectDropdown from 'react-native-select-dropdown'
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const ErrorIcon = ({ onPress }) => (
   <TouchableOpacity onPress={onPress} style={styles.errorIcon}>
@@ -27,6 +30,7 @@ const VacunacionScreen = () => {
   const [cadaError, setCadaError] = useState(false);
   const { userId } = useContext(UserContext);
 
+  const [lotes, setLotes] = useState([]);
   const validateFields = () => {
     let isValid = true;
     if (!numero_lote) {
@@ -63,13 +67,31 @@ const VacunacionScreen = () => {
   };
 
   const navigation = useNavigation();
+  useEffect(() => {
+    // Define the async function
+    const fetchLotes = async () => {
+      try {
+        const response = await getUserLotes(userId); // Replace with your API call
+        if (Array.isArray(response)) {
+          setLotes(response);
+        } else {
+          console.error('Unexpected response structure:', response);
+        }
+      } catch (error) {
+        console.error('Error fetching lotes:', error);
+      }
+    };
+    fetchLotes();
+  }, [userId]); // Re-run effect if userId changes
+
+  const opcionesLotes = Array.isArray(lotes) ? lotes.map(lote => ({ title: lote.numero })) : [];
 
   const handleGuardar = async () => {
     if (!validateFields()) {
       return;
     }
     try {
-      const lotes = await getUserLotes(userId);
+      
       console.log('Lotes:', lotes);
   
       const numeroLoteInt = parseInt(numero_lote, 10);
@@ -101,20 +123,42 @@ const VacunacionScreen = () => {
     <ThemedView style={styles.container}>
       <ThemedText style={styles.label}>Vacunación</ThemedText>
 
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={[styles.input, numero_loteError && styles.errorInput]}
-          placeholder="Seleccione Lote"
-          value={numero_lote}
-          onChangeText={setNumeroLote}
-        />
-        {numero_loteError && <ErrorIcon onPress={() => Alert.alert('Error', 'El campo Lote no puede estar vacío')} />}
-      </View>
+      <View>
+              <SelectDropdown
+                  data={opcionesLotes}
+                  onSelect={(selectedItem, index) => {
+                    setNumeroLote(selectedItem.title);
+                  }}
+                  renderButton={(selectedItem, isOpened) => {
+                    return (
+                      <View style={styles.dropdownButtonStyle}>
+                        {selectedItem && (
+                          <Icon name={selectedItem.icon} style={styles.dropdownButtonIconStyle} />
+                        )}
+                         <Text style={styles.dropdownButtonTxtStyle}>
+                          {selectedItem ? `Lote ${selectedItem.title}` : 'Número de lote'}
+                        </Text>
+                        <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
+                      </View>
+                    );
+                  }}
+                  renderItem={(item, index, isSelected) => {
+                    return (
+                      <View style={{...styles.dropdownItemStyle, ...(isSelected && {backgroundColor: '#D2D9DF'})}}>
+                        <Text style={styles.dropdownItemTxtStyle}>Lote {item.title}</Text>
+                      </View>
+                    );
+                  }}
+                  showsVerticalScrollIndicator={false}
+                  dropdownStyle={styles.dropdownMenuStyle}
+                />
+              </View>
 
       <View style={styles.inputContainer}>
         <TextInput
           style={[styles.input, nombre_vacunaError && styles.errorInput]}
           placeholder="Nombre de la Vacuna"
+          placeholderTextColor='#565859'
           value={nombre_vacuna}
           onChangeText={setNombreVacuna}
         />
@@ -125,6 +169,7 @@ const VacunacionScreen = () => {
         <TextInput
           style={[styles.input, fechaInicioError && styles.errorInput]}
           placeholder="Fecha (YYYY-MM-DD)"
+          placeholderTextColor='#565859'
           value={fechaInicio}
           onChangeText={setFechaInicio}
         />
@@ -134,7 +179,8 @@ const VacunacionScreen = () => {
       <View style={styles.inputContainer}>
         <TextInput
           style={[styles.input, duranteError && styles.errorInput]}
-          placeholder="Durante/Duración (dias)"
+          placeholder="Durante/Duración (días)"
+          placeholderTextColor='#565859'
           value={durante}
           onChangeText={setDurante}
         />
@@ -144,7 +190,8 @@ const VacunacionScreen = () => {
       <View style={styles.inputContainer}>
         <TextInput
           style={[styles.input, cadaError && styles.errorInput]}
-          placeholder="Cada..(dias)"
+          placeholder="Cada..(días)"
+          placeholderTextColor='#565859'
           value={cada}
           onChangeText={setCada}
         />
@@ -182,7 +229,7 @@ const styles = StyleSheet.create({
     borderColor: '#CCCCCC',
     borderWidth: 1,
     borderRadius: 20,
-    paddingHorizontal: 10,
+    paddingHorizontal: 20,
     justifyContent: 'center',
   },
   errorInput: {
@@ -204,6 +251,47 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 10,
     right: 10,
+  },
+
+  dropdownButtonStyle: {
+    width: '100%',
+    borderColor: '#CCCCCC',
+    borderWidth: 1,
+    height: 50,
+    borderRadius: 20,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    marginBottom: 20,
+  },
+  dropdownButtonTxtStyle: {
+    flex: 1,
+    color: '#565859',
+  },
+  dropdownButtonArrowStyle: {
+    fontSize: 28,
+  },
+  dropdownButtonIconStyle: {
+    fontSize: 28,
+    marginRight: 8,
+  },
+  dropdownMenuStyle: {
+    backgroundColor: '#E9ECEF',
+    borderRadius: 8,
+  },
+  dropdownItemStyle: {
+    width: '100%',
+    flexDirection: 'row',
+    padding: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  dropdownItemTxtStyle: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#565859',
   },
 });
 

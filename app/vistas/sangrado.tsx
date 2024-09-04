@@ -1,5 +1,5 @@
-import React, { useState, useContext } from 'react';
-import { View, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import React, { useState, useContext, useEffect } from 'react';
+import { View, TextInput, TouchableOpacity, Text, StyleSheet, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -7,6 +7,9 @@ import { UserContext } from '../../api/UserContext';
 import { createSangrado, buscarAnimal, buscarSan, actualizarSangrado, getUserLotes } from '../../api/api';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
+
+import SelectDropdown from 'react-native-select-dropdown'
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const ErrorIcon = ({ onPress }) => (
   <TouchableOpacity onPress={onPress} style={styles.errorIcon}>
@@ -24,7 +27,11 @@ const SangradoScreen = () => {
   const [fechaError, setFechaError] = useState(false);
   const [fecha, setFecha] = useState('');
   const { userId } = useContext(UserContext);
+  
+  const [lotes, setLotes] = useState([]);
+  
   const navigation = useNavigation();
+
 
   const validateFields = () => {
     let isValid = true;
@@ -90,6 +97,26 @@ const SangradoScreen = () => {
     }
   };
 
+  useEffect(() => {
+    // Define the async function
+    const fetchLotes = async () => {
+      try {
+        const response = await getUserLotes(userId); // Replace with your API call
+        if (Array.isArray(response)) {
+          setLotes(response);
+        } else {
+          console.error('Unexpected response structure:', response);
+        }
+      } catch (error) {
+        console.error('Error fetching lotes:', error);
+      }
+    };
+    fetchLotes();
+  }, [userId]); // Re-run effect if userId changes
+
+  const opcionesLotes = Array.isArray(lotes) ? lotes.map(lote => ({ title: lote.numero })) : [];
+
+
   const handlesig = async () => {
     if (!validateFields()) {
       return;
@@ -146,20 +173,42 @@ const SangradoScreen = () => {
     <ThemedView style={styles.container}>
       <ThemedText style={styles.title}>Sangrado</ThemedText>
 
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={[styles.input, numeroLoteError && styles.errorInput]}
-          placeholder="Seleccione Lote"
-          value={numero_lote}
-          onChangeText={setNumeroLote}
-        />
-        {numeroLoteError && <ErrorIcon onPress={() => Alert.alert('Error', 'El campo Lote no puede estar vacío')} />}
-      </View>
+      <View>
+              <SelectDropdown
+                  data={opcionesLotes}
+                  onSelect={(selectedItem, index) => {
+                    setNumeroLote(selectedItem.title);
+                  }}
+                  renderButton={(selectedItem, isOpened) => {
+                    return (
+                      <View style={styles.dropdownButtonStyle}>
+                        {selectedItem && (
+                          <Icon name={selectedItem.icon} style={styles.dropdownButtonIconStyle} />
+                        )}
+                         <Text style={styles.dropdownButtonTxtStyle}>
+                          {selectedItem ? `Lote ${selectedItem.title}` : 'Número de lote'}
+                        </Text>
+                        <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
+                      </View>
+                    );
+                  }}
+                  renderItem={(item, index, isSelected) => {
+                    return (
+                      <View style={{...styles.dropdownItemStyle, ...(isSelected && {backgroundColor: '#D2D9DF'})}}>
+                        <Text style={styles.dropdownItemTxtStyle}>Lote {item.title}</Text>
+                      </View>
+                    );
+                  }}
+                  showsVerticalScrollIndicator={false}
+                  dropdownStyle={styles.dropdownMenuStyle}
+                />
+              </View>
 
       <View style={styles.inputContainer}>
         <TextInput
           style={[styles.input, numeroCaravanaError && styles.errorInput]}
           placeholder="Número de caravana"
+          placeholderTextColor='#565859'
           value={numeroCaravana}
           onChangeText={setNumeroCaravana}
         />
@@ -170,6 +219,7 @@ const SangradoScreen = () => {
         <TextInput
           style={[styles.input, numeroTuboError && styles.errorInput]}
           placeholder="Número del tubo de ensayo"
+          placeholderTextColor='#565859'
           value={numero_tubo}
           onChangeText={setNumeroTubo}
         />
@@ -180,6 +230,7 @@ const SangradoScreen = () => {
         <TextInput
           style={[styles.input, fechaError && styles.errorInput]}
           placeholder="Fecha (YYYY-MM-DD)"
+          placeholderTextColor='#565859'
           value={fecha}
           onChangeText={setFecha}
         />
@@ -221,7 +272,7 @@ const styles = StyleSheet.create({
     borderColor: '#CCCCCC',
     borderWidth: 1,
     borderRadius: 20,
-    paddingHorizontal: 10,
+    paddingHorizontal: 20,
   },
   errorInput: {
     borderColor: '#d44648',
@@ -250,6 +301,47 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 10,
     right: 10,
+  },
+
+  dropdownButtonStyle: {
+    width: '100%',
+    borderColor: '#CCCCCC',
+    borderWidth: 1,
+    height: 50,
+    borderRadius: 20,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    marginBottom: 20,
+  },
+  dropdownButtonTxtStyle: {
+    flex: 1,
+    color: '#565859',
+  },
+  dropdownButtonArrowStyle: {
+    fontSize: 28,
+  },
+  dropdownButtonIconStyle: {
+    fontSize: 28,
+    marginRight: 8,
+  },
+  dropdownMenuStyle: {
+    backgroundColor: '#E9ECEF',
+    borderRadius: 8,
+  },
+  dropdownItemStyle: {
+    width: '100%',
+    flexDirection: 'row',
+    padding: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  dropdownItemTxtStyle: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#565859',
   },
 });
 

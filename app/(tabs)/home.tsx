@@ -5,12 +5,16 @@ import { ThemedView } from '@/components/ThemedView';
 import { useNavigation } from '@react-navigation/native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faChartColumn, faClipboardCheck, faCow, faFileMedical, faFlask, faPlus,faMapLocationDot, faSyringe, faUserDoctor } from '@fortawesome/free-solid-svg-icons';
+
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import dayjs from 'dayjs';
 import 'dayjs/locale/es';
 import { getUserNotificaciones, createNotificacion } from '../../api/api';
 import { UserContext } from '../../api/UserContext';
 import DateTimePicker from '@react-native-community/datetimepicker';
+
+import SelectDropdown from 'react-native-select-dropdown'
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 dayjs.locale('es');
 
@@ -186,6 +190,14 @@ export default function HomeScreen() {
     setSelectedDate(currentDate);
   };
 
+  const opcionesEvento = [
+    {title: 'Lote'},
+    {title: 'Tratamiento'},
+    {title: 'Tacto'},
+    {title: 'Vacunación'},
+    {title: 'Sangrado'},
+  ];
+
   return (
     <View style={styles.containerColor}>
       <ThemedView style={styles.container}>
@@ -260,49 +272,61 @@ export default function HomeScreen() {
               <ThemedText type='subtitle' style={styles.modalTitle}>Crear un nuevo evento o recordatorio</ThemedText>
               <TextInput
                 style={styles.input}
-                placeholder="Ingrese la descripción del evento"
+                placeholder="Descripción del evento"
+                placeholderTextColor='#151E26'
                 onChangeText={text => setNuevaNotificacion(text)}
                 value={nuevaNotificacion}
               />
               
               <TouchableOpacity style={styles.datePickerButton}>
-                <Text>Fecha: <DateTimePicker
+                <Text style={styles.datePickerText}>Fecha </Text>
+                <DateTimePicker
                   value={selectedDate}
                   mode="date"
                   display="compact"
                   onChange={onChangeFecha}
-                /></Text>
+                  style={styles.picker}
+                />
               </TouchableOpacity>
-              
-                
-              
-              <View >
-                <TouchableOpacity style={styles.select} onPress={toggleOptions}>
-                  <Text>{'Tipo de evento: '+tipoNotificacion || 'Tipo de evento: Selecciona una opción'}</Text>
-                </TouchableOpacity>
-                {showOptions && (
-                  <View style={styles.options}>
-                    <TouchableOpacity style={styles.option} onPress={() => selectOption('Lote')}>
-                      <Text>Lote</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.option} onPress={() => selectOption('Tratamiento')}>
-                      <Text>Tratamiento</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.option} onPress={() => selectOption('Tacto')}>
-                      <Text>Tacto</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.option} onPress={() => selectOption('Vacunación')}>
-                      <Text>Vacunación</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.option} onPress={() => selectOption('Sangrado')}>
-                      <Text>Sangrado</Text>
-                    </TouchableOpacity>
-                  </View>
-                )}
+            
+              <View>
+              <SelectDropdown
+                  data={opcionesEvento}
+                  onSelect={(selectedItem, index) => {
+                    selectOption(selectedItem.title);
+                  }}
+                  renderButton={(selectedItem, isOpened) => {
+                    return (
+                      <View style={styles.dropdownButtonStyle}>
+                        {selectedItem && (
+                          <Icon name={selectedItem.icon} style={styles.dropdownButtonIconStyle} />
+                        )}
+                        <Text style={styles.dropdownButtonTxtStyle}>
+                          {(selectedItem && selectedItem.title) || 'Tipo de evento'}
+                        </Text>
+                        <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
+                      </View>
+                    );
+                  }}
+                  renderItem={(item, index, isSelected) => {
+                    return (
+                      <View style={{...styles.dropdownItemStyle, ...(isSelected && {backgroundColor: '#D2D9DF'})}}>
+                        <Text style={styles.dropdownItemTxtStyle}>{item.title}</Text>
+                      </View>
+                    );
+                  }}
+                  showsVerticalScrollIndicator={false}
+                  dropdownStyle={styles.dropdownMenuStyle}
+                />
               </View>
               <View style={styles.modalButtonContainer}>
-                <Button title="Cancelar" onPress={() => setModalVisible(false)} />
-                <Button title="Agregar" onPress={agregarNotificacion} />
+                <TouchableOpacity  style={styles.modalButtonCancel} onPress={() => setModalVisible(false)}> 
+                <ThemedText style={styles.modalButtonText}>Cancelar</ThemedText> 
+                </TouchableOpacity>
+
+                <TouchableOpacity  style={styles.modalButton} onPress={agregarNotificacion}> 
+                <ThemedText style={styles.modalButtonText}>Agregar</ThemedText> 
+                </TouchableOpacity>
               </View>
             </View>
           </View>
@@ -487,22 +511,43 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   modalTitle: {
-    marginBottom: 15,
+    marginBottom: 20,
     textAlign: 'center',
   },
   input: {
-    height: 40,
-    borderColor: '#ddd',
-    borderWidth: 1,
-    borderRadius: 5,
+    height: 45,
     marginBottom: 20,
-    paddingHorizontal: 10,
-    width: '100%',
+    paddingHorizontal: 20,
+    width: 300,
+    backgroundColor: '#E9ECEF',
+    borderRadius: 12,
+    color: '#151E26',
   },
   modalButtonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
+    justifyContent: 'space-between',
+    gap: '15%',
+    width: '60%',
+  },
+  modalButton: {
+    backgroundColor: '#407157',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginBottom: 10,
+    alignItems: 'center',
+  },
+  modalButtonCancel: {
+    backgroundColor: '#bdbdbd',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginBottom: 10,
+    alignItems: 'center',
+  },
+  modalButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -552,14 +597,25 @@ const styles = StyleSheet.create({
   },
   datePickerButton: {
     padding: 10,
-    borderRadius: 5,
     marginBottom: 20,
-    paddingHorizontal: 10,
-    width: '100%',
-    borderWidth: 1,
-    borderColor: '#ccc',
+    paddingHorizontal: 20,
+    width: 300,
+    height: 50,
+    backgroundColor: '#E9ECEF',
+    borderRadius: 12,
     paddingVertical: 10,
-    minWidth: 200,
+    justifyContent: 'center',
+  },
+  datePickerText: {
+    marginTop: 0,
+  },
+  picker: {
+    paddingTop: 50,
+    top: 0,
+    width: 100,
+    marginTop: -18,
+    right: 20,
+    position: 'absolute',
   },
   modalBackground: {
     flex: 1,
@@ -579,20 +635,60 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingVertical: 10,
     paddingHorizontal: 20,
-    minWidth: 200,
+    width: 300,
   },
   options: {
-    width: 200,
+    width: 300,
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 5,
     backgroundColor: '#fff',
   },
   option: {
-    paddingVertical: 10,
+    paddingVertical: 20,
     paddingHorizontal: 20,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
     
+  },
+  dropdownButtonStyle: {
+    width: 300,
+    height: 45,
+    backgroundColor: '#E9ECEF',
+    borderRadius: 12,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    marginBottom: 20,
+  },
+  dropdownButtonTxtStyle: {
+    flex: 1,
+    fontWeight: '500',
+    color: '#151E26',
+  },
+  dropdownButtonArrowStyle: {
+    fontSize: 28,
+  },
+  dropdownButtonIconStyle: {
+    fontSize: 28,
+    marginRight: 8,
+  },
+  dropdownMenuStyle: {
+    backgroundColor: '#E9ECEF',
+    borderRadius: 8,
+  },
+  dropdownItemStyle: {
+    width: '100%',
+    flexDirection: 'row',
+    padding: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  dropdownItemTxtStyle: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#151E26',
   },
 });
