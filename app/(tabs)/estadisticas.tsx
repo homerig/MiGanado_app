@@ -218,13 +218,13 @@ const EstadisticasScreen = () => {
             {animalesEncontrado && animalesEncontrado.length > 0 ? (
               <LineChart
                 data={lineChartData}
-                width={Dimensions.get("window").width - 40}
+                width={Dimensions.get("window").width - 50}
                 height={220}
                 chartConfig={chartConfig}
                 bezier
                 style={styles.chartStyle}
                 verticalLabelRotation={0}
-                horizontalLabelRotation={-35}
+                horizontalLabelRotation={0}
                 yAxisSuffix=" kg"
                 fromZero={true}
               />
@@ -243,7 +243,7 @@ const chartConfig = {
   backgroundColor: "#407157",
   backgroundGradientFrom: "#407157",
   backgroundGradientTo: "#407157",
-  decimalPlaces: 2,
+  decimalPlaces: 1,
   color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
   labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
   style: {
@@ -332,6 +332,8 @@ const styles = StyleSheet.create({
   },
   chartStyle: {
     marginVertical: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 4,
     borderRadius: 16,
     borderWidth: 4,
     borderRightWidth: 0,
