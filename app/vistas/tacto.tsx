@@ -158,35 +158,35 @@ const TactoScreen = () => {
       <ThemedText style={styles.title}>Tacto</ThemedText>
 
       <View>
-              <SelectDropdown
-                  data={opcionesLotes}
-                  onSelect={(selectedItem, index) => {
-                    setNumeroLote(selectedItem.title);
-                  }}
-                  renderButton={(selectedItem, isOpened) => {
-                    return (
-                      <View style={styles.dropdownButtonStyle}>
-                        {selectedItem && (
-                          <Icon name={selectedItem.icon} style={styles.dropdownButtonIconStyle} />
-                        )}
-                         <Text style={styles.dropdownButtonTxtStyle}>
-                          {selectedItem ? `Lote ${selectedItem.title}` : 'Número de lote'}
-                        </Text>
-                        <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
-                      </View>
-                    );
-                  }}
-                  renderItem={(item, index, isSelected) => {
-                    return (
-                      <View style={{...styles.dropdownItemStyle, ...(isSelected && {backgroundColor: '#D2D9DF'})}}>
-                        <Text style={styles.dropdownItemTxtStyle}>Lote {item.title}</Text>
-                      </View>
-                    );
-                  }}
-                  showsVerticalScrollIndicator={false}
-                  dropdownStyle={styles.dropdownMenuStyle}
-                />
-              </View>
+        <SelectDropdown
+            data={opcionesLotes}
+            onSelect={(selectedItem, index) => {
+              setNumeroLote(selectedItem.title);
+            }}
+            renderButton={(selectedItem, isOpened) => {
+              return (
+                <View style={styles.dropdownButtonStyle}>
+                  {selectedItem && (
+                    <Icon name={selectedItem.icon} style={styles.dropdownButtonIconStyle} />
+                  )}
+                    <Text style={styles.dropdownButtonTxtStyle}>
+                    {selectedItem ? `Lote ${selectedItem.title}` : 'Número de lote'}
+                  </Text>
+                  <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
+                </View>
+              );
+            }}
+            renderItem={(item, index, isSelected) => {
+              return (
+                <View style={{...styles.dropdownItemStyle, ...(isSelected && {backgroundColor: '#D2D9DF'})}}>
+                  <Text style={styles.dropdownItemTxtStyle}>Lote {item.title}</Text>
+                </View>
+              );
+            }}
+            showsVerticalScrollIndicator={false}
+            dropdownStyle={styles.dropdownMenuStyle}
+          />
+      </View>
 
       <View style={styles.inputContainer}>
         <TextInput

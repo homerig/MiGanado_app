@@ -42,20 +42,23 @@ const TratamientosScreen = () => {
       <TextInput
         style={styles.input}
         placeholder="Número de caravana"
+        placeholderTextColor='#565859'
         value={numeroCaravana}
         onChangeText={setNumeroCaravana}
       />
 
       <TextInput
         style={styles.input}
-        placeholder="Tratamiento"
+        placeholder="Nombre del Tratamiento"
+        placeholderTextColor='#565859'
         value={tratamiento}
         onChangeText={setTratamiento}
       />
 
       <TextInput
         style={styles.input}
-        placeholder="Medicación"
+        placeholder="Nombre de la Medicación"
+        placeholderTextColor='#565859'
         value={medicacion}
         onChangeText={setMedicacion}
       />
@@ -63,20 +66,23 @@ const TratamientosScreen = () => {
       <TextInput
         style={styles.input}
         placeholder="Fecha (YYYY-MM-DD)"
+        placeholderTextColor='#565859'
         value={fechaInicio}
         onChangeText={setFechaInicio}
       />
 
       <TextInput
         style={styles.input}
-        placeholder="Durante/Duración (dias)"
+        placeholder="Durante/Duración (días)"
+        placeholderTextColor='#565859'
         value={durante}
         onChangeText={setDuracion}
       />
 
       <TextInput
         style={styles.input}
-        placeholder="Cada..(dias)"
+        placeholder="Cada..(días)"
+        placeholderTextColor='#565859'
         value={cada}
         onChangeText={setCada}
       />
@@ -107,9 +113,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 20,
     marginBottom: 16,
-    paddingHorizontal: 10,
+    paddingHorizontal: 20,
     justifyContent: 'center',
-    backgroundColor: '#F1F1F1',
   },
   button: {
     backgroundColor: '#407157',

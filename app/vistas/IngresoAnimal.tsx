@@ -1,6 +1,6 @@
 
-import React, { useState, useContext } from 'react';
-import { View, TextInput, TouchableOpacity, Modal, FlatList, StyleSheet, Text, Alert } from 'react-native';
+import React, { useState, useContext, useEffect } from 'react';
+import { View, TextInput, TouchableOpacity, StyleSheet, Text, Alert } from 'react-native';
 import { ThemedText } from '@/components/ThemedText'; // Asegúrate de que la ruta es correcta
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
@@ -8,6 +8,9 @@ import { ThemedView } from '@/components/ThemedView'; // Asegúrate de que la ru
 import { registerAnimal, getUserLotes, buscarAnimal } from '../../api/api';
 import { UserContext } from '../../api/UserContext';
 import { useNavigation } from 'expo-router';
+
+import SelectDropdown from 'react-native-select-dropdown'
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const ErrorIcon = ({ onPress }) => (
   <TouchableOpacity onPress={onPress} style={styles.errorIcon}>
@@ -24,13 +27,38 @@ const IngresarAnimalScreen = () => {
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [isTipoModalVisible, setIsTipoModalVisible] = useState<boolean>(false);
   const [tipos, setTipos] = useState(''); 
-  const [numero_lote, setLotes] = useState(''); 
+  const [numero_lote, setNumeroLote] = useState(''); 
   const { userId } = useContext(UserContext);
   const [numero_loteError, setNumeroLoteError] = useState(false);
   const [numeroCaravanaError, setnumeroCaravanaError] = useState(false);
   const [pesoError, setPesoError] = useState(false);
   const [edadError, setEdadError] = useState(false);
   const [tiposError, setTiposError] = useState(false);
+  const [lotes, setLotes] = useState([]);
+  
+  useEffect(() => {
+    // Define the async function
+    const fetchLotes = async () => {
+      try {
+        const response = await getUserLotes(userId); // Replace with your API call
+        if (Array.isArray(response)) {
+          setLotes(response);
+        } else {
+          console.error('Unexpected response structure:', response);
+        }
+      } catch (error) {
+        console.error('Error fetching lotes:', error);
+      }
+    };
+    fetchLotes();
+  }, [userId]); // Re-run effect if userId changes
+
+  const opcionesLotes = Array.isArray(lotes) ? lotes.map(lote => ({ title: lote.numero })) : [];
+
+  const animalTypes = [
+    { title: 'Vaca' },
+    { title: 'Toro' }
+  ];
 
   const validateFields = () => {
     let isValid = true;
@@ -98,8 +126,6 @@ const IngresarAnimalScreen = () => {
       setNumeroCaravana('');
       setPeso('');
       setEdad('');
-      setLotes('');
-      setTipos('');
       setPreniada(false);
       setReciennacida(false);
       Alert.alert('Éxito', 'Animal registrado correctamente.');
@@ -119,29 +145,70 @@ const IngresarAnimalScreen = () => {
 
 
       <View style={styles.inputContainer}>
-      <TextInput
-        style={styles.input}
-        placeholder="Ingrese Tipo"
-        value={tipos}
-        onChangeText={setTipos}
-      />
-      {tiposError && <ErrorIcon onPress={() => Alert.alert('Error', 'El campo Lote no puede estar vacío')} />}
+        <SelectDropdown
+          data={animalTypes}
+          onSelect={(selectedItem, index) => {
+            setTipos(selectedItem.title);
+          }}
+          renderButton={(selectedItem, isOpened) => {
+            return (
+              <View style={styles.dropdownButtonStyle}>
+                <Text style={styles.dropdownButtonTxtStyle}>
+                  {selectedItem ? `${selectedItem.title}` : 'Seleccione tipo'}
+                </Text>
+                <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
+              </View>
+            );
+          }}
+          renderItem={(item, index, isSelected) => {
+            return (
+              <View style={{...styles.dropdownItemStyle, ...(isSelected && {backgroundColor: '#D2D9DF'})}}>
+                <Text style={styles.dropdownItemTxtStyle}>{item.title}</Text>
+              </View>
+            );
+          }}
+          showsVerticalScrollIndicator={false}
+          dropdownStyle={styles.dropdownMenuStyle}
+        />
+        
       </View>
 
-      <View style={styles.inputContainer}>
-      <TextInput
-        style={styles.input}
-        placeholder="Ingresar número de Lote"
-        value={numero_lote}
-        onChangeText={setLotes}
-      />
-      {numero_loteError && <ErrorIcon onPress={() => Alert.alert('Error', 'El campo Lote no puede estar vacío')} />}
+      <View>
+        <SelectDropdown
+            data={opcionesLotes}
+            onSelect={(selectedItem, index) => {
+              setNumeroLote(selectedItem.title);
+            }}
+            renderButton={(selectedItem, isOpened) => {
+              return (
+                <View style={styles.dropdownButtonStyle}>
+                  {selectedItem && (
+                    <Icon name={selectedItem.icon} style={styles.dropdownButtonIconStyle} />
+                  )}
+                    <Text style={styles.dropdownButtonTxtStyle}>
+                    {selectedItem ? `Lote ${selectedItem.title}` : 'Número de lote'}
+                  </Text>
+                  <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
+                </View>
+              );
+            }}
+            renderItem={(item, index, isSelected) => {
+              return (
+                <View style={{...styles.dropdownItemStyle, ...(isSelected && {backgroundColor: '#D2D9DF'})}}>
+                  <Text style={styles.dropdownItemTxtStyle}>Lote {item.title}</Text>
+                </View>
+              );
+            }}
+            showsVerticalScrollIndicator={false}
+            dropdownStyle={styles.dropdownMenuStyle}
+          />
       </View>
 
       <View style={styles.inputContainer}>
       <TextInput
         style={styles.input}
         placeholder="Número de caravana"
+        placeholderTextColor='#565859'
         value={numeroCaravana}
         onChangeText={setNumeroCaravana}
       />
@@ -153,6 +220,7 @@ const IngresarAnimalScreen = () => {
       <TextInput
         style={styles.input}
         placeholder="Peso"
+        placeholderTextColor='#565859'
         value={peso}
         onChangeText={setPeso}
       />
@@ -163,6 +231,7 @@ const IngresarAnimalScreen = () => {
       <TextInput
         style={styles.input}
         placeholder="Edad"
+        placeholderTextColor='#565859'
         value={edad}
         onChangeText={setEdad}
       />
@@ -221,7 +290,8 @@ const styles = StyleSheet.create({
   },
   subLabel: {
     fontSize: 18,
-    padding: 2,
+    paddingHorizontal: 20,
+    marginTop: 16,
     fontWeight: 'bold',
     marginBottom: 10,
     textAlign: 'left',
@@ -232,13 +302,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 20,
     marginBottom: 16,
-    paddingHorizontal: 10,
+    paddingHorizontal: 20,
     justifyContent: 'center',
-    backgroundColor: '#F1F1F1',
   },
   inputContainer: {
     position: 'relative',
-    marginBottom: 16,
   },
   inputError: {
     borderColor: '#d44648',
@@ -285,6 +353,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 16,
+    paddingHorizontal: 5,
   },
   checkboxLabel: {
     marginRight: 10,
@@ -345,6 +414,47 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#FFFFFF',
     fontSize: 16,
+  },
+
+  dropdownButtonStyle: {
+    width: '100%',
+    borderColor: '#CCCCCC',
+    borderWidth: 1,
+    height: 50,
+    borderRadius: 20,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    marginBottom: 20,
+  },
+  dropdownButtonTxtStyle: {
+    flex: 1,
+    color: '#565859',
+  },
+  dropdownButtonArrowStyle: {
+    fontSize: 28,
+  },
+  dropdownButtonIconStyle: {
+    fontSize: 28,
+    marginRight: 8,
+  },
+  dropdownMenuStyle: {
+    backgroundColor: '#E9ECEF',
+    borderRadius: 8,
+  },
+  dropdownItemStyle: {
+    width: '100%',
+    flexDirection: 'row',
+    padding: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  dropdownItemTxtStyle: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#565859',
   },
 });
 export default IngresarAnimalScreen;

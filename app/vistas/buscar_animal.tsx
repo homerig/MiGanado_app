@@ -1,11 +1,14 @@
-import React, { useState, useContext } from 'react';
-import { View, TextInput, TouchableOpacity, StyleSheet, Modal, Alert, Switch } from 'react-native';
+import React, { useState, useContext, useEffect } from 'react';
+import { View, TextInput, TouchableOpacity, StyleSheet, Modal, Text, Alert, Switch } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { faChevronLeft, faPen } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { buscarAnimal, buscarTratam, buscarSan, actualizarAnimal } from '../../api/api';
+import { buscarAnimal, buscarTratam, buscarSan, actualizarAnimal, getUserLotes } from '../../api/api';
 import { UserContext } from '../../api/UserContext';
+
+import SelectDropdown from 'react-native-select-dropdown'
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const BuscarAnimalScreen = () => {
   const [numeroCaravana, setNumeroCaravana] = useState('');
@@ -17,6 +20,27 @@ const BuscarAnimalScreen = () => {
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editedAnimal, setEditedAnimal] = useState({});
   const { userId } = useContext(UserContext);
+  const [lotes, setLotes] = useState([]);
+
+  useEffect(() => {
+    // Define the async function
+    const fetchLotes = async () => {
+      try {
+        const response = await getUserLotes(userId); // Replace with your API call
+        if (Array.isArray(response)) {
+          setLotes(response);
+        } else {
+          console.error('Unexpected response structure:', response);
+        }
+      } catch (error) {
+        console.error('Error fetching lotes:', error);
+      }
+    };
+    fetchLotes();
+  }, [userId]); // Re-run effect if userId changes
+
+  const opcionesLotes = Array.isArray(lotes) ? lotes.map(lote => ({ title: lote.numero })) : [];
+
 
   const buscar = async () => {
     try {
@@ -179,19 +203,43 @@ const BuscarAnimalScreen = () => {
           <Modal
             visible={editModalVisible}
             transparent={true}
-            animationType="slide"
+            animationType="fade"
             onRequestClose={() => setEditModalVisible(false)}
           >
             <View style={styles.modalContainer}>
               <View style={styles.modalContent}>
                 <ThemedText style={styles.title}>Editar Animal</ThemedText>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Número de lote"
-                  placeholderTextColor="#666666"
-                  value={editedAnimal.numero_lote}
-                  onChangeText={(text) => setEditedAnimal({ ...editedAnimal, numero_lote: text })}
-                />
+                <View>
+                    <SelectDropdown
+                        data={opcionesLotes}
+                        onSelect={(selectedItem, index) => {
+                          setEditedAnimal({...editedAnimal, numero_lote: selectedItem.title });
+                        }}
+                        renderButton={(selectedItem, isOpened) => {
+                          return (
+                            <View style={styles.dropdownButtonStyle}>
+                              {selectedItem && (
+                                <Icon name={selectedItem.icon} style={styles.dropdownButtonIconStyle} />
+                              )}
+                                <Text style={styles.dropdownButtonTxtStyle}>
+                                {selectedItem ? `Lote ${selectedItem.title}` : 'Número de lote'}
+                              </Text>
+                              <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
+                            </View>
+                          );
+                        }}
+                        renderItem={(item, index, isSelected) => {
+                          return (
+                            <View style={{...styles.dropdownItemStyle, ...(isSelected && {backgroundColor: '#D2D9DF'})}}>
+                              <Text style={styles.dropdownItemTxtStyle}>Lote {item.title}</Text>
+                            </View>
+                          );
+                        }}
+                        showsVerticalScrollIndicator={false}
+                        dropdownStyle={styles.dropdownMenuStyle}
+                      />
+                  </View>
+                
                 <TextInput
                   style={styles.input}
                   placeholder="Peso"
@@ -238,7 +286,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    padding: 2,
+    padding: 20,
     fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
@@ -249,7 +297,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 20,
     marginBottom: 16,
-    paddingHorizontal: 10,
+    paddingHorizontal: 20,
   },
   buttonContainer: {
     marginTop: 20,
@@ -281,7 +329,6 @@ const styles = StyleSheet.create({
   animalDetailContainer: {
     marginTop: 20,
     padding: 20,
-    backgroundColor: '#f0f0f0',
     borderRadius: 10,
   },
   detail: {
@@ -295,7 +342,10 @@ const styles = StyleSheet.create({
     marginLeft: 'auto',
   },
   tratamientosContainer: {
-    marginLeft: 20,
+    marginTop: 20,
+    borderRadius: 20,
+    backgroundColor: '#f0f0f0',
+    padding: 20,
   },
   tratamiento: {
     fontSize: 16,
@@ -313,7 +363,7 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     width: '80%',
-    padding: 20,
+    padding: 30,
     backgroundColor: '#ffffff',
     borderRadius: 10,
   },
@@ -322,9 +372,51 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginVertical: 10,
+    paddingHorizontal: 5,
   },
   switchLabel: {
     fontSize: 16,
+  },
+
+  dropdownButtonStyle: {
+    width: '100%',
+    borderColor: '#CCCCCC',
+    borderWidth: 1,
+    height: 50,
+    borderRadius: 20,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    marginBottom: 20,
+  },
+  dropdownButtonTxtStyle: {
+    flex: 1,
+    color: '#565859',
+  },
+  dropdownButtonArrowStyle: {
+    fontSize: 28,
+  },
+  dropdownButtonIconStyle: {
+    fontSize: 28,
+    marginRight: 8,
+  },
+  dropdownMenuStyle: {
+    backgroundColor: '#E9ECEF',
+    borderRadius: 8,
+  },
+  dropdownItemStyle: {
+    width: '100%',
+    flexDirection: 'row',
+    padding: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  dropdownItemTxtStyle: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#565859',
   },
 });
 
