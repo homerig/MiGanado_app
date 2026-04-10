@@ -5,6 +5,8 @@ import { ThemedView } from '@/components/ThemedView'; // Asegúrate de que la ru
 import { UserContext } from '../../api/UserContext';
 import { createTratamiento } from '../../api/api';
 import { DateCarouselPicker } from '@/components/DateCarouselPicker';
+import { getNumeroCaravanaError, NUMERO_CARAVANA_MAX_LENGTH, sanitizeNumeroCaravana } from '@/utils/caravana';
+import { DismissKeyboardView } from '@/components/DismissKeyboardView';
 
 const TratamientosScreen = () => {
   const [numeroCaravana, setNumeroCaravana] = useState('');
@@ -16,6 +18,13 @@ const TratamientosScreen = () => {
   const { userId } = useContext(UserContext);
 
   const handleGuardar = async () => {
+    const numeroCaravanaError = getNumeroCaravanaError(numeroCaravana);
+
+    if (numeroCaravanaError) {
+      Alert.alert('Error', numeroCaravanaError);
+      return;
+    }
+
     try {
       
       const Nuevotratamiento = await createTratamiento({ numeroCaravana, tratamiento , medicacion, fechaInicio, cada, durante, userId });
@@ -34,6 +43,7 @@ const TratamientosScreen = () => {
   }
 
   return (
+    <DismissKeyboardView>
     <ThemedView style={styles.container}>
       <ThemedText style={styles.label}>Tratamientos</ThemedText>
 
@@ -42,7 +52,9 @@ const TratamientosScreen = () => {
         placeholder="Número de caravana"
         placeholderTextColor='#565859'
         value={numeroCaravana}
-        onChangeText={setNumeroCaravana}
+        onChangeText={(text) => setNumeroCaravana(sanitizeNumeroCaravana(text))}
+        keyboardType="number-pad"
+        maxLength={NUMERO_CARAVANA_MAX_LENGTH}
       />
 
       <TextInput
@@ -83,6 +95,7 @@ const TratamientosScreen = () => {
           <ThemedText style={styles.buttonText}>Agregar al calendario</ThemedText>
         </TouchableOpacity>
     </ThemedView>
+    </DismissKeyboardView>
   );
 }
 

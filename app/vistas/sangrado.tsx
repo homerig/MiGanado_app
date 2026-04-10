@@ -11,6 +11,8 @@ import { DateCarouselPicker } from '@/components/DateCarouselPicker';
 
 import SelectDropdown from 'react-native-select-dropdown'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { getNumeroCaravanaError, NUMERO_CARAVANA_MAX_LENGTH, sanitizeNumeroCaravana } from '@/utils/caravana';
+import { DismissKeyboardView } from '@/components/DismissKeyboardView';
 
 const ErrorIcon = ({ onPress }) => (
   <TouchableOpacity onPress={onPress} style={styles.errorIcon}>
@@ -37,6 +39,9 @@ const SangradoScreen = () => {
   const validateFields = () => {
     let isValid = true;
     if (!numeroCaravana) {
+      setNumeroCaravanaError(true);
+      isValid = false;
+    } else if (getNumeroCaravanaError(numeroCaravana)) {
       setNumeroCaravanaError(true);
       isValid = false;
     } else {
@@ -171,6 +176,7 @@ const SangradoScreen = () => {
   };
 
   return (
+    <DismissKeyboardView>
     <ThemedView style={styles.container}>
       <ThemedText style={styles.title}>Sangrado</ThemedText>
 
@@ -211,9 +217,11 @@ const SangradoScreen = () => {
           placeholder="Número de caravana"
           placeholderTextColor='#565859'
           value={numeroCaravana}
-          onChangeText={setNumeroCaravana}
+          onChangeText={(text) => setNumeroCaravana(sanitizeNumeroCaravana(text))}
+          keyboardType="number-pad"
+          maxLength={NUMERO_CARAVANA_MAX_LENGTH}
         />
-        {numeroCaravanaError && <ErrorIcon onPress={() => Alert.alert('Error', 'El campo Número de caravana no puede estar vacío')} />}
+        {numeroCaravanaError && <ErrorIcon onPress={() => Alert.alert('Error', getNumeroCaravanaError(numeroCaravana) ?? 'El campo Número de caravana no puede estar vacío')} />}
       </View>
 
       <View style={styles.inputContainer}>
@@ -241,6 +249,7 @@ const SangradoScreen = () => {
         </TouchableOpacity>
       </View>
     </ThemedView>
+    </DismissKeyboardView>
   );
 };
 

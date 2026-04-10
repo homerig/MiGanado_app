@@ -7,6 +7,8 @@ import { faPen, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { buscarAnimal, actualizarNombreLote, buscarAnimalLote, buscarTratam, buscarSan, deleteAnimal } from '../../api/api'; // Asegúrate de tener esta función en tu API
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { UserContext } from '../../api/UserContext';
+import { getNumeroCaravanaError, NUMERO_CARAVANA_MAX_LENGTH, sanitizeNumeroCaravana } from '@/utils/caravana';
+import { DismissKeyboardView } from '@/components/DismissKeyboardView';
 
 const AnimalSearchScreen = () => {
   const searchParams = useLocalSearchParams();
@@ -55,6 +57,13 @@ const AnimalSearchScreen = () => {
   }, [userId, numero_lote]);
 
   const handleSearchAnimal = async () => {
+    const caravanaError = getNumeroCaravanaError(caravanaNumber);
+
+    if (caravanaError) {
+      Alert.alert('Error', caravanaError);
+      return;
+    }
+
     const animal = await buscarAnimal(userId, caravanaNumber);
     if (animal && animal.numeroCaravana === caravanaNumber) {
       setAnimalEncontrado(animal);
@@ -142,6 +151,7 @@ const AnimalSearchScreen = () => {
   };
 
   return (
+    <DismissKeyboardView>
     <ThemedView style={styles.container}>
       <View style={styles.header}>
         <View style={styles.leftHeader}>
@@ -165,8 +175,10 @@ const AnimalSearchScreen = () => {
           style={styles.input}
           placeholder="Número de caravana"
           value={caravanaNumber}
-          onChangeText={setCaravanaNumber}
+          onChangeText={(text) => setCaravanaNumber(sanitizeNumeroCaravana(text))}
           placeholderTextColor="#666666"
+          keyboardType="number-pad"
+          maxLength={NUMERO_CARAVANA_MAX_LENGTH}
         />
         <TouchableOpacity style={styles.button} onPress={handleSearchAnimal}>
           <ThemedText style={styles.buttonText}>Buscar</ThemedText>
@@ -261,6 +273,7 @@ const AnimalSearchScreen = () => {
         </View>
       </Modal>
     </ThemedView>
+    </DismissKeyboardView>
   );
 };
 

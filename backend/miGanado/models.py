@@ -1,4 +1,10 @@
+from django.core.validators import RegexValidator
 from django.db import models
+
+numero_caravana_validator = RegexValidator(
+    regex=r'^\d{1,15}$',
+    message='El numero de caravana debe contener solo numeros y hasta 15 digitos.',
+)
 
 class Usuario(models.Model):
     TIPO_CHOICES = [
@@ -29,7 +35,7 @@ class Lote(models.Model):
 
 class Animal(models.Model):
     numero_lote = models.IntegerField()
-    numeroCaravana = models.CharField(max_length=100)
+    numeroCaravana = models.CharField(max_length=15, validators=[numero_caravana_validator])
     tipos = models.CharField(max_length=100)
     peso = models.FloatField(null=True, blank=True)
     edad = models.FloatField(null=True, blank=True)
@@ -40,7 +46,7 @@ class Animal(models.Model):
     sangrado = models.ManyToManyField('Sangrado')
 
 class Tratamiento(models.Model):
-    numeroCaravana = models.CharField(max_length=100)
+    numeroCaravana = models.CharField(max_length=15, validators=[numero_caravana_validator])
     tratamiento = models.CharField(max_length=100)
     medicacion = models.CharField(max_length=100)
     fechaInicio = models.DateField()
@@ -50,14 +56,14 @@ class Tratamiento(models.Model):
 
 class Sangrado(models.Model):
     numero_lote = models.IntegerField()
-    numeroCaravana = models.CharField(max_length=100)
+    numeroCaravana = models.CharField(max_length=15, validators=[numero_caravana_validator])
     numero_tubo = models.IntegerField()
     fecha = models.DateField()
     userId = models.IntegerField()
 
 class Tacto(models.Model):
     numero_lote = models.IntegerField()
-    numeroCaravana = models.IntegerField()
+    numeroCaravana = models.CharField(max_length=15, validators=[numero_caravana_validator])
     prenada = models.BooleanField(default=False)
     fecha = models.DateField()
     userId = models.IntegerField()

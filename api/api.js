@@ -1,6 +1,42 @@
 import axios from 'axios';
+import Constants from 'expo-constants';
 
-const baseURL = 'http://172.20.10.3:8000/miGanado'; 
+const API_PORT = '8000';
+const API_PATH = 'miGanado';
+const FALLBACK_API_HOST = '127.0.0.1';
+
+const getHostFromUri = (value) => {
+  if (!value || typeof value !== 'string') {
+    return null;
+  }
+
+  const sanitizedValue = value.replace(/^[a-z]+:\/\//i, '');
+  const host = sanitizedValue.split('/')[0]?.split(':')[0];
+
+  return host || null;
+};
+
+const getApiHost = () => {
+  const possibleHosts = [
+    Constants.expoConfig?.hostUri,
+    Constants.expoGoConfig?.debuggerHost,
+    Constants.manifest2?.extra?.expoGo?.debuggerHost,
+    Constants.manifest?.debuggerHost,
+    Constants.linkingUri,
+  ];
+
+  for (const value of possibleHosts) {
+    const host = getHostFromUri(value);
+
+    if (host) {
+      return host;
+    }
+  }
+
+  return FALLBACK_API_HOST;
+};
+
+const baseURL = `http://${getApiHost()}:${API_PORT}/${API_PATH}`;
 
 const registerUser = async (userData) => {
   try {
@@ -21,7 +57,9 @@ const loginUser = async (email, password) => {
     const response = await axios.post(`${baseURL}/login/`, { email, password });
     return response.data;
   } catch (error) {
-    if (error.response) {
+    if (error.response?.status === 401) {
+      throw new Error('Credenciales inválidas');
+    } else if (error.response) {
       console.error('Error al iniciar sesión - Respuesta del servidor:', error.response.data);
     } else if (error.request) {
       console.error('Error al iniciar sesión - No se recibió respuesta:', error.request);

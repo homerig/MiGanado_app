@@ -26,8 +26,12 @@ class LoginView(APIView):
         password = request.data.get('password')
 
         try:
-            # Buscar un usuario con el correo electrónico proporcionado
-            usuario = Usuario.objects.get(correo_electronico=email)
+            # Tomamos el usuario más reciente para evitar que un correo duplicado
+            # rompa el login con MultipleObjectsReturned.
+            usuario = Usuario.objects.filter(correo_electronico=email).order_by('-id').first()
+
+            if usuario is None:
+                return Response({'message': 'Credenciales inválidas'}, status=status.HTTP_401_UNAUTHORIZED)
             
             # Verificar si la contraseña coincide
             if usuario.contrasenia == password:
@@ -36,9 +40,8 @@ class LoginView(APIView):
             else:
                 # Contraseña incorrecta
                 return Response({'message': 'Credenciales inválidas'}, status=status.HTTP_401_UNAUTHORIZED)
-        except Usuario.DoesNotExist:
-            # No se encontró un usuario con el correo electrónico proporcionado
-            return Response({'message': 'Credenciales inválidas'}, status=status.HTTP_401_UNAUTHORIZED)
+        except Exception as e:
+            return Response({'message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class AnimalDelete(APIView):
     def delete(self, request, userId, numeroCaravana):

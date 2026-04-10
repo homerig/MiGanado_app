@@ -54,8 +54,15 @@ const LoginScreen = () => {
       await setUserId(userData.id); // Guarda el ID del usuario en el contexto y AsyncStorage
       router.replace('/home'); // Navega a la pantalla principal de tabs
     } catch (error) {
-      console.error('Error al iniciar sesión:', error.message);
-      Alert.alert('Error', 'Inicio de sesión fallido');
+      const message = error instanceof Error ? error.message : 'Inicio de sesión fallido';
+
+      if (message === 'Credenciales inválidas') {
+        Alert.alert('Error', 'El correo o la contraseña son incorrectos');
+        return;
+      }
+
+      console.error('Error al iniciar sesión:', message);
+      Alert.alert('Error', 'No se pudo iniciar sesión. Inténtalo de nuevo.');
     }
   };
 

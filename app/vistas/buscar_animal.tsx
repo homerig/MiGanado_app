@@ -9,6 +9,8 @@ import { UserContext } from '../../api/UserContext';
 
 import SelectDropdown from 'react-native-select-dropdown'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { getNumeroCaravanaError, NUMERO_CARAVANA_MAX_LENGTH, sanitizeNumeroCaravana } from '@/utils/caravana';
+import { DismissKeyboardView } from '@/components/DismissKeyboardView';
 
 const BuscarAnimalScreen = () => {
   const [numeroCaravana, setNumeroCaravana] = useState('');
@@ -43,6 +45,13 @@ const BuscarAnimalScreen = () => {
 
 
   const buscar = async () => {
+    const numeroCaravanaError = getNumeroCaravanaError(numeroCaravana);
+
+    if (numeroCaravanaError) {
+      Alert.alert('Error', numeroCaravanaError);
+      return;
+    }
+
     try {
       const animal = await buscarAnimal(userId, numeroCaravana);
       if (animal && animal.numeroCaravana === numeroCaravana) {
@@ -115,6 +124,7 @@ const BuscarAnimalScreen = () => {
   };
 
   return (
+    <DismissKeyboardView>
     <ThemedView style={styles.container}>
       {!animalEncontrado ? (
         <>
@@ -124,8 +134,10 @@ const BuscarAnimalScreen = () => {
             placeholder="Número de caravana"
             placeholderTextColor="#666666"
             value={numeroCaravana}
-            onChangeText={setNumeroCaravana}
+            onChangeText={(text) => setNumeroCaravana(sanitizeNumeroCaravana(text))}
             autoCapitalize="none"
+            keyboardType="number-pad"
+            maxLength={NUMERO_CARAVANA_MAX_LENGTH}
           />
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.button} onPress={buscar}>
@@ -283,6 +295,7 @@ const BuscarAnimalScreen = () => {
         </>
       )}
     </ThemedView>
+    </DismissKeyboardView>
   );
 };
 

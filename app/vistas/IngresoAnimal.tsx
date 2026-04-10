@@ -8,6 +8,8 @@ import { ThemedView } from '@/components/ThemedView'; // Asegúrate de que la ru
 import { registerAnimal, getUserLotes, buscarAnimal } from '../../api/api';
 import { UserContext } from '../../api/UserContext';
 import { useRouter } from 'expo-router';
+import { getNumeroCaravanaError, NUMERO_CARAVANA_MAX_LENGTH, sanitizeNumeroCaravana } from '@/utils/caravana';
+import { DismissKeyboardView } from '@/components/DismissKeyboardView';
 
 import SelectDropdown from 'react-native-select-dropdown'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -69,6 +71,9 @@ const IngresarAnimalScreen = () => {
       setNumeroLoteError(false);
     }
     if (!numeroCaravana) {
+      setnumeroCaravanaError(true);
+      isValid = false;
+    } else if (getNumeroCaravanaError(numeroCaravana)) {
       setnumeroCaravanaError(true);
       isValid = false;
     } else {
@@ -140,6 +145,7 @@ const IngresarAnimalScreen = () => {
 
 
   return (
+    <DismissKeyboardView>
     <ThemedView style={styles.container}>
       <ThemedText style={styles.label}>Ingresar Animal</ThemedText>
 
@@ -210,9 +216,11 @@ const IngresarAnimalScreen = () => {
         placeholder="Número de caravana"
         placeholderTextColor='#565859'
         value={numeroCaravana}
-        onChangeText={setNumeroCaravana}
+        onChangeText={(text) => setNumeroCaravana(sanitizeNumeroCaravana(text))}
+        keyboardType="number-pad"
+        maxLength={NUMERO_CARAVANA_MAX_LENGTH}
       />
-      {numeroCaravanaError && <ErrorIcon onPress={() => Alert.alert('Error', 'El campo Lote no puede estar vacío')} />}
+      {numeroCaravanaError && <ErrorIcon onPress={() => Alert.alert('Error', getNumeroCaravanaError(numeroCaravana) ?? 'El campo Número de caravana no puede estar vacío')} />}
       </View>
 
       <ThemedText style={styles.subLabel}>Historial Médico</ThemedText>
@@ -268,6 +276,7 @@ const IngresarAnimalScreen = () => {
       </TouchableOpacity>
 
     </ThemedView>
+    </DismissKeyboardView>
   );
 }
 
