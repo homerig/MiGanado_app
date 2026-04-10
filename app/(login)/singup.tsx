@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { useNavigation } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { ThemedText } from '@/components/ThemedText';
@@ -33,7 +33,7 @@ const SignUpScreen = () => {
     password: '',
     repeatPassword: '',
   });
-  const navigation = useNavigation();
+  const router = useRouter();
   const { setUserId } = useContext(UserContext); 
   const handleSignUp = async () => {
     setErrors({
@@ -117,7 +117,7 @@ const SignUpScreen = () => {
         const registeredUser = await registerUser(userData);
         console.log('Usuario registrado:', registeredUser);
         await setUserId(registeredUser.id)
-        navigation.navigate('(tabs)'); // Navegar después del registro exitoso
+        router.replace('/home'); // Navegar después del registro exitoso
       } catch (error) {
         if (error.response) {
           console.error('Error al registrar el usuario:', error.response.data);

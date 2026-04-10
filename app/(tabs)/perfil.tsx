@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Image, StyleSheet, TouchableOpacity, TextInput, View, Alert } from 'react-native';
-import Modal from 'react-native-modal';
-import { useNavigation } from '@react-navigation/native';
+import { Image, StyleSheet, TouchableOpacity, TextInput, View, Alert, Modal } from 'react-native';
+import { useRouter } from 'expo-router';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
@@ -19,7 +18,7 @@ export default function HomeScreen() {
   const [newPassword, setNewPassword] = useState('');
   const [repeatNewPassword, setRepeatNewPassword] = useState('');
 
-  const navigation = useNavigation();
+  const router = useRouter();
 
   useEffect(() => {
     setName(userName);
@@ -93,80 +92,90 @@ export default function HomeScreen() {
         <TouchableOpacity onPress={() => setChangePasswordModalVisible(true)}>
           <ThemedText type="default"><FontAwesomeIcon icon={faKey} color="#605856" /> Cambiar Contraseña</ThemedText>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('(login)')}>
+        <TouchableOpacity onPress={() => router.replace('/')}>
           <ThemedText type="default"><FontAwesomeIcon icon={faArrowRightFromBracket} color="#605856" /> Cerrar Sesión</ThemedText>
         </TouchableOpacity>
       </ThemedView>
 
       {/* Modal for Editing Profile */}
-      <Modal isVisible={isEditProfileModalVisible}>
-        <View style={styles.modalContent}>
-          <ThemedText style={styles.modalTitle}>Editar Perfil</ThemedText>
-          <TextInput
-            style={styles.modalInput}
-            placeholder="Nombre y Apellido"
-            value={name}
-            onChangeText={setName}
-            placeholderTextColor="#666666"
-          />
-          <TextInput
-            style={styles.modalInput}
-            placeholder="Correo Electrónico"
-            value={email}
-            onChangeText={setEmail}
-            placeholderTextColor="#666666"
-          />
-          <View style={{flexDirection: 'row',alignItems: 'center', gap: 20}}>
-          <TouchableOpacity style={styles.modalButtonCancel} onPress={() => setEditProfileModalVisible(false)}>
-              <ThemedText style={styles.modalButtonText}>Cancelar</ThemedText>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.modalButton} onPress={handleSaveProfile}>
-              <ThemedText style={styles.modalButtonText}>Guardar</ThemedText>
-            </TouchableOpacity>
-            
+      <Modal
+        visible={isEditProfileModalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setEditProfileModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <ThemedText style={styles.modalTitle}>Editar Perfil</ThemedText>
+            <TextInput
+              style={styles.modalInput}
+              placeholder="Nombre y Apellido"
+              value={name}
+              onChangeText={setName}
+              placeholderTextColor="#666666"
+            />
+            <TextInput
+              style={styles.modalInput}
+              placeholder="Correo Electrónico"
+              value={email}
+              onChangeText={setEmail}
+              placeholderTextColor="#666666"
+            />
+            <View style={{flexDirection: 'row', alignItems: 'center', gap: 20}}>
+              <TouchableOpacity style={styles.modalButtonCancel} onPress={() => setEditProfileModalVisible(false)}>
+                <ThemedText style={styles.modalButtonText}>Cancelar</ThemedText>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.modalButton} onPress={handleSaveProfile}>
+                <ThemedText style={styles.modalButtonText}>Guardar</ThemedText>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
 
       {/* Modal for Changing Password */}
-      <Modal isVisible={isChangePasswordModalVisible}>
-        <View style={styles.modalContent}>
-          <ThemedText style={styles.modalTitle}>Cambiar Contraseña</ThemedText>
-          <TextInput
-            style={styles.modalInput}
-            placeholder="Contraseña Actual"
-            secureTextEntry
-            value={currentPassword}
-            onChangeText={setCurrentPassword}
-            placeholderTextColor="#666666"
-          />
-          <TextInput
-            style={styles.modalInput}
-            placeholder="Contraseña Nueva"
-            secureTextEntry
-            value={newPassword}
-            onChangeText={setNewPassword}
-            placeholderTextColor="#666666"
-          />
-          <TextInput
-            style={styles.modalInput}
-            placeholder="Repetir Contraseña"
-            secureTextEntry
-            value={repeatNewPassword}
-            onChangeText={setRepeatNewPassword}
-            placeholderTextColor="#666666"
-          />
-           <View style={{flexDirection: 'row',alignItems: 'center', gap: 20}}>
-
-           <TouchableOpacity style={styles.modalButtonCancel} onPress={handleCloseChangePasswordModal}>
-              <ThemedText style={styles.modalButtonText}>Cancelar</ThemedText>
-            </TouchableOpacity>
-            
-            <TouchableOpacity style={styles.modalButton} onPress={handleChangePassword}>
-              <ThemedText style={styles.modalButtonText}>Guardar</ThemedText>
-            </TouchableOpacity>
-            
-           </View>
+      <Modal
+        visible={isChangePasswordModalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={handleCloseChangePasswordModal}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <ThemedText style={styles.modalTitle}>Cambiar Contraseña</ThemedText>
+            <TextInput
+              style={styles.modalInput}
+              placeholder="Contraseña Actual"
+              secureTextEntry
+              value={currentPassword}
+              onChangeText={setCurrentPassword}
+              placeholderTextColor="#666666"
+            />
+            <TextInput
+              style={styles.modalInput}
+              placeholder="Contraseña Nueva"
+              secureTextEntry
+              value={newPassword}
+              onChangeText={setNewPassword}
+              placeholderTextColor="#666666"
+            />
+            <TextInput
+              style={styles.modalInput}
+              placeholder="Repetir Contraseña"
+              secureTextEntry
+              value={repeatNewPassword}
+              onChangeText={setRepeatNewPassword}
+              placeholderTextColor="#666666"
+            />
+            <View style={{flexDirection: 'row', alignItems: 'center', gap: 20}}>
+              <TouchableOpacity style={styles.modalButtonCancel} onPress={handleCloseChangePasswordModal}>
+                <ThemedText style={styles.modalButtonText}>Cancelar</ThemedText>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.modalButton} onPress={handleChangePassword}>
+                <ThemedText style={styles.modalButtonText}>Guardar</ThemedText>
+              </TouchableOpacity>
+            </View>
+          </View>
         </View>
       </Modal>
     </ThemedView>
@@ -246,6 +255,12 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    paddingHorizontal: 20,
   },
   modalTitle: {
     fontSize: 20,

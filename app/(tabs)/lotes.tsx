@@ -5,7 +5,8 @@ import { faAngleRight, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons
 import { getUserLotes, createLote, deleteLote, buscarAnimalLote } from '../../api/api'; // Importar la función buscarAnimalLote
 import { UserContext } from '../../api/UserContext';
 import { ThemedText } from '@/components/ThemedText';
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
 
 const ListItem = ({ item, onPress, isSelected, isDeleting, onDelete }) => (
   <TouchableOpacity
@@ -34,7 +35,7 @@ export default function TabTwoScreen() {
   const [lotes, setLotes] = useState([]);
   const [selectedLote, setSelectedLote] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const navigation = useNavigation();
+  const router = useRouter();
 
   const fetchLotes = useCallback(async () => {
     try {
@@ -96,7 +97,10 @@ export default function TabTwoScreen() {
   const handleSelectLote = (item) => {
     if (!isDeleting) {
       setSelectedLote(item);
-      navigation.navigate('vistas/buscar_animal_lote', { lote: item });
+      router.push({
+        pathname: '/vistas/buscar_animal_lote',
+        params: { lote: JSON.stringify(item) },
+      });
     }
   };
 

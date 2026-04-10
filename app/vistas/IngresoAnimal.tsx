@@ -7,7 +7,7 @@ import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { ThemedView } from '@/components/ThemedView'; // Asegúrate de que la ruta es correcta
 import { registerAnimal, getUserLotes, buscarAnimal } from '../../api/api';
 import { UserContext } from '../../api/UserContext';
-import { useNavigation } from 'expo-router';
+import { useRouter } from 'expo-router';
 
 import SelectDropdown from 'react-native-select-dropdown'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -94,7 +94,7 @@ const IngresarAnimalScreen = () => {
     }
     return isValid;
   };
-  const navigation = useNavigation();
+  const router = useRouter();
   const handleGuardarAnimal = async () => {
     if (!validateFields()) {
       return;
@@ -135,7 +135,7 @@ const IngresarAnimalScreen = () => {
     }
   };
   const handleFinalizar = () => {
-    navigation.navigate('(tabs)');
+    router.replace('/home');
   };
 
 

@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Modal, TextInput, Button } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Modal, TextInput, Platform, Alert } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faChartColumn, faClipboardCheck, faCow, faFileMedical, faFlask, faPlus,faMapLocationDot, faSyringe, faUserDoctor } from '@fortawesome/free-solid-svg-icons';
 
@@ -36,8 +36,55 @@ LocaleConfig.locales['es'] = {
 };
 LocaleConfig.defaultLocale = 'es';
 
+const getNotificationDate = (fecha) => {
+  const fechaNotificacion = dayjs(fecha).startOf('day');
+  let notificacionDate = dayjs(fecha).format('YYYY-MM-DD');
+
+  if (fechaNotificacion.format("YYYY-MM-DD'T'HH:mm:ss'Z'") === dayjs(fecha).format("YYYY-MM-DD'T'HH:mm:ss'Z'")) {
+    notificacionDate = dayjs(fecha).startOf('day').add(-1, 'day').format('YYYY-MM-DD');
+  }
+
+  return notificacionDate;
+};
+
+const parseLocalDateString = (dateString) => {
+  const [year, month, day] = dateString.split('-').map(Number);
+  return new Date(year, month - 1, day);
+};
+
+const buildMarkedDates = (notifications, selectedDate) => {
+  const marked = {};
+
+  notifications.forEach((notificacion) => {
+    const notificacionDate = getNotificationDate(notificacion.fecha);
+    marked[notificacionDate] = {
+      selected: true,
+      selectedColor: '#d3d3d3',
+      customStyles: {
+        container: {
+          borderWidth: 1,
+          borderColor: '#d3d3d3',
+          borderRadius: 5,
+        },
+        text: {
+          color: '#000',
+        },
+      },
+    };
+  });
+
+  const selectedDateKey = dayjs(selectedDate).format('YYYY-MM-DD');
+  marked[selectedDateKey] = {
+    ...marked[selectedDateKey],
+    selected: true,
+    selectedColor: '#B43A3A',
+  };
+
+  return marked;
+};
+
 export default function HomeScreen() {
-  const navigation = useNavigation();
+  const router = useRouter();
   const { userId, userName, fetchUserName } = useContext(UserContext);
   const [notificaciones, setNotificaciones] = useState([]);
   const [filteredNotificaciones, setFilteredNotificaciones] = useState([]);
@@ -69,45 +116,6 @@ export default function HomeScreen() {
       try {
         const data = await getUserNotificaciones(userId);
         setNotificaciones(data);
-
-        // Crear un objeto para marcar las fechas con notificaciones
-        const marked = {};
-        data.forEach(notificacion => {
-          const fechaNotificacion = dayjs(notificacion.fecha).startOf('day');
-
-          var notificacionDate = dayjs(notificacion.fecha).startOf('day').format("YYYY-MM-DD");
-          // Comparación de fechas
-          if (fechaNotificacion.format("YYYY-MM-DD'T'HH:mm:ss'Z'") !== dayjs(notificacion.fecha).format("YYYY-MM-DD'T'HH:mm:ss'Z'")) {
-             notificacionDate = dayjs(notificacion.fecha).startOf('day').add(1, 'day').format("YYYY-MM-DD");
-          } 
-         
-          console.log(notificacionDate);
-          marked[notificacionDate] = { 
-            selected: true,
-            selectedColor: '#d3d3d3',
-            // Opcional: añadir un borde gris alrededor del número del día
-            customStyles: {
-              container: {
-                borderWidth: 1,
-                borderColor: '#d3d3d3',
-                borderRadius: 5,
-              },
-              text: {
-                color: '#000', // Color del número del día
-              },
-            },
-          };
-        });
-
-        // Marcar también el día actual
-        const today = dayjs().format('YYYY-MM-DD');
-        marked[today] = {
-          selected: true,
-          selectedColor: '#B43A3A'
-        };
-
-        // Actualizar el estado de markedDates con las fechas marcadas
-        setMarkedDates(marked);
       } catch (error) {
         console.error('Error fetching notifications:', error);
       }
@@ -122,18 +130,7 @@ export default function HomeScreen() {
     const filterNotificaciones = () => {
       const selectedDateStr = dayjs(selectedDate).format('YYYY-MM-DD');
       const filtered = notificaciones.filter((notificacion) => {
-        // const notificacionDateStr = dayjs(notificacion.fecha).format('YYYY-MM-DD');
-        
-
-        const fechaNotificacion = dayjs(notificacion.fecha).startOf('day');
-
-          var notificacionDate = dayjs(notificacion.fecha).format("YYYY-MM-DD");
-          // Comparación de fechas
-          if (fechaNotificacion.format("YYYY-MM-DD'T'HH:mm:ss'Z'") == dayjs(notificacion.fecha).format("YYYY-MM-DD'T'HH:mm:ss'Z'")) {
-             notificacionDate = dayjs(notificacion.fecha).startOf('day').add(-1, 'day').format("YYYY-MM-DD");
-          } 
-          
-        return notificacionDate === selectedDateStr;
+        return getNotificationDate(notificacion.fecha) === selectedDateStr;
       });
       setFilteredNotificaciones(filtered);
     };
@@ -141,30 +138,12 @@ export default function HomeScreen() {
     filterNotificaciones();
   }, [selectedDate, notificaciones]);
 
+  useEffect(() => {
+    setMarkedDates(buildMarkedDates(notificaciones, selectedDate));
+  }, [notificaciones, selectedDate]);
+
   const handleDayPress = (day) => {
-    const newMarkedDates = { ...markedDates };
-
-    // Deseleccionar días que no tienen notificaciones
-    Object.keys(newMarkedDates).forEach(date => {
-      if (!newMarkedDates[date].hasOwnProperty('customStyles')) {
-        newMarkedDates[date] = { ...newMarkedDates[date], selected: false };
-      }
-    });
-
-    Object.keys(newMarkedDates).forEach(date => {
-      if (newMarkedDates[date].hasOwnProperty('customStyles')) {
-        newMarkedDates[date] = { ...newMarkedDates[date], selected: true, selectedColor: '#d3d3d3' };
-      }
-    });
-    // Marcar el día seleccionado
-    newMarkedDates[day.dateString] = {
-      ...newMarkedDates[day.dateString],
-      selected: true,
-      selectedColor: '#B43A3A'
-    };
-
-    setMarkedDates(newMarkedDates);
-    setSelectedDate(new Date(day.dateString));
+    setSelectedDate(parseLocalDateString(day.dateString));
   };
 
   const handleScroll = (event) => {
@@ -173,21 +152,51 @@ export default function HomeScreen() {
     setActiveDotIndex(index);
   };
 
-  const agregarNotificacion = () => {
-    const nextDay = new Date(selectedDate);
-    nextDay.setDate(selectedDate.getDate());
-    const utcDate = new Date(Date.UTC(nextDay.getFullYear(), nextDay.getMonth(), nextDay.getDate(), 0, 0, 0));
-    const notificacion = createNotificacion(userId, tipoNotificacion, nuevaNotificacion, utcDate );
-    setNotificaciones([...notificaciones, notificacion]);
-    setNuevaNotificacion('');
-    setTipoNotificacion('Seleccione una opción'); // Reiniciar el tipo de notificación
+  const openCreateEventModal = () => {
+    setShowDatePicker(false);
+    setModalVisible(true);
+  };
+
+  const closeCreateEventModal = () => {
+    setShowDatePicker(false);
     setModalVisible(false);
   };
 
-  const onChangeFecha = (event, selectedDate) => {
-    const currentDate = selectedDate || selectedDate;
-    setShowDatePicker(false);
-    setSelectedDate(currentDate);
+  const agregarNotificacion = async () => {
+    if (!nuevaNotificacion.trim()) {
+      Alert.alert('Error', 'Ingresá una descripción para el evento.');
+      return;
+    }
+
+    if (tipoNotificacion === 'Seleccione una opción') {
+      Alert.alert('Error', 'Seleccioná un tipo de evento.');
+      return;
+    }
+
+    const nextDay = new Date(selectedDate);
+    nextDay.setDate(selectedDate.getDate());
+    const utcDate = new Date(Date.UTC(nextDay.getFullYear(), nextDay.getMonth(), nextDay.getDate(), 0, 0, 0));
+
+    try {
+      const notificacion = await createNotificacion(userId, tipoNotificacion, nuevaNotificacion, utcDate);
+      setNotificaciones((prevNotificaciones) => [...prevNotificaciones, notificacion]);
+      setNuevaNotificacion('');
+      setTipoNotificacion('Seleccione una opción');
+      closeCreateEventModal();
+    } catch (error) {
+      console.error('Error creating notification:', error);
+      Alert.alert('Error', 'No se pudo crear el evento.');
+    }
+  };
+
+  const onChangeFecha = (_event, nextSelectedDate) => {
+    if (nextSelectedDate) {
+      setSelectedDate(nextSelectedDate);
+    }
+
+    if (Platform.OS !== 'ios') {
+      setShowDatePicker(false);
+    }
   };
 
   const opcionesEvento = [
@@ -221,7 +230,7 @@ export default function HomeScreen() {
           <View style={styles.eventsContainer}>
             <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '82%'}}>
               <ThemedText type="subtitle" style={styles.eventsTitle}>Eventos del día</ThemedText>
-              <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.agregarNotificacionButton}>
+              <TouchableOpacity onPress={openCreateEventModal} style={styles.agregarNotificacionButton}>
                 <FontAwesomeIcon icon={faPlus} size={16} color="#6e6e6e" style={styles.icon} />
               </TouchableOpacity>
             </View>
@@ -235,7 +244,7 @@ export default function HomeScreen() {
                 style={styles.eventScrollView}
               >
                 {filteredNotificaciones.map((event, index) => (
-                  <View key={event.id} style={styles.eventBox}>
+                  <View key={event.id ?? `${event.mensaje}-${event.fecha}-${index}`} style={styles.eventBox}>
                     <Text style={styles.eventDescription}>{event.mensaje}</Text>
                   </View>
                 ))}
@@ -262,9 +271,7 @@ export default function HomeScreen() {
           animationType="fade"
           transparent={true}
           visible={modalVisible}
-          onRequestClose={() => {
-            setModalVisible(false);
-          }}
+          onRequestClose={closeCreateEventModal}
         >
           <View style={styles.modalBackground}>
           <View style={styles.centeredView}>
@@ -278,16 +285,22 @@ export default function HomeScreen() {
                 value={nuevaNotificacion}
               />
               
-              <TouchableOpacity style={styles.datePickerButton}>
-                <Text style={styles.datePickerText}>Fecha </Text>
-                <DateTimePicker
-                  value={selectedDate}
-                  mode="date"
-                  display="compact"
-                  onChange={onChangeFecha}
-                  style={styles.picker}
-                />
+              <TouchableOpacity style={styles.datePickerButton} onPress={() => setShowDatePicker((prev) => !prev)}>
+                <Text style={styles.datePickerLabel}>Fecha</Text>
+                <Text style={styles.datePickerValue}>{dayjs(selectedDate).format('DD/MM/YYYY')}</Text>
               </TouchableOpacity>
+
+              {showDatePicker && (
+                <View style={styles.datePickerContainer}>
+                  <DateTimePicker
+                    value={selectedDate}
+                    mode="date"
+                    display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                    onChange={onChangeFecha}
+                    style={styles.picker}
+                  />
+                </View>
+              )}
             
               <View>
               <SelectDropdown
@@ -320,7 +333,7 @@ export default function HomeScreen() {
                 />
               </View>
               <View style={styles.modalButtonContainer}>
-                <TouchableOpacity  style={styles.modalButtonCancel} onPress={() => setModalVisible(false)}> 
+                <TouchableOpacity  style={styles.modalButtonCancel} onPress={closeCreateEventModal}> 
                 <ThemedText style={styles.modalButtonText}>Cancelar</ThemedText> 
                 </TouchableOpacity>
 
@@ -335,14 +348,14 @@ export default function HomeScreen() {
         </Modal>
 
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('vistas/buscar_animal')}>
+          <TouchableOpacity style={styles.button} onPress={() => router.push('/vistas/buscar_animal')}>
             <View style={styles.buttonContent}>
               <FontAwesomeIcon icon={faCow} size={32} color="#FFFFFF" style={styles.icon} />
               <Text style={styles.buttonText}>Mis Animales</Text>
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('vistas/IngresoAnimal')}>
+          <TouchableOpacity style={styles.button} onPress={() => router.push('/vistas/IngresoAnimal')}>
             <View style={styles.buttonContent}>
               <FontAwesomeIcon icon={faClipboardCheck} size={32} color="#FFFFFF" style={styles.icon} />
               <View style={styles.splitTextContainer}>
@@ -352,42 +365,42 @@ export default function HomeScreen() {
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('estadisticas')}>
+          <TouchableOpacity style={styles.button} onPress={() => router.navigate('/estadisticas')}>
             <View style={styles.buttonContent}>
               <FontAwesomeIcon icon={faChartColumn} size={32} color="#FFFFFF" style={styles.icon} />
               <Text style={styles.buttonText}>Estadísticas</Text>
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('lotes')}>
+          <TouchableOpacity style={styles.button} onPress={() => router.navigate('/lotes')}>
             <View style={styles.buttonContent}>
               <FontAwesomeIcon icon={faMapLocationDot} size={32} color="#FFFFFF" style={styles.icon} />
               <Text style={styles.buttonText}>Lotes</Text>
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('vistas/vacunacion')}>
+          <TouchableOpacity style={styles.button} onPress={() => router.push('/vistas/vacunacion')}>
             <View style={styles.buttonContent}>
               <FontAwesomeIcon icon={faSyringe} size={32} color="#FFFFFF" style={styles.icon} />
               <Text style={styles.buttonText}>Vacunación</Text>
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('vistas/sangrado')}>
+          <TouchableOpacity style={styles.button} onPress={() => router.push('/vistas/sangrado')}>
             <View style={styles.buttonContent}>
               <FontAwesomeIcon icon={faFlask} size={32} color="#FFFFFF" style={styles.icon} />
               <Text style={styles.buttonText}>Sangrado</Text>
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('vistas/tacto')}>
+          <TouchableOpacity style={styles.button} onPress={() => router.push('/vistas/tacto')}>
             <View style={styles.buttonContent}>
               <FontAwesomeIcon icon={faUserDoctor} size={32} color="#FFFFFF" style={styles.icon} />
               <Text style={styles.buttonText}>Tacto</Text>
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('vistas/tratamientos')}>
+          <TouchableOpacity style={styles.button} onPress={() => router.push('/vistas/tratamientos')}>
             <View style={styles.buttonContent}>
               <FontAwesomeIcon icon={faFileMedical} size={32} color="#FFFFFF" style={styles.icon} />
               <Text style={styles.buttonText}>Tratamiento</Text>
@@ -600,22 +613,32 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     paddingHorizontal: 20,
     width: 300,
-    height: 50,
+    minHeight: 50,
     backgroundColor: '#E9ECEF',
     borderRadius: 12,
-    paddingVertical: 10,
     justifyContent: 'center',
   },
-  datePickerText: {
-    marginTop: 0,
+  datePickerLabel: {
+    fontSize: 12,
+    color: '#666666',
+    marginBottom: 2,
+  },
+  datePickerValue: {
+    fontSize: 16,
+    color: '#151E26',
+    fontWeight: '500',
+  },
+  datePickerContainer: {
+    width: 300,
+    backgroundColor: '#E9ECEF',
+    borderRadius: 12,
+    marginTop: -10,
+    marginBottom: 20,
+    paddingHorizontal: 8,
+    alignItems: 'center',
   },
   picker: {
-    paddingTop: 50,
-    top: 0,
-    width: 100,
-    marginTop: -18,
-    right: 20,
-    position: 'absolute',
+    width: '100%',
   },
   modalBackground: {
     flex: 1,

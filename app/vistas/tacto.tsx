@@ -1,12 +1,13 @@
 import React, { useState, useContext, useEffect} from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { UserContext } from '../../api/UserContext';
 import { createTacto, buscarAnimal, actualizarPrenies, getUserLotes } from '../../api/api';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
+import { DateCarouselPicker } from '@/components/DateCarouselPicker';
 
 import SelectDropdown from 'react-native-select-dropdown'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -29,7 +30,7 @@ const TactoScreen = () => {
   const { userId } = useContext(UserContext);
   const [lotes, setLotes] = useState([]);
 
-  const navigation = useNavigation();
+  const router = useRouter();
 
   useEffect(() => {
     // Define the async function
@@ -82,7 +83,7 @@ const TactoScreen = () => {
       const result = await handlesig();
       if (result) {
         Alert.alert('Éxito', 'Tacto registrado y finalizado correctamente.');
-        navigation.navigate('(tabs)');
+        router.replace('/home');
       }
     } catch (error) {
       console.error('Error al finalizar:', error.message);
@@ -206,13 +207,7 @@ const TactoScreen = () => {
       </View>
 
       <View style={styles.inputContainer}>
-        <TextInput
-          style={[styles.input, fechaError && styles.errorInput]}
-          placeholder="Fecha (YYYY-MM-DD)"
-          placeholderTextColor='#565859'
-          value={fecha}
-          onChangeText={setFecha}
-        />
+        <DateCarouselPicker value={fecha} onChange={setFecha} error={fechaError} />
         {fechaError && (
           <ErrorIcon onPress={() => Alert.alert('Error', 'El campo fecha no puede estar vacío')} />
         )}

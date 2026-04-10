@@ -4,7 +4,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faGear, faSyringe, faUserDoctor, faMapLocationDot, faFileMedical, faXmark } from '@fortawesome/free-solid-svg-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
 
@@ -47,7 +47,7 @@ const NotificationItem = ({ item, onDelete }) => {
 };
 
 const NotificacionScreen = () => {
-  const navigation = useNavigation();
+  const router = useRouter();
   const { userId } = useContext(UserContext);
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -91,7 +91,7 @@ const NotificacionScreen = () => {
       <ThemedView style={styles.container}>
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Notificaciones</ThemedText>
-        <TouchableOpacity onPress={() => navigation.navigate('vistas/ConfiguracionNotificaciones')}>
+        <TouchableOpacity onPress={() => router.push('/vistas/ConfiguracionNotificaciones')}>
           <FontAwesomeIcon icon={faGear} size={24} color="#605856" />
         </TouchableOpacity>
       </ThemedView>

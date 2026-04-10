@@ -1,19 +1,18 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, TextInput, TouchableOpacity, ScrollView, StyleSheet, Alert, Text, Image } from 'react-native';
-import Modal from 'react-native-modal';
+import { View, TextInput, TouchableOpacity, ScrollView, StyleSheet, Alert, Text, Image, Modal } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faPen, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { buscarAnimal, actualizarNombreLote, buscarAnimalLote, buscarTratam, buscarSan, deleteAnimal } from '../../api/api'; // Asegúrate de tener esta función en tu API
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { UserContext } from '../../api/UserContext';
 
 const AnimalSearchScreen = () => {
-  const route = useRoute();
-  const navigation = useNavigation();
+  const searchParams = useLocalSearchParams();
+  const router = useRouter();
   const { userId } = useContext(UserContext);
-  const { lote } = route.params;
+  const lote = JSON.parse(decodeURIComponent(searchParams.lote as string));
 
   const [caravanaNumber, setCaravanaNumber] = useState('');
   const [numero_lote, setNumeroLote] = useState(lote.numero);
@@ -36,17 +35,20 @@ const AnimalSearchScreen = () => {
       if (Array.isArray(animales) && animales.length > 0) {
         const numerosCaravana = animales.map(animal => animal.numeroCaravana);
         setCaravanas(numerosCaravana);
+        setAnimals(animales);
 
-        // Buscar tratamiento y sangrado para el primer animal encontrado
-        if (animales.length > 0) {
-          const primerAnimal = animales[0];
-          const [tratamiento, sangrado] = await Promise.all([
-            buscarTratam(userId, primerAnimal.numeroCaravana),
-            buscarSan(userId, primerAnimal.numeroCaravana)
-          ]);
-          setTratamientoEncontrado(tratamiento);
-          setSangradoEncontrado(sangrado);
-        }
+        const primerAnimal = animales[0];
+        const [tratamiento, sangrado] = await Promise.all([
+          buscarTratam(userId, primerAnimal.numeroCaravana),
+          buscarSan(userId, primerAnimal.numeroCaravana)
+        ]);
+        setTratamientoEncontrado(tratamiento);
+        setSangradoEncontrado(sangrado);
+      } else {
+        setCaravanas([]);
+        setAnimals([]);
+        setTratamientoEncontrado(null);
+        setSangradoEncontrado(null);
       }
     };
     buscar();
@@ -102,7 +104,41 @@ const AnimalSearchScreen = () => {
   };
 
   const handleDeleteAnimal = async (numeroCaravana) => {
-    
+    Alert.alert(
+      'Eliminar animal',
+      `¿Querés eliminar el animal N°${numeroCaravana} de este lote?`,
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+        {
+          text: 'Eliminar',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await deleteAnimal(userId, numeroCaravana);
+              setCaravanas((prevCaravanas) =>
+                prevCaravanas.filter((caravana) => caravana !== numeroCaravana)
+              );
+              setAnimals((prevAnimals) =>
+                prevAnimals.filter((animal) => animal.numeroCaravana !== numeroCaravana)
+              );
+
+              if (animalEncontrado?.numeroCaravana === numeroCaravana) {
+                setAnimalEncontrado(null);
+                setIsModalVisible(false);
+              }
+
+              Alert.alert('Éxito', 'El animal fue eliminado correctamente.');
+            } catch (error) {
+              console.error('Error deleting animal:', error);
+              Alert.alert('Error', 'No se pudo eliminar el animal.');
+            }
+          },
+        },
+      ]
+    );
   };
 
   return (
@@ -115,7 +151,7 @@ const AnimalSearchScreen = () => {
           </TouchableOpacity>
         </View>
         <View style={styles.rightHeader}>
-          <TouchableOpacity style={styles.iconButton} onPress={() => navigation.navigate('vistas/IngresoAnimal')}>
+          <TouchableOpacity style={styles.iconButton} onPress={() => router.push('/vistas/IngresoAnimal')}>
             <FontAwesomeIcon icon={faPlus} size={20} color="#407157" />
           </TouchableOpacity>
           <TouchableOpacity style={styles.iconButton} onPress={() => setIsDeleteMode(!isDeleteMode)}>
@@ -147,61 +183,81 @@ const AnimalSearchScreen = () => {
           </TouchableOpacity>
         ))}
       </View>
-      <Modal isVisible={isModalVisible} animationIn="fadeIn" animationOut="fadeOut">
-        <View style={styles.modalContent}>
-          {animalEncontrado && (
-            <View style={styles.animalDetail}>
-              <ThemedText type='subtitle' style={styles.modalTitle}>Detalle del Animal N°{animalEncontrado.numeroCaravana}</ThemedText>
-              <ThemedText style={styles.detail}>Edad: {animalEncontrado.edad} años</ThemedText>
-              <ThemedText style={styles.detail}>Peso: {animalEncontrado.peso} kg</ThemedText>
-              {!(animalEncontrado.tipos.includes("toro") || animalEncontrado.tipos.includes("Toro")) && (
-                <ThemedText style={styles.detail}>Preñada: {animalEncontrado.preniada ? 'Sí' : 'No'}</ThemedText>
-              )}
-            </View>
-          )}
+      <Modal
+        visible={isModalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setIsModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            {animalEncontrado && (
+              <View style={styles.animalDetail}>
+                <ThemedText type='subtitle' style={styles.modalTitle}>Detalle del Animal N°{animalEncontrado.numeroCaravana}</ThemedText>
+                <ThemedText style={styles.detail}>Edad: {animalEncontrado.edad} años</ThemedText>
+                <ThemedText style={styles.detail}>Lote: {animalEncontrado.numero_lote}</ThemedText>
+                <ThemedText style={styles.detail}>Peso: {animalEncontrado.peso} kg</ThemedText>
+                {!(animalEncontrado.tipos.includes("toro") || animalEncontrado.tipos.includes("Toro")) && (
+                  <ThemedText style={styles.detail}>Preñada: {animalEncontrado.preniada ? 'Sí' : 'No'}</ThemedText>
+                )}
+                <ThemedText style={styles.detail}>Recien Nacido: {animalEncontrado.reciennacida ? 'Sí' : 'No'}</ThemedText>
+              </View>
+            )}
 
-          {tratamientoEncontrado && tratamientoEncontrado.tratamiento ? (
-            <View style={styles.tratamientoDetail}>
-              <ThemedText style={styles.detail}>Tratamiento: {tratamientoEncontrado.tratamiento}</ThemedText>
-              <ThemedText style={styles.detail}>Fecha: {tratamientoEncontrado.fecha}</ThemedText>
-            </View>
-          ) : (
-            <View style={styles.tratamientoDetail}>
-              <ThemedText style={styles.detail}>Tratamiento: No se encontró información de tratamiento.</ThemedText>
-            </View>
-          )}
+            {tratamientoEncontrado && tratamientoEncontrado.tratamiento ? (
+              <View style={styles.tratamientoDetail}>
+                <ThemedText style={styles.detail}>Tratamiento: {tratamientoEncontrado.tratamiento}</ThemedText>
+                <ThemedText style={styles.detail}>Medicación: {tratamientoEncontrado.medicacion}</ThemedText>
+                <ThemedText style={styles.detail}>Fecha Inicio: {tratamientoEncontrado.fechaInicio}</ThemedText>
+                <ThemedText style={styles.detail}>Cada: {tratamientoEncontrado.cada} días</ThemedText>
+                <ThemedText style={styles.detail}>Durante: {tratamientoEncontrado.durante} días</ThemedText>
+              </View>
+            ) : (
+              <View style={styles.tratamientoDetail}>
+                <ThemedText style={styles.detail}>Tratamiento: No se encontró información de tratamiento.</ThemedText>
+              </View>
+            )}
 
-          {sangradoEncontrado && sangradoEncontrado.fecha ? (
-            <View style={styles.sangradoDetail}>
-              <ThemedText style={styles.detail}>Sangrado: {sangradoEncontrado.fecha}</ThemedText>
-            </View>
-          ) : (
-            <View style={styles.sangradoDetail}>
-              <ThemedText style={styles.detail}>Sangrado: No se encontró información de sangrado.</ThemedText>
-            </View>
-          )}
+            {sangradoEncontrado ? (
+              <View style={styles.sangradoDetail}>
+                <ThemedText style={styles.detail}>Sangrado:</ThemedText>
+                <ThemedText style={styles.detail}>Numero tubo: {sangradoEncontrado.numero_tubo}</ThemedText>
+              </View>
+            ) : (
+              <View style={styles.sangradoDetail}>
+                <ThemedText style={styles.detail}>Sangrado: No se encontró información de sangrado.</ThemedText>
+              </View>
+            )}
 
-          <TouchableOpacity style={styles.button} onPress={() => setIsModalVisible(false)}>
-            <ThemedText style={styles.buttonText}>Cerrar</ThemedText>
-          </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={() => setIsModalVisible(false)}>
+              <ThemedText style={styles.buttonText}>Cerrar</ThemedText>
+            </TouchableOpacity>
+          </View>
         </View>
       </Modal>
 
-      <Modal isVisible={isUpdateModalVisible} animationIn="fadeIn" animationOut="fadeOut">
-        <View style={styles.modalContent}>
-          <ThemedText type='subtitle' style={styles.modalTitle}>Actualizar Nombre del Lote</ThemedText>
-          <TextInput
-            style={styles.input}
-            placeholder="Nuevo nombre del lote"
-            value={newLoteName}
-            onChangeText={setNewLoteName}
-          />
-          <TouchableOpacity style={styles.button} onPress={handleUpdateLoteName}>
-            <ThemedText style={styles.buttonText}>Actualizar</ThemedText>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => setIsUpdateModalVisible(false)}>
-            <ThemedText style={styles.buttonText}>Cerrar</ThemedText>
-          </TouchableOpacity>
+      <Modal
+        visible={isUpdateModalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setIsUpdateModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <ThemedText type='subtitle' style={styles.modalTitle}>Actualizar Nombre del Lote</ThemedText>
+            <TextInput
+              style={styles.input}
+              placeholder="Nuevo nombre del lote"
+              value={newLoteName}
+              onChangeText={setNewLoteName}
+            />
+            <TouchableOpacity style={styles.button} onPress={handleUpdateLoteName}>
+              <ThemedText style={styles.buttonText}>Actualizar</ThemedText>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={() => setIsUpdateModalVisible(false)}>
+              <ThemedText style={styles.buttonText}>Cerrar</ThemedText>
+            </TouchableOpacity>
+          </View>
         </View>
       </Modal>
     </ThemedView>
@@ -299,6 +355,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     padding: 20,
     borderRadius: 15,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    paddingHorizontal: 20,
   },
   modalTitle: {
     marginBottom: 10,

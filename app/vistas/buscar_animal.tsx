@@ -4,7 +4,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { faChevronLeft, faPen } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { buscarAnimal, buscarTratam, buscarSan, actualizarAnimal, getUserLotes } from '../../api/api';
+import { buscarAnimal, buscarTratam, buscarSan, actualizarAnimal, actualizarPrenies, getUserLotes } from '../../api/api';
 import { UserContext } from '../../api/UserContext';
 
 import SelectDropdown from 'react-native-select-dropdown'
@@ -98,14 +98,15 @@ const BuscarAnimalScreen = () => {
   };
 
   const handleEdit = () => {
-    setEditedAnimal(animalEncontrado);
+    setEditedAnimal({ ...animalEncontrado });
     setEditModalVisible(true);
   };
 
   const handleUpdate = async () => {
     try {
       await actualizarAnimal(userId, editedAnimal.numeroCaravana, editedAnimal.numero_lote, editedAnimal.peso, editedAnimal.edad, editedAnimal.reciennacida);
-      setAnimalEncontrado(editedAnimal);
+      await actualizarPrenies(userId, editedAnimal.numeroCaravana, editedAnimal.preniada);
+      setAnimalEncontrado({ ...editedAnimal });
       setEditModalVisible(false);
     } catch (error) {
       console.error('Error al actualizar animal:', error);
@@ -259,6 +260,13 @@ const BuscarAnimalScreen = () => {
                   <Switch
                     value={editedAnimal.reciennacida}
                     onValueChange={(value) => setEditedAnimal({ ...editedAnimal, reciennacida: value })}
+                  />
+                </View>
+                <View style={styles.switchContainer}>
+                  <ThemedText style={styles.switchLabel}>Preñada</ThemedText>
+                  <Switch
+                    value={!!editedAnimal.preniada}
+                    onValueChange={(value) => setEditedAnimal({ ...editedAnimal, preniada: value })}
                   />
                 </View>
                 <View style={styles.buttonContainer}>

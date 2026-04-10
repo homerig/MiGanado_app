@@ -3,8 +3,6 @@ import { Tabs } from 'expo-router';
 import { View, Image, StyleSheet } from 'react-native';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { ThemedText } from '@/components/ThemedText';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
 
 const CustomHeader = () => {
   return (
@@ -44,77 +42,74 @@ const styles = StyleSheet.create({
 });
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
   return (
-    <View style={styles.container}>
-      <Tabs
-        initialRouteName="home"
-        screenOptions={{
-          tabBarActiveTintColor: '#ffffff',
-          tabBarInactiveTintColor: '#605856',
-          headerShown: true,
-          header: () => <CustomHeader />,
-          tabBarShowLabel: false,
-          tabBarStyle: {
-            backgroundColor: '#EEEEEE',
-            borderTopWidth: 0,
-            elevation: 0,
-            height: 80,
-            paddingTop: 12
-          },
+    <Tabs
+      initialRouteName="home"
+      screenOptions={{
+        tabBarActiveTintColor: '#ffffff',
+        tabBarInactiveTintColor: '#605856',
+        headerShown: true,
+        header: () => <CustomHeader />,
+        tabBarShowLabel: false,
+        sceneStyle: styles.container,
+        tabBarStyle: {
+          backgroundColor: '#EEEEEE',
+          borderTopWidth: 0,
+          elevation: 0,
+          height: 80,
+          paddingTop: 12,
+        },
+      }}
+    >
+      <Tabs.Screen
+        name="estadisticas"
+        options={{
+          title: 'Estadísticas',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'chart' : 'chart'} color={color} focused={focused} />
+          ),
         }}
-      >
-        <Tabs.Screen
-          name="estadisticas"        
-          options={{
-            title: 'Estadísticas',
-            tabBarIcon: ({ color, focused }) => (
-              <TabBarIcon name={focused ? 'chart' : 'chart'} color={color} focused={focused} />
-            ),
-          }}
-        />
+      />
 
-        <Tabs.Screen
-          name="notificaciones"
-          options={{
-            title: 'Notificaciones',
-            tabBarIcon: ({ color, focused }) => (
-              <TabBarIcon name={focused ? 'bell' : 'bell'} color={color} focused={focused} />
-            ),
-          }}
-        />
+      <Tabs.Screen
+        name="notificaciones"
+        options={{
+          title: 'Notificaciones',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'bell' : 'bell'} color={color} focused={focused} />
+          ),
+        }}
+      />
 
-        <Tabs.Screen
-          name="home"
-          options={{
-            title: 'Home',
-            tabBarIcon: ({ color, focused }) => (
-              <TabBarIcon name={focused ? 'home' : 'home'} color={color} focused={focused} />
-            ),
-          }}
-        />
-        
-        <Tabs.Screen
-          name="lotes"
-          options={{
-            title: 'Lotes',
-            tabBarIcon: ({ color, focused }) => (
-              <TabBarIcon name={focused ? 'map' : 'map'} color={color} focused={focused} />
-            ),
-          }}
-        />
+      <Tabs.Screen
+        name="home"
+        options={{
+          title: 'Home',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'home' : 'home'} color={color} focused={focused} />
+          ),
+        }}
+      />
 
-        <Tabs.Screen
-          name="perfil"
-          options={{
-            title: 'Perfil',
-            tabBarIcon: ({ color, focused }) => (
-              <TabBarIcon name={focused ? 'user' : 'user'} color={color} focused={focused} />
-            ),
-          }}
-        />      
-      </Tabs>
-    </View>
+      <Tabs.Screen
+        name="lotes"
+        options={{
+          title: 'Lotes',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'map' : 'map'} color={color} focused={focused} />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="perfil"
+        options={{
+          title: 'Perfil',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'user' : 'user'} color={color} focused={focused} />
+          ),
+        }}
+      />
+    </Tabs>
   );
 }

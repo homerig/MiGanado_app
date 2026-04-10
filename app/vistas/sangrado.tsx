@@ -1,12 +1,13 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { UserContext } from '../../api/UserContext';
 import { createSangrado, buscarAnimal, buscarSan, actualizarSangrado, getUserLotes } from '../../api/api';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
+import { DateCarouselPicker } from '@/components/DateCarouselPicker';
 
 import SelectDropdown from 'react-native-select-dropdown'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -30,7 +31,7 @@ const SangradoScreen = () => {
   
   const [lotes, setLotes] = useState([]);
   
-  const navigation = useNavigation();
+  const router = useRouter();
 
 
   const validateFields = () => {
@@ -162,7 +163,7 @@ const SangradoScreen = () => {
     }
     try {
       await handlesig();
-      navigation.navigate('(tabs)');
+      router.replace('/home');
     } catch (error) {
       console.error('Error al finalizar:', error.message);
       Alert.alert('Error', 'No se pudo completar la acción.');
@@ -227,13 +228,7 @@ const SangradoScreen = () => {
       </View>
 
       <View style={styles.inputContainer}>
-        <TextInput
-          style={[styles.input, fechaError && styles.errorInput]}
-          placeholder="Fecha (YYYY-MM-DD)"
-          placeholderTextColor='#565859'
-          value={fecha}
-          onChangeText={setFecha}
-        />
+        <DateCarouselPicker value={fecha} onChange={setFecha} error={fechaError} />
         {fechaError && <ErrorIcon onPress={() => Alert.alert('Error', 'El campo Fecha no puede estar vacío')} />}
       </View>
 

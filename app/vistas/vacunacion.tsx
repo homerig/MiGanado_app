@@ -2,11 +2,11 @@ import React, { useContext, useState, useEffect } from 'react';
 import { View, TextInput,  Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { ThemedText } from '@/components/ThemedText'; // Asegúrate de que la ruta es correcta
 import { ThemedView } from '@/components/ThemedView'; // Asegúrate de que la ruta es correcta
-import { useNavigation } from '@react-navigation/native';
 import { UserContext } from '../../api/UserContext';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { createVacunacion, getUserLotes } from '@/api/api';
+import { DateCarouselPicker } from '@/components/DateCarouselPicker';
 
 import SelectDropdown from 'react-native-select-dropdown'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -66,7 +66,6 @@ const VacunacionScreen = () => {
     return isValid;
   };
 
-  const navigation = useNavigation();
   useEffect(() => {
     // Define the async function
     const fetchLotes = async () => {
@@ -166,13 +165,7 @@ const VacunacionScreen = () => {
       </View>
 
       <View style={styles.inputContainer}>
-        <TextInput
-          style={[styles.input, fechaInicioError && styles.errorInput]}
-          placeholder="Fecha (YYYY-MM-DD)"
-          placeholderTextColor='#565859'
-          value={fechaInicio}
-          onChangeText={setFechaInicio}
-        />
+        <DateCarouselPicker value={fechaInicio} onChange={setFechaInicio} error={fechaInicioError} />
         {fechaInicioError && <ErrorIcon onPress={() => Alert.alert('Error', 'El campo Fecha no puede estar vacío')} />}
       </View>
 

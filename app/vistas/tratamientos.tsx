@@ -1,11 +1,10 @@
 import React, { useContext, useState } from 'react';
-import { View, TextInput, TouchableOpacity, StyleSheet, Text, Platform, Alert } from 'react-native';
+import { View, TextInput, TouchableOpacity, StyleSheet, Text, Alert } from 'react-native';
 import { ThemedText } from '@/components/ThemedText'; // Asegúrate de que la ruta es correcta
 import { ThemedView } from '@/components/ThemedView'; // Asegúrate de que la ruta es correcta
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { useNavigation } from '@react-navigation/native';
 import { UserContext } from '../../api/UserContext';
 import { createTratamiento } from '../../api/api';
+import { DateCarouselPicker } from '@/components/DateCarouselPicker';
 
 const TratamientosScreen = () => {
   const [numeroCaravana, setNumeroCaravana] = useState('');
@@ -15,7 +14,6 @@ const TratamientosScreen = () => {
   const [durante, setDuracion] = useState('');
   const [cada, setCada] = useState('');
   const { userId } = useContext(UserContext);
-  const navigation = useNavigation();
 
   const handleGuardar = async () => {
     try {
@@ -63,13 +61,7 @@ const TratamientosScreen = () => {
         onChangeText={setMedicacion}
       />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Fecha (YYYY-MM-DD)"
-        placeholderTextColor='#565859'
-        value={fechaInicio}
-        onChangeText={setFechaInicio}
-      />
+      <DateCarouselPicker value={fechaInicio} onChange={setFechaInicio} />
 
       <TextInput
         style={styles.input}
