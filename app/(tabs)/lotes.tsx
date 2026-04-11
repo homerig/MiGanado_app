@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useCallback } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert, Modal } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faAngleRight, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { getUserLotes, createLote, deleteLote, buscarAnimalLote } from '../../api/api'; // Importar la función buscarAnimalLote
@@ -7,8 +7,24 @@ import { UserContext } from '../../api/UserContext';
 import { ThemedText } from '@/components/ThemedText';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
+import SelectDropdown from 'react-native-select-dropdown';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const ListItem = ({ item, onPress, isSelected, isDeleting, onDelete }) => (
+type LoteItem = {
+  id: number;
+  numero: number;
+  nombre_lote: string;
+  capacidad_max: number;
+  animalCount?: number;
+};
+
+const ListItem = ({ item, onPress, isSelected, isDeleting, onDelete }: {
+  item: LoteItem;
+  onPress: (item: LoteItem) => void;
+  isSelected: boolean | null;
+  isDeleting: boolean;
+  onDelete: (item: LoteItem) => void;
+}) => (
   <TouchableOpacity
     style={[styles.itemContainer, isSelected && styles.selectedItem]}
     onPress={() => (isDeleting ? onDelete(item) : onPress(item))}
@@ -32,9 +48,11 @@ const ListItem = ({ item, onPress, isSelected, isDeleting, onDelete }) => (
 
 export default function TabTwoScreen() {
   const { userId } = useContext(UserContext);
-  const [lotes, setLotes] = useState([]);
-  const [selectedLote, setSelectedLote] = useState(null);
+  const [lotes, setLotes] = useState<LoteItem[]>([]);
+  const [selectedLote, setSelectedLote] = useState<LoteItem | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [loteToDelete, setLoteToDelete] = useState<LoteItem | null>(null);
+  const [loteDestino, setLoteDestino] = useState('');
   const router = useRouter();
 
   const fetchLotes = useCallback(async () => {
@@ -42,14 +60,14 @@ export default function TabTwoScreen() {
       const userLotes = await getUserLotes(userId);
 
       const lotesConAnimales = await Promise.all(
-        userLotes.map(async lote => {
+        userLotes.map(async (lote: LoteItem) => {
           const animales = await buscarAnimalLote(userId, lote.numero);
           return { ...lote, animalCount: animales.length };
         })
       );
 
       setLotes(lotesConAnimales);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error al obtener los lotes del usuario:', error.message);
     }
   }, [userId]);
@@ -79,7 +97,20 @@ export default function TabTwoScreen() {
     }
   };
 
-  const handleDeleteLote = async (item) => {
+  const handleDeleteLote = async (item: LoteItem) => {
+    const lotesDestino = lotes.filter((lote) => lote.id !== item.id);
+
+    if ((item.animalCount || 0) > 0 && lotesDestino.length === 0) {
+      Alert.alert('No se puede eliminar', 'Este lote tiene animales y no existe otro lote disponible para trasladarlos.');
+      return;
+    }
+
+    if ((item.animalCount || 0) > 0) {
+      setLoteToDelete(item);
+      setLoteDestino('');
+      return;
+    }
+
     try {
       await deleteLote(item.id);
       setLotes(prevLotes => prevLotes.filter(lote => lote.id !== item.id));
@@ -94,7 +125,29 @@ export default function TabTwoScreen() {
     setIsDeleting(prev => !prev);
   };
 
-  const handleSelectLote = (item) => {
+  const confirmDeleteLote = async () => {
+    if (!loteToDelete) {
+      return;
+    }
+
+    if ((loteToDelete.animalCount || 0) > 0 && !loteDestino) {
+      Alert.alert('Seleccioná un lote', 'Elegí a qué lote trasladar los animales antes de borrar.');
+      return;
+    }
+
+    try {
+      await deleteLote(loteToDelete.id, (loteDestino || null) as any);
+      await fetchLotes();
+      setSelectedLote(null);
+      setIsDeleting(false);
+      setLoteToDelete(null);
+      setLoteDestino('');
+    } catch (error) {
+      Alert.alert('Error', 'Error al eliminar el lote. Inténtalo de nuevo más tarde.');
+    }
+  };
+
+  const handleSelectLote = (item: LoteItem) => {
     if (!isDeleting) {
       setSelectedLote(item);
       router.push({
@@ -132,6 +185,52 @@ export default function TabTwoScreen() {
         keyExtractor={item => item.id.toString()}
         contentContainerStyle={styles.list}
       />
+      <Modal
+        visible={!!loteToDelete}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setLoteToDelete(null)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <ThemedText type='subtitle' style={styles.modalTitle}>Eliminar lote</ThemedText>
+            <ThemedText style={styles.modalText}>
+              {loteToDelete?.animalCount
+                ? 'Este lote tiene animales. Elegí a qué lote querés trasladarlos antes de borrarlo.'
+                : 'Confirmá la eliminación del lote.'}
+            </ThemedText>
+
+            {(loteToDelete?.animalCount || 0) > 0 && (
+              <SelectDropdown
+                data={lotes.filter((lote) => lote.id !== loteToDelete?.id).map((lote) => ({ title: String(lote.numero) }))}
+                onSelect={(selectedItem) => setLoteDestino(selectedItem.title)}
+                renderButton={(selectedItem, isOpened) => (
+                  <View style={styles.dropdownButtonStyle}>
+                    <Text style={styles.dropdownButtonTxtStyle}>
+                      {selectedItem ? `Lote ${selectedItem.title}` : loteDestino ? `Lote ${loteDestino}` : 'Seleccionar lote destino'}
+                    </Text>
+                    <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
+                  </View>
+                )}
+                renderItem={(item, index, isSelected) => (
+                  <View style={{...styles.dropdownItemStyle, ...(isSelected && {backgroundColor: '#D2D9DF'})}}>
+                    <Text style={styles.dropdownItemTxtStyle}>Lote {item.title}</Text>
+                  </View>
+                )}
+                showsVerticalScrollIndicator={false}
+                dropdownStyle={styles.dropdownMenuStyle}
+              />
+            )}
+
+            <TouchableOpacity style={styles.modalButton} onPress={confirmDeleteLote}>
+              <ThemedText style={styles.modalButtonText}>Confirmar</ThemedText>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.modalButton, styles.modalButtonSecondary]} onPress={() => setLoteToDelete(null)}>
+              <ThemedText style={styles.modalButtonText}>Cancelar</ThemedText>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
     </View>
   );
@@ -206,5 +305,69 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
     fontFamily: 'JostRegular',
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 24,
+    backgroundColor: 'rgba(0,0,0,0.35)',
+  },
+  modalContent: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    padding: 20,
+  },
+  modalTitle: {
+    marginBottom: 10,
+  },
+  modalText: {
+    marginBottom: 16,
+  },
+  modalButton: {
+    backgroundColor: '#407157',
+    paddingVertical: 12,
+    borderRadius: 20,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  modalButtonSecondary: {
+    backgroundColor: '#6F7C75',
+  },
+  modalButtonText: {
+    color: '#FFFFFF',
+  },
+  dropdownButtonStyle: {
+    width: '100%',
+    borderColor: '#CCCCCC',
+    borderWidth: 1,
+    height: 50,
+    borderRadius: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    marginBottom: 8,
+  },
+  dropdownButtonTxtStyle: {
+    flex: 1,
+    color: '#565859',
+  },
+  dropdownButtonArrowStyle: {
+    fontSize: 28,
+  },
+  dropdownMenuStyle: {
+    backgroundColor: '#E9ECEF',
+    borderRadius: 8,
+  },
+  dropdownItemStyle: {
+    width: '100%',
+    flexDirection: 'row',
+    padding: 15,
+    alignItems: 'center',
+  },
+  dropdownItemTxtStyle: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#565859',
   },
 });

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import dayjs from 'dayjs';
@@ -17,6 +17,12 @@ export function DateCarouselPicker({
   error = false,
 }: DateCarouselPickerProps) {
   const [showDatePicker, setShowDatePicker] = useState(false);
+
+  useEffect(() => {
+    if (!value) {
+      onChange(dayjs().format('YYYY-MM-DD'));
+    }
+  }, [value, onChange]);
 
   const selectedDate = useMemo(() => {
     if (!value) {

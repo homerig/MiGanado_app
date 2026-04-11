@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
-from .views import AnimalDelete,actualizarAnimalView,VerifyCurrentPasswordView,ActualizarContrasenaView,ActualizarDetallesUsuarioView,EstadisticasView,ActualizarNombreLoteView,BuscarAnimalLoteView,ActualizarSangradoView ,UserLotesView,ActualizarPreniesView, buscarSanView,buscarTratamView, LoginView, UsuarioViewSet, BuscarAnimalView, LoteViewSet, AnimalViewSet, TratamientoViewSet, SangradoViewSet, NotificacionViewSet, ConfigNotificacionesViewSet,TactoViewSet,VacunacionViewSet, UserNotificationsView
+from .views import AnimalDelete,actualizarAnimalView,VerifyCurrentPasswordView,ActualizarContrasenaView,ActualizarDetallesUsuarioView,EstadisticasView,ActualizarNombreLoteView,BuscarAnimalLoteView,ActualizarSangradoView ,UserLotesView,ActualizarPreniesView, ActualizarEstadoAnimalView, ConfiguracionNotificacionesUsuarioView, buscarSanView,buscarTratamView, LoginView, UsuarioViewSet, BuscarAnimalView, LoteViewSet, AnimalViewSet, TratamientoViewSet, SangradoViewSet, NotificacionViewSet, ConfigNotificacionesViewSet,TactoViewSet,VacunacionViewSet, UserNotificationsView
 
 
 router = DefaultRouter()
@@ -23,10 +23,12 @@ urlpatterns = [
     path('buscarTratam/', buscarTratamView.as_view(), name='buscarTratam'),
     path('buscarSan/', buscarSanView.as_view(), name='buscarSan'),
     path('actualizarPrenies/', ActualizarPreniesView.as_view(), name='actualizarPrenies'),
+    path('actualizarEstadoAnimal/', ActualizarEstadoAnimalView.as_view(), name='actualizarEstadoAnimal'),
     path('actualizarAnimal/', actualizarAnimalView.as_view(), name='actualizarAnimal'),
     path('actualizarNombreLote/<int:lote_id>/', ActualizarNombreLoteView.as_view(), name='actualizarNombreLote'),
     path('actualizarSangrado/', ActualizarSangradoView.as_view(), name='actualizar_sangrado'),
     path('user_notifications/<int:user_id>/', UserNotificationsView.as_view(), name='user_notifications'),
+    path('config_notificaciones/<int:user_id>/', ConfiguracionNotificacionesUsuarioView.as_view(), name='config_notificaciones'),
     path('user_lotes/', UserLotesView.as_view({'get': 'user_lotes'}), name='user_lotes'),
     path('estadisticas/<int:lote_id>/', EstadisticasView.as_view(), name='estadisticas'),
     path('actualizarContrasena/', ActualizarContrasenaView.as_view(), name='actualizar_contrasena'),
@@ -34,4 +36,3 @@ urlpatterns = [
     path('verifyCurrentPassword/', VerifyCurrentPasswordView.as_view(), name='verify_current_password'),
     path('animal_delete/', AnimalDelete.as_view(), name='animal_delete'),
 ]
-

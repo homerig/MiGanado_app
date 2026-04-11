@@ -115,9 +115,24 @@ const actualizarPrenies = async (idUsuario, numeroCaravana, preniada) => {
     throw error;
   }
 };
-const actualizarAnimal = async (idUsuario, numeroCaravana, numero_lote, peso, edad,reciennacida) => {
+const actualizarEstadoAnimal = async (idUsuario, numeroCaravana, estado) => {
   try {
-    const response = await axios.put(`${baseURL}/actualizarAnimal/`, { idUsuario, numeroCaravana,  numero_lote, peso, edad,reciennacida });
+    const response = await axios.put(`${baseURL}/actualizarEstadoAnimal/`, { idUsuario, numeroCaravana, estado });
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error('Error al actualizar el estado del animal:', error.response.data);
+    } else if (error.request) {
+      console.error('Error al actualizar el estado del animal - No se recibió respuesta:', error.request);
+    } else {
+      console.error('Error al actualizar el estado del animal:', error.message);
+    }
+    throw error;
+  }
+};
+const actualizarAnimal = async (idUsuario, numeroCaravana, nuevoNumeroCaravana, numero_lote, peso, edad,reciennacida) => {
+  try {
+    const response = await axios.put(`${baseURL}/actualizarAnimal/`, { idUsuario, numeroCaravana, nuevoNumeroCaravana, numero_lote, peso, edad,reciennacida });
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -205,10 +220,49 @@ const getUserLotes = async (userId) => {
   }
 };
 
+const getConfigNotificaciones = async (userId) => {
+  try {
+    const response = await axios.get(`${baseURL}/config_notificaciones/${userId}/`);
+    return response.data;
+  } catch (error) {
+    console.error('Error al obtener la configuración de notificaciones:', error.message);
+    throw error;
+  }
+};
+
+const actualizarConfigNotificaciones = async (userId, config) => {
+  try {
+    const response = await axios.put(`${baseURL}/config_notificaciones/${userId}/`, config);
+    return response.data;
+  } catch (error) {
+    console.error('Error al actualizar la configuración de notificaciones:', error.message);
+    throw error;
+  }
+};
+
+const notificationTypeToConfigKey = {
+  Lote: 'recibir_notificaciones_lote',
+  Tratamiento: 'recibir_notificaciones_tratamiento',
+  Tacto: 'recibir_notificaciones_tacto',
+  Sangrado: 'recibir_notificaciones_sangrado',
+  Estadísticas: 'recibir_notificaciones_estadisticas',
+};
+
 
 const createNotificacion = async(userId, tipo, mensaje, fecha ) => {
   try {
-    const response = await axios.post(`${baseURL}/notificaciones/`, {  userId, tipo, mensaje, fecha });
+    const config = await getConfigNotificaciones(userId);
+    const configKey = notificationTypeToConfigKey[tipo];
+
+    if (configKey && config?.[configKey] === false) {
+      return null;
+    }
+
+    const normalizedFecha = typeof fecha === 'string'
+      ? fecha
+      : (fecha?.toISOString ? fecha.toISOString() : String(fecha));
+
+    const response = await axios.post(`${baseURL}/notificaciones/`, {  userId, tipo, mensaje, fecha: normalizedFecha });
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -262,7 +316,7 @@ const createLote = async (loteData, userId) => {
 
 export const deleteAnimal = async (userId, numeroCaravana) => {
   try {
-    const response = await axios.delete(`${baseURL}/animale_delete/`, {
+    const response = await axios.delete(`${baseURL}/animal_delete/`, {
       data: {
         userId: userId,
         numeroCaravana: numeroCaravana
@@ -280,9 +334,9 @@ export const deleteAnimal = async (userId, numeroCaravana) => {
 };
 
 
-const deleteLote = async (loteId) => {
+const deleteLote = async (loteId, nuevo_numero_lote = null) => {
   try {
-    const response = await axios.delete(`${baseURL}/lotes/${loteId}/`);
+    const response = await axios.post(`${baseURL}/lotes/${loteId}/eliminar-con-traslado/`, { nuevo_numero_lote });
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -331,13 +385,13 @@ const createTratamiento = async ({ numeroCaravana, tratamiento, medicacion, fech
     var animal = await buscarAnimal(userId, numeroCaravana);
     var fecha = fechaInicio;
     var mensaje = tratamiento + " de Caravana Nº"+ numeroCaravana +" en el lote N°" + animal.numero_lote;
-    const notificacion = await createNotificacion(userId, tipo, mensaje, fecha);
+    await createNotificacion(userId, tipo, mensaje, dayjs(fecha).startOf('day').toDate());
 
     var nuevaFecha = dayjs(fechaInicio);
       // Crear las notificaciones cada 'cada' días durante 'durante' veces
       for (let i = 1; i < durante / cada; i++) {
         nuevaFecha = nuevaFecha.add(cada, 'day'); // Sumar 1 día
-        await createNotificacion(userId, tipo, mensaje, nuevaFecha);
+        await createNotificacion(userId, tipo, mensaje, nuevaFecha.startOf('day').toDate());
       }
     return response.data;
   } catch (error) {
@@ -375,13 +429,13 @@ const createVacunacion = async ({ numero_lote, nombre_vacuna, fechaInicio, duran
     var tipo = "Vacunación";
     var fecha = fechaInicio;
     var mensaje = "Vacunación del lote N°" + numero_lote +" con la vacuna "+ nombre_vacuna;
-    const notificacion = await createNotificacion(userId, tipo, mensaje, fecha);
+    await createNotificacion(userId, tipo, mensaje, dayjs(fecha).startOf('day').toDate());
 
     var nuevaFecha = dayjs(fechaInicio);
       // Crear las notificaciones cada 'cada' días durante 'durante' veces
       for (let i = 1; i < durante / cada; i++) {
         nuevaFecha = nuevaFecha.add(cada, 'day'); // Sumar 1 día
-        await createNotificacion(userId, tipo, mensaje, nuevaFecha);
+        await createNotificacion(userId, tipo, mensaje, nuevaFecha.startOf('day').toDate());
       }
     return response.data;
   } catch (error) {
@@ -434,4 +488,4 @@ const getTasaPrenez = async (loteId) => {
 
 
 
-export { baseURL ,actualizarAnimal, createNotificacion,deleteNotificacion,actualizarSangrado,buscarAnimalLote,actualizarPrenies,actualizarNombreLote ,buscarSan ,buscarTratam ,registerUser, loginUser, buscarAnimal, getUserLotes, getUserNotificaciones,createSangrado,createTacto,createVacunacion, createTratamiento, registerAnimal,createLote,deleteLote,getTasaNatalidad,getPesoPromedio,getTasaPrenez};
+export { baseURL ,actualizarAnimal, actualizarEstadoAnimal, actualizarConfigNotificaciones, getConfigNotificaciones, createNotificacion,deleteNotificacion,actualizarSangrado,buscarAnimalLote,actualizarPrenies,actualizarNombreLote ,buscarSan ,buscarTratam ,registerUser, loginUser, buscarAnimal, getUserLotes, getUserNotificaciones,createSangrado,createTacto,createVacunacion, createTratamiento, registerAnimal,createLote,deleteLote,getTasaNatalidad,getPesoPromedio,getTasaPrenez};

@@ -13,7 +13,7 @@ import { loginUser } from '../../api/api';
 //Para el dato del id del usuario
 import { UserContext } from '../../api/UserContext'; 
 
-const ErrorIcon = ({ onPress }) => (
+const ErrorIcon = ({ onPress }: { onPress: () => void }) => (
   <TouchableOpacity onPress={onPress} style={styles.errorIcon}>
     <FontAwesomeIcon icon={faTimesCircle} size={24} color="#d44648" />
   </TouchableOpacity>

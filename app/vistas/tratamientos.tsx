@@ -36,7 +36,7 @@ const TratamientosScreen = () => {
       setCada('');
       setDuracion('');
       Alert.alert('Éxito', 'Tratamiento registrado correctamente.');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error al registrar el tratamiento:', error.message);
       Alert.alert('Error', 'No se pudo guardar el tratamiento.');
     }

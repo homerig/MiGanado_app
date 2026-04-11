@@ -34,7 +34,7 @@ class AnimalSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Animal
-        fields = ['id', 'numeroCaravana', 'numero_lote', 'tipos', 'peso', 'edad', 'preniada', 'reciennacida', 'userId']
+        fields = ['id', 'numeroCaravana', 'numero_lote', 'tipos', 'peso', 'edad', 'preniada', 'reciennacida', 'estado', 'userId']
 
 class TratamientoSerializer(serializers.ModelSerializer):
     def validate_numeroCaravana(self, value):

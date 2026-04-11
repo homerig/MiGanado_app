@@ -10,6 +10,7 @@ from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from django.views import View
 from django.db.models import Count
+from django.db import transaction
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -44,13 +45,11 @@ class LoginView(APIView):
             return Response({'message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class AnimalDelete(APIView):
-    def delete(self, request, userId, numeroCaravana):
-        try:
-            animal = Animal.objects.get(user_id=userId, numero_caravana=numeroCaravana)
-            animal.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        except Animal.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+    def delete(self, request, *args, **kwargs):
+        return Response(
+            {'message': 'La eliminación física del animal no está permitida. Actualice su estado.'},
+            status=status.HTTP_405_METHOD_NOT_ALLOWED,
+        )
 
 class VerifyCurrentPasswordView(APIView):
     def post(self, request, *args, **kwargs):
@@ -139,11 +138,35 @@ class ActualizarPreniesView(APIView):
         except Exception as e:
             return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
+class ActualizarEstadoAnimalView(APIView):
+    def put(self, request, *args, **kwargs):
+        idUsuario = request.data.get('idUsuario')
+        numeroCaravana = request.data.get('numeroCaravana')
+        estado = request.data.get('estado')
+
+        if estado not in {'vivo', 'murio', 'vendido'}:
+            return Response({'message': 'Estado inválido'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            animal = Animal.objects.get(numeroCaravana=numeroCaravana, userId=idUsuario)
+            animal.estado = estado
+
+            if animal.tipos.lower() == 'toro':
+                animal.preniada = False
+
+            animal.save()
+            serializer = AnimalSerializer(animal)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Animal.DoesNotExist:
+            return Response({'message': 'Animal no encontrado'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class actualizarAnimalView(APIView):
     def put(self, request, *args, **kwargs):
         idUsuario = request.data.get('idUsuario')
         numeroCaravana = request.data.get('numeroCaravana')
+        nuevo_numero_caravana = request.data.get('nuevoNumeroCaravana') or numeroCaravana
         numero_lote = request.data.get('numero_lote')
         peso = request.data.get('peso')
         edad = request.data.get('edad')
@@ -151,10 +174,23 @@ class actualizarAnimalView(APIView):
 
         try:
             animal = Animal.objects.get(numeroCaravana=numeroCaravana, userId=idUsuario)
+            if nuevo_numero_caravana != numeroCaravana and Animal.objects.filter(numeroCaravana=nuevo_numero_caravana, userId=idUsuario).exists():
+                return Response({'message': 'El número de caravana ya está en uso'}, status=status.HTTP_400_BAD_REQUEST)
+
+            if nuevo_numero_caravana != numeroCaravana:
+                Tratamiento.objects.filter(numeroCaravana=numeroCaravana, userId=idUsuario).update(numeroCaravana=nuevo_numero_caravana)
+                Sangrado.objects.filter(numeroCaravana=numeroCaravana, userId=idUsuario).update(numeroCaravana=nuevo_numero_caravana)
+                Tacto.objects.filter(numeroCaravana=numeroCaravana, userId=idUsuario).update(numeroCaravana=nuevo_numero_caravana)
+
+            animal.numeroCaravana = nuevo_numero_caravana
             animal.numero_lote= numero_lote
             animal.peso = peso
             animal.reciennacida= reciennacida
             animal.edad= edad
+
+            if animal.tipos.lower() == 'toro':
+                animal.preniada = False
+
             animal.save()
             serializer = AnimalSerializer(animal)
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -256,6 +292,40 @@ class UserNotificationsView(APIView):
         notificaciones = Notificacion.objects.filter(userId=user_id)
         notificaciones_data = list(notificaciones.values('tipo', 'mensaje', 'fecha', 'id'))
         return JsonResponse(notificaciones_data, safe=False)
+
+class ConfiguracionNotificacionesUsuarioView(APIView):
+    def get(self, request, user_id):
+        config, _ = ConfigNotificaciones.objects.get_or_create(
+            usuario_id=user_id,
+            defaults={
+                'recibir_notificaciones_lote': True,
+                'recibir_notificaciones_tratamiento': True,
+                'recibir_notificaciones_tacto': True,
+                'recibir_notificaciones_sangrado': True,
+                'recibir_notificaciones_estadisticas': True,
+            },
+        )
+        serializer = ConfigNotificacionesSerializer(config)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request, user_id):
+        config, _ = ConfigNotificaciones.objects.get_or_create(
+            usuario_id=user_id,
+            defaults={
+                'recibir_notificaciones_lote': True,
+                'recibir_notificaciones_tratamiento': True,
+                'recibir_notificaciones_tacto': True,
+                'recibir_notificaciones_sangrado': True,
+                'recibir_notificaciones_estadisticas': True,
+            },
+        )
+        serializer = ConfigNotificacionesSerializer(config, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save(usuario_id=user_id)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class UserLotesView(viewsets.ModelViewSet):
     queryset = Lote.objects.all()
@@ -292,6 +362,35 @@ class UsuarioViewSet(viewsets.ModelViewSet):
 class LoteViewSet(viewsets.ModelViewSet):
     queryset = Lote.objects.all()
     serializer_class = LoteSerializer
+
+    @action(detail=True, methods=['post'], url_path='eliminar-con-traslado')
+    def eliminar_con_traslado(self, request, pk=None):
+        lote = self.get_object()
+        nuevo_numero_lote = request.data.get('nuevo_numero_lote')
+
+        with transaction.atomic():
+            animales = Animal.objects.filter(numero_lote=lote.numero, userId=lote.usuario_id)
+
+            if animales.exists():
+                if not nuevo_numero_lote:
+                    return Response(
+                        {'message': 'Debe indicar un lote destino para trasladar los animales.'},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
+                try:
+                    lote_destino = Lote.objects.get(numero=nuevo_numero_lote, usuario=lote.usuario_id)
+                except Lote.DoesNotExist:
+                    return Response({'message': 'Lote destino no encontrado'}, status=status.HTTP_404_NOT_FOUND)
+
+                if lote_destino.id == lote.id:
+                    return Response({'message': 'El lote destino debe ser diferente.'}, status=status.HTTP_400_BAD_REQUEST)
+
+                animales.update(numero_lote=lote_destino.numero)
+
+            lote.delete()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
     

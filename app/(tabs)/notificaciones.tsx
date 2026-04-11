@@ -1,17 +1,25 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useCallback, useState, useEffect, useContext } from 'react';
 import { ActivityIndicator, StyleSheet, Image, TouchableOpacity, View, Text, FlatList } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faGear, faSyringe, faUserDoctor, faMapLocationDot, faFileMedical, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { useRouter } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
 
 import { UserContext } from '../../api/UserContext';
 import { getUserNotificaciones, deleteNotificacion } from '../../api/api';
 
-const NotificationItem = ({ item, onDelete }) => {
+type Notification = {
+  id: number;
+  tipo: string;
+  mensaje: string;
+  fecha: string;
+};
+
+const NotificationItem = ({ item, onDelete }: { item: Notification; onDelete: (id: number) => void }) => {
   let icon;
   switch (item.tipo) {
     case "Vacunación":
@@ -49,25 +57,25 @@ const NotificationItem = ({ item, onDelete }) => {
 const NotificacionScreen = () => {
   const router = useRouter();
   const { userId } = useContext(UserContext);
-  const [notifications, setNotifications] = useState([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
     try {
       const notificaciones = await getUserNotificaciones(userId);
       setNotifications(notificaciones);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching notifications:', error.message);
     } finally {
       setLoading(false);
     }
-  };
+  }, [userId]);
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id: number) => {
     try {
       await deleteNotificacion(id);
       fetchNotifications(); // Recargar las notificaciones después de eliminar una
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error al eliminar la notificación:', error.message);
     }
   };
@@ -76,7 +84,13 @@ const NotificacionScreen = () => {
     if (userId) {
       fetchNotifications();
     }
-  }, [userId]);
+  }, [userId, fetchNotifications]);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchNotifications();
+    }, [fetchNotifications])
+  );
 
   if (loading) {
     return (

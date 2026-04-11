@@ -11,7 +11,12 @@ import { DateCarouselPicker } from '@/components/DateCarouselPicker';
 import SelectDropdown from 'react-native-select-dropdown'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const ErrorIcon = ({ onPress }) => (
+type LoteOption = {
+  id: number;
+  numero: number;
+};
+
+const ErrorIcon = ({ onPress }: { onPress: () => void }) => (
   <TouchableOpacity onPress={onPress} style={styles.errorIcon}>
     <FontAwesomeIcon icon={faTimesCircle} size={24} color="#d44648" />
   </TouchableOpacity>
@@ -30,7 +35,7 @@ const VacunacionScreen = () => {
   const [cadaError, setCadaError] = useState(false);
   const { userId } = useContext(UserContext);
 
-  const [lotes, setLotes] = useState([]);
+  const [lotes, setLotes] = useState<LoteOption[]>([]);
   const validateFields = () => {
     let isValid = true;
     if (!numero_lote) {
@@ -83,7 +88,7 @@ const VacunacionScreen = () => {
     fetchLotes();
   }, [userId]); // Re-run effect if userId changes
 
-  const opcionesLotes = Array.isArray(lotes) ? lotes.map(lote => ({ title: lote.numero })) : [];
+  const opcionesLotes = Array.isArray(lotes) ? lotes.map((lote) => ({ title: String(lote.numero) })) : [];
 
   const handleGuardar = async () => {
     if (!validateFields()) {
@@ -94,7 +99,7 @@ const VacunacionScreen = () => {
       console.log('Lotes:', lotes);
   
       const numeroLoteInt = parseInt(numero_lote, 10);
-      const loteExiste = lotes.some(lote => {
+      const loteExiste = lotes.some((lote) => {
         console.log(`Comparando ${lote.numero} con ${numeroLoteInt}`); 
         return lote.numero === numeroLoteInt;
       });
@@ -112,7 +117,7 @@ const VacunacionScreen = () => {
       setDurante('');
       setCada('');
       Alert.alert('Éxito', 'Vacunacion registrada correctamente.');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error al registrar la vacunacion:', error.message);
       Alert.alert('Error', 'No se pudo guardar la vacunacion.');
     }

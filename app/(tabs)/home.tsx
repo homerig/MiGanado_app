@@ -1,8 +1,9 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Modal, TextInput, Platform, Alert } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useRouter } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faChartColumn, faClipboardCheck, faCow, faFileMedical, faFlask, faPlus,faMapLocationDot, faSyringe, faUserDoctor } from '@fortawesome/free-solid-svg-icons';
 
@@ -15,6 +16,28 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 
 import SelectDropdown from 'react-native-select-dropdown'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
+type Notification = {
+  id?: number;
+  tipo: string;
+  mensaje: string;
+  fecha: string | Date;
+};
+
+type MarkedDateMap = Record<string, {
+  selected?: boolean;
+  selectedColor?: string;
+  customStyles?: {
+    container?: {
+      borderWidth?: number;
+      borderColor?: string;
+      borderRadius?: number;
+    };
+    text?: {
+      color?: string;
+    };
+  };
+}>;
 
 dayjs.locale('es');
 
@@ -36,7 +59,7 @@ LocaleConfig.locales['es'] = {
 };
 LocaleConfig.defaultLocale = 'es';
 
-const getNotificationDate = (fecha) => {
+const getNotificationDate = (fecha: string | Date) => {
   const fechaNotificacion = dayjs(fecha).startOf('day');
   let notificacionDate = dayjs(fecha).format('YYYY-MM-DD');
 
@@ -47,15 +70,15 @@ const getNotificationDate = (fecha) => {
   return notificacionDate;
 };
 
-const parseLocalDateString = (dateString) => {
+const parseLocalDateString = (dateString: string) => {
   const [year, month, day] = dateString.split('-').map(Number);
   return new Date(year, month - 1, day);
 };
 
-const buildMarkedDates = (notifications, selectedDate) => {
-  const marked = {};
+const buildMarkedDates = (notifications: Notification[], selectedDate: Date): MarkedDateMap => {
+  const marked: MarkedDateMap = {};
 
-  notifications.forEach((notificacion) => {
+  notifications.forEach((notificacion: Notification) => {
     const notificacionDate = getNotificationDate(notificacion.fecha);
     marked[notificacionDate] = {
       selected: true,
@@ -86,10 +109,10 @@ const buildMarkedDates = (notifications, selectedDate) => {
 export default function HomeScreen() {
   const router = useRouter();
   const { userId, userName, fetchUserName } = useContext(UserContext);
-  const [notificaciones, setNotificaciones] = useState([]);
-  const [filteredNotificaciones, setFilteredNotificaciones] = useState([]);
+  const [notificaciones, setNotificaciones] = useState<Notification[]>([]);
+  const [filteredNotificaciones, setFilteredNotificaciones] = useState<Notification[]>([]);
   const [selectedDate, setSelectedDate] = useState(dayjs().toDate());
-  const [markedDates, setMarkedDates] = useState({});
+  const [markedDates, setMarkedDates] = useState<MarkedDateMap>({});
   const [activeDotIndex, setActiveDotIndex] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
   const [nuevaNotificacion, setNuevaNotificacion] = useState('');
@@ -98,11 +121,24 @@ export default function HomeScreen() {
   const [showOptions, setShowOptions] = useState(false);
   const [tipoNotificacion, setTipoNotificacion] = useState('Seleccione una opción');
 
+  const fetchNotificaciones = useCallback(async () => {
+    if (!userId) {
+      return;
+    }
+
+    try {
+      const data = await getUserNotificaciones(userId);
+      setNotificaciones(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+    }
+  }, [userId]);
+
   const toggleOptions = () => {
     setShowOptions(!showOptions);
   };
 
-  const selectOption = (tipo) => {
+  const selectOption = (tipo: string) => {
     setTipoNotificacion(tipo);
     setShowOptions(false);
   };
@@ -112,24 +148,21 @@ export default function HomeScreen() {
       fetchUserName(userId);
     }
 
-    const fetchNotificaciones = async () => {
-      try {
-        const data = await getUserNotificaciones(userId);
-        setNotificaciones(data);
-      } catch (error) {
-        console.error('Error fetching notifications:', error);
-      }
-    };
-
     if (userId) {
       fetchNotificaciones();
     }
-  }, [userId]);
+  }, [userId, fetchNotificaciones, fetchUserName]);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchNotificaciones();
+    }, [fetchNotificaciones])
+  );
 
   useEffect(() => {
     const filterNotificaciones = () => {
       const selectedDateStr = dayjs(selectedDate).format('YYYY-MM-DD');
-      const filtered = notificaciones.filter((notificacion) => {
+      const filtered = notificaciones.filter((notificacion: Notification) => {
         return getNotificationDate(notificacion.fecha) === selectedDateStr;
       });
       setFilteredNotificaciones(filtered);
@@ -142,11 +175,11 @@ export default function HomeScreen() {
     setMarkedDates(buildMarkedDates(notificaciones, selectedDate));
   }, [notificaciones, selectedDate]);
 
-  const handleDayPress = (day) => {
+  const handleDayPress = (day: { dateString: string }) => {
     setSelectedDate(parseLocalDateString(day.dateString));
   };
 
-  const handleScroll = (event) => {
+  const handleScroll = (event: any) => {
     const { contentOffset } = event.nativeEvent;
     const index = Math.round(contentOffset.x / event.nativeEvent.layoutMeasurement.width);
     setActiveDotIndex(index);
@@ -179,7 +212,9 @@ export default function HomeScreen() {
 
     try {
       const notificacion = await createNotificacion(userId, tipoNotificacion, nuevaNotificacion, utcDate);
-      setNotificaciones((prevNotificaciones) => [...prevNotificaciones, notificacion]);
+      if (notificacion) {
+        setNotificaciones((prevNotificaciones) => [...prevNotificaciones, notificacion]);
+      }
       setNuevaNotificacion('');
       setTipoNotificacion('Seleccione una opción');
       closeCreateEventModal();
@@ -189,7 +224,7 @@ export default function HomeScreen() {
     }
   };
 
-  const onChangeFecha = (_event, nextSelectedDate) => {
+  const onChangeFecha = (_event: unknown, nextSelectedDate?: Date) => {
     if (nextSelectedDate) {
       setSelectedDate(nextSelectedDate);
     }
@@ -221,10 +256,17 @@ export default function HomeScreen() {
             markedDates={markedDates}
             onDayPress={handleDayPress}
             monthFormat={'MMMM yyyy'}
+            renderArrow={(direction) => (
+              <View style={styles.calendarArrow}>
+                <Text style={styles.calendarArrowText}>{direction === 'left' ? '<' : '>'}</Text>
+              </View>
+            )}
             theme={{
               selectedDayBackgroundColor: '#407157',
               todayTextColor: '#629479',
               arrowColor: '#407157',
+              monthTextColor: '#1E3428',
+              textMonthFontWeight: '700',
             }}
           />
           <View style={styles.eventsContainer}>
@@ -305,7 +347,7 @@ export default function HomeScreen() {
               <View>
               <SelectDropdown
                   data={opcionesEvento}
-                  onSelect={(selectedItem, index) => {
+                  onSelect={(selectedItem) => {
                     selectOption(selectedItem.title);
                   }}
                   renderButton={(selectedItem, isOpened) => {
@@ -443,6 +485,19 @@ const styles = StyleSheet.create({
   },
   calendar: {
     borderRadius: 15,
+  },
+  calendarArrow: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: '#E7F0EA',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  calendarArrowText: {
+    color: '#407157',
+    fontSize: 18,
+    fontWeight: '700',
   },
   eventsContainer: {
     width: '100%',

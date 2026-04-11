@@ -14,7 +14,16 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { getNumeroCaravanaError, NUMERO_CARAVANA_MAX_LENGTH, sanitizeNumeroCaravana } from '@/utils/caravana';
 import { DismissKeyboardView } from '@/components/DismissKeyboardView';
 
-const ErrorIcon = ({ onPress }) => (
+type LoteOption = {
+  id: number;
+  numero: number;
+};
+
+type AnimalData = {
+  tipos?: string;
+};
+
+const ErrorIcon = ({ onPress }: { onPress: () => void }) => (
   <TouchableOpacity onPress={onPress} style={styles.errorIcon}>
     <FontAwesomeIcon icon={faTimesCircle} size={24} color="#d44648" />
   </TouchableOpacity>
@@ -29,8 +38,9 @@ const TactoScreen = () => {
   const [numeroCaravanaError, setNumeroCaravanaError] = useState(false);
   const [fechaError, setFechaError] = useState(false);
   const [animalEncontrado, setAnimalEncontrado] = useState(false);
+  const [animalData, setAnimalData] = useState<AnimalData | null>(null);
   const { userId } = useContext(UserContext);
-  const [lotes, setLotes] = useState([]);
+  const [lotes, setLotes] = useState<LoteOption[]>([]);
 
   const router = useRouter();
 
@@ -51,7 +61,7 @@ const TactoScreen = () => {
     fetchLotes();
   }, [userId]); // Re-run effect if userId changes
 
-  const opcionesLotes = Array.isArray(lotes) ? lotes.map(lote => ({ title: lote.numero })) : [];
+  const opcionesLotes = Array.isArray(lotes) ? lotes.map((lote) => ({ title: String(lote.numero) })) : [];
 
 
   const validateFields = () => {
@@ -90,7 +100,7 @@ const TactoScreen = () => {
         Alert.alert('Éxito', 'Tacto registrado y finalizado correctamente.');
         router.replace('/home');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error al finalizar:', error.message);
       Alert.alert('Error', 'No se pudo completar la acción.');
     }
@@ -100,6 +110,7 @@ const TactoScreen = () => {
     try {
       const animal = await buscarAnimal(userId, numeroCaravana);
       if (animal && animal.numeroCaravana === numeroCaravana) {
+        setAnimalData(animal);
         return true;
       } else {
         Alert.alert(
@@ -123,10 +134,10 @@ const TactoScreen = () => {
     const valid = await validar();
     if (valid) {
       try {
-        const lotes = await getUserLotes(userId);
+        const lotes: LoteOption[] = await getUserLotes(userId);
         console.log('Lotes:', lotes);
         const numeroLoteInt = parseInt(numero_lote, 10);
-        const loteExiste = lotes.some(lote => {
+        const loteExiste = lotes.some((lote) => {
           console.log(`Comparando ${lote.numero} con ${numeroLoteInt}`); 
           return lote.numero === numeroLoteInt;
         });
@@ -140,7 +151,9 @@ const TactoScreen = () => {
         console.log("Tacto registrado:", tacto);
         
         // Actualizar la preñez del animal
-        await actualizarPrenies(userId, numeroCaravana, prenada);
+        if (animalData?.tipos?.toLowerCase?.() !== 'toro') {
+          await actualizarPrenies(userId, numeroCaravana, prenada);
+        }
         console.log("Preñez del animal actualizada");
         
         // Limpiar los campos después de guardar exitosamente
@@ -148,9 +161,10 @@ const TactoScreen = () => {
         setNumeroCaravana('');
         setPrenada(false);
         setFecha('');
+        setAnimalData(null);
         Alert.alert('Éxito', 'Tacto registrado correctamente.');
         return true;
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error al registrar el tacto:', error.message);
         Alert.alert('Error', 'No se pudo guardar el tacto.');
         return false;
@@ -221,17 +235,19 @@ const TactoScreen = () => {
         )}
       </View>
 
-      <View style={styles.checkboxContainer}>
-        <TouchableOpacity
-          style={styles.checkbox}
-          onPress={() => setPrenada(!prenada)}
-        >
-          <View style={styles.box}>
-            {prenada && <ThemedText style={styles.checkmark}>✓</ThemedText>}
-          </View>
-        </TouchableOpacity>
-        <ThemedText style={styles.label}>Preñada</ThemedText>
-      </View>
+      {animalData?.tipos?.toLowerCase?.() !== 'toro' && (
+        <View style={styles.checkboxContainer}>
+          <TouchableOpacity
+            style={styles.checkbox}
+            onPress={() => setPrenada(!prenada)}
+          >
+            <View style={styles.box}>
+              {prenada && <ThemedText style={styles.checkmark}>✓</ThemedText>}
+            </View>
+          </TouchableOpacity>
+          <ThemedText style={styles.label}>Preñada</ThemedText>
+        </View>
+      )}
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={handlesig}>

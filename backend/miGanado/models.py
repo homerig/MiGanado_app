@@ -34,6 +34,12 @@ class Lote(models.Model):
 
 
 class Animal(models.Model):
+    ESTADO_CHOICES = [
+        ('vivo', 'Vivo'),
+        ('murio', 'Murió'),
+        ('vendido', 'Vendido'),
+    ]
+
     numero_lote = models.IntegerField()
     numeroCaravana = models.CharField(max_length=15, validators=[numero_caravana_validator])
     tipos = models.CharField(max_length=100)
@@ -41,6 +47,7 @@ class Animal(models.Model):
     edad = models.FloatField(null=True, blank=True)
     preniada = models.BooleanField(default=False)
     reciennacida = models.BooleanField(default=False)
+    estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='vivo')
     userId = models.IntegerField()
     tratamientos = models.ManyToManyField('Tratamiento')
     sangrado = models.ManyToManyField('Sangrado')

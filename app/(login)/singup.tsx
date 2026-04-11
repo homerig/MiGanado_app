@@ -118,7 +118,7 @@ const SignUpScreen = () => {
         console.log('Usuario registrado:', registeredUser);
         await setUserId(registeredUser.id)
         router.replace('/home'); // Navegar después del registro exitoso
-      } catch (error) {
+      } catch (error: any) {
         if (error.response) {
           console.error('Error al registrar el usuario:', error.response.data);
           alert(`Error al registrar el usuario: ${JSON.stringify(error.response.data)}`);

@@ -6,6 +6,8 @@ import { Platform } from 'react-native';
 type Props = Omit<ComponentProps<typeof Link>, 'href'> & { href: Href };
 
 export function ExternalLink({ href, ...rest }: Props) {
+  const hrefString = typeof href === 'string' ? href : String(href);
+
   return (
     <Link
       target="_blank"
@@ -16,7 +18,7 @@ export function ExternalLink({ href, ...rest }: Props) {
           // Prevent the default behavior of linking to the default browser on native.
           event.preventDefault();
           // Open the link in an in-app browser.
-          await openBrowserAsync(href);
+          await openBrowserAsync(hrefString);
         }
       }}
     />

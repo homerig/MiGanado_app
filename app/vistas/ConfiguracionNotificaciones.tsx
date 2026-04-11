@@ -1,75 +1,137 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Switch } from 'react-native';
+import React, { useContext, useEffect, useState } from 'react';
+import { ActivityIndicator, Alert, StyleSheet, View, Switch } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { UserContext } from '@/api/UserContext';
+import { actualizarConfigNotificaciones, getConfigNotificaciones } from '@/api/api';
 
-// Vista para la configuración de notificaciones
+const initialState = {
+  recibir_notificaciones_lote: true,
+  recibir_notificaciones_tratamiento: true,
+  recibir_notificaciones_tacto: true,
+  recibir_notificaciones_sangrado: true,
+  recibir_notificaciones_estadisticas: true,
+};
+
 export default function NotificationSettings() {
-  const [treatmentNotifications, setTreatmentNotifications] = useState(true);
-  const [contactNotifications, setContactNotifications] = useState(true);
-  const [vaccinationNotifications, setVaccinationNotifications] = useState(false);
-  const [bleedingNotifications, setBleedingNotifications] = useState(false);
-  const [statisticsNotifications, setStatisticsNotifications] = useState(false);
+  const { userId } = useContext(UserContext);
+  const [config, setConfig] = useState(initialState);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const response = await getConfigNotificaciones(userId);
+        setConfig({
+          ...initialState,
+          ...response,
+        });
+      } catch (error) {
+        console.error('Error loading notification settings:', error);
+        Alert.alert('Error', 'No se pudo cargar la configuración de notificaciones.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchConfig();
+  }, [userId]);
+
+  const handleToggle = async (key: keyof typeof initialState, value: boolean) => {
+    const nextConfig = { ...config, [key]: value };
+    setConfig(nextConfig);
+
+    try {
+      await actualizarConfigNotificaciones(userId, { [key]: value });
+    } catch (error) {
+      console.error('Error updating notification settings:', error);
+      setConfig(config);
+      Alert.alert('Error', 'No se pudo actualizar la configuración.');
+    }
+  };
+
+  const rows: Array<{ key: keyof typeof initialState; label: string }> = [
+    { key: 'recibir_notificaciones_tratamiento', label: 'Avisos de tratamientos' },
+    { key: 'recibir_notificaciones_tacto', label: 'Avisos de tacto' },
+    { key: 'recibir_notificaciones_lote', label: 'Avisos de lotes' },
+    { key: 'recibir_notificaciones_sangrado', label: 'Avisos de sangrado' },
+    { key: 'recibir_notificaciones_estadisticas', label: 'Avisos de estadísticas' },
+  ];
+
+  if (loading) {
+    return (
+      <ThemedView style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#407157" />
+      </ThemedView>
+    );
+  }
 
   return (
-    <ThemedView style={styles.container}>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Configuración de Notificaciones</ThemedText>
-      </ThemedView>
-      <View style={styles.notificationRow}>
-        <ThemedText type="default">Avisos de tratamientos</ThemedText>
-        <Switch
-          value={treatmentNotifications}
-          onValueChange={setTreatmentNotifications}
-        />
-      </View>
-      <View style={styles.notificationRow}>
-        <ThemedText type="default">Avisos de tacto</ThemedText>
-        <Switch
-          value={contactNotifications}
-          onValueChange={setContactNotifications}
-        />
-      </View>
-      <View style={styles.notificationRow}>
-        <ThemedText type="default">Avisos de vacunaciones</ThemedText>
-        <Switch
-          value={vaccinationNotifications}
-          onValueChange={setVaccinationNotifications}
-        />
-      </View>
-      <View style={styles.notificationRow}>
-        <ThemedText type="default">Aviso de sangrado</ThemedText>
-        <Switch
-          value={bleedingNotifications}
-          onValueChange={setBleedingNotifications}
-        />
-      </View>
-      <View style={styles.notificationRow}>
-        <ThemedText type="default">Aviso de estadísticas</ThemedText>
-        <Switch
-          value={statisticsNotifications}
-          onValueChange={setStatisticsNotifications}
-        />
+    <ThemedView style={styles.screen}>
+      <View style={styles.card}>
+        <ThemedText type="title" style={styles.title}>Configuración de Notificaciones</ThemedText>
+        <ThemedText style={styles.subtitle}>Los cambios se guardan al instante y afectan la creación de nuevos avisos.</ThemedText>
+
+        {rows.map((row) => (
+          <View key={row.key} style={styles.notificationRow}>
+            <ThemedText type="default" style={styles.rowLabel}>{row.label}</ThemedText>
+            <Switch
+              value={config[row.key]}
+              onValueChange={(value) => handleToggle(row.key, value)}
+              trackColor={{ false: '#CDD7D0', true: '#7EB092' }}
+              thumbColor={config[row.key] ? '#407157' : '#F8FAF9'}
+            />
+          </View>
+        ))}
       </View>
     </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  screen: {
     flex: 1,
-    padding: 16,
+    backgroundColor: '#EDF3EE',
+    paddingHorizontal: 16,
+    justifyContent: 'center',
   },
-  titleContainer: {
-    flexDirection: 'row',
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 16,
-    marginTop: 16,
+    backgroundColor: '#EDF3EE',
+  },
+  card: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 28,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: '#D9E5DC',
+    shadowColor: '#274233',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    elevation: 4,
+  },
+  title: {
+    color: '#274233',
+    marginBottom: 8,
+  },
+  subtitle: {
+    color: '#617066',
+    marginBottom: 20,
   },
   notificationRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 8,
+    paddingVertical: 14,
+    borderTopWidth: 1,
+    borderTopColor: '#E6ECE8',
+  },
+  rowLabel: {
+    flex: 1,
+    color: '#22372B',
+    paddingRight: 12,
   },
 });
