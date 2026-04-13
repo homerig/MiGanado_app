@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tabs } from 'expo-router';
+import { Stack } from 'expo-router';
 import { View, Image, Text} from 'react-native';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { ThemedText } from '@/components/ThemedText';
@@ -19,51 +19,16 @@ const CustomHeader = () => {
   );
 };
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
+export default function LoginLayout() {
   return (
-    <Tabs
-      initialRouteName="index"
+    <Stack
       screenOptions={{
-        tabBarActiveTintColor: '#ffffff',
-        tabBarInactiveTintColor: '#605856',
         headerShown: false,
-        tabBarShowLabel: false,
-        tabBarStyle: {
-          display: 'none',
-        },
       }}
     >
-      <Tabs.Screen
-        name="index"        
-        options={{
-          title: 'Estadísticas',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'chart' : 'chart'} color={color} focused={focused} />
-          ),
-        }}
-      />
-
-      <Tabs.Screen
-        name="singup"        
-        options={{
-          title: 'Estadísticas',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'chart' : 'chart'} color={color} focused={focused} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="ingresarvia"        
-        options={{
-          title: 'Estadísticas',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'chart' : 'chart'} color={color} focused={focused} />
-          ),
-        }}
-      />
-
-    </Tabs>
+      <Stack.Screen name="index" />
+      <Stack.Screen name="singup" />
+      <Stack.Screen name="ingresarvia" />
+    </Stack>
   );
 }

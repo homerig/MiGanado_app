@@ -9,6 +9,9 @@ npm-debug.*
 *.mobileprovision
 *.orig.*
 web-build/
+backend/db.sqlite3
+__pycache__/
+*.py[cod]
 
 # macOS
 .DS_Store

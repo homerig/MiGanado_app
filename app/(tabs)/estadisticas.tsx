@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useCallback, useState, useContext, useEffect } from 'react';
 import { StyleSheet, ScrollView, View, Dimensions, TextInput, Text, TouchableOpacity, Alert } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -7,12 +7,24 @@ import { UserContext } from '../../api/UserContext';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { buscarAnimalLote, getUserLotes } from '../../api/api';
+import { useFocusEffect } from '@react-navigation/native';
 
 
 import SelectDropdown from 'react-native-select-dropdown'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const ErrorIcon = ({ onPress }) => (
+type Animal = {
+  peso?: number;
+  preniada?: boolean;
+  reciennacida?: boolean;
+  estado?: string;
+};
+
+type LoteOption = {
+  numero: number;
+};
+
+const ErrorIcon = ({ onPress }: { onPress: () => void }) => (
   <TouchableOpacity onPress={onPress} style={styles.errorIcon}>
     <FontAwesomeIcon icon={faTimesCircle} size={24} color="#d44648" />
   </TouchableOpacity>
@@ -38,47 +50,83 @@ const StatisticsCard: React.FC<StatisticsCardProps> = ({ title, value, subTitle,
 
 const EstadisticasScreen = () => {
   const [numero_lote, setNumeroLote] = useState('');
+  const [selectedLoteKey, setSelectedLoteKey] = useState(0);
   const [numero_loteError, setNumeroLoteError] = useState(false);
-  const [animalesEncontrado, setAnimalesEncontrado] = useState(null);
+  const [animalesEncontrado, setAnimalesEncontrado] = useState<Animal[] | null>(null);
   const { userId } = useContext(UserContext);
   const [porcentajePrenez, setPorcentajePrenez] = useState(0);
   const [cantidadCrias, setCantidadCrias] = useState(0);
-  const [lotes, setLotes] = useState([]);
+  const [cantidadMuertas, setCantidadMuertas] = useState(0);
+  const [cantidadVendidas, setCantidadVendidas] = useState(0);
+  const [tasaNatalidadNeta, setTasaNatalidadNeta] = useState(0);
+  const [lotes, setLotes] = useState<LoteOption[]>([]);
 
 
   useEffect(() => {
     if (animalesEncontrado && animalesEncontrado.length > 0) {
       const vacasTotales = animalesEncontrado.length;
-      const vacasPrenez = animalesEncontrado.filter(animal => animal.preniada).length;
+      const vacasPrenez = animalesEncontrado.filter((animal) => animal.preniada).length;
       const porcentajePrenez = (vacasPrenez / vacasTotales) * 100;
       setPorcentajePrenez(porcentajePrenez);
 
-      const criasRecienNacidas = animalesEncontrado.filter(animal => animal.reciennacida).length;
+      const criasRecienNacidas = animalesEncontrado.filter((animal) => animal.reciennacida).length;
       setCantidadCrias(criasRecienNacidas);
+
+      const muertas = animalesEncontrado.filter((animal) => animal.estado === 'murio').length;
+      const vendidas = animalesEncontrado.filter((animal) => animal.estado === 'vendido').length;
+      setCantidadMuertas(muertas);
+      setCantidadVendidas(vendidas);
+
+      const natalidadBase = vacasTotales || 1;
+      const natalidadCalculada = ((criasRecienNacidas - muertas) / natalidadBase) * 100;
+      setTasaNatalidadNeta(natalidadCalculada);
     } else {
       setPorcentajePrenez(0);
       setCantidadCrias(0);
+      setCantidadMuertas(0);
+      setCantidadVendidas(0);
+      setTasaNatalidadNeta(0);
     }
   }, [animalesEncontrado]);
 
-  useEffect(() => {
-    // Define the async function
-    const fetchLotes = async () => {
-      try {
-        const response = await getUserLotes(userId); // Replace with your API call
-        if (Array.isArray(response)) {
-          setLotes(response);
-        } else {
-          console.error('Unexpected response structure:', response);
-        }
-      } catch (error) {
-        console.error('Error fetching lotes:', error);
+  const fetchLotes = useCallback(async () => {
+    try {
+      const response = await getUserLotes(userId);
+      if (Array.isArray(response)) {
+        setLotes(response);
+      } else {
+        console.error('Unexpected response structure:', response);
       }
-    };
-    fetchLotes();
-  }, [userId]); // Re-run effect if userId changes
+    } catch (error) {
+      console.error('Error fetching lotes:', error);
+    }
+  }, [userId]);
 
-  const opcionesLotes = Array.isArray(lotes) ? lotes.map(lote => ({ title: lote.numero })) : [];
+  useEffect(() => {
+    fetchLotes();
+  }, [fetchLotes]);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchLotes();
+    }, [fetchLotes])
+  );
+
+  useEffect(() => {
+    if (!numero_lote) {
+      return;
+    }
+
+    const loteExiste = lotes.some((lote) => String(lote.numero) === String(numero_lote));
+
+    if (!loteExiste) {
+      setNumeroLote(lotes[0] ? String(lotes[0].numero) : '');
+      setAnimalesEncontrado(null);
+      setSelectedLoteKey((prev) => prev + 1);
+    }
+  }, [lotes, numero_lote]);
+
+  const opcionesLotes = Array.isArray(lotes) ? lotes.map((lote) => ({ title: String(lote.numero) })) : [];
 
   const buscar = async () => {
     if (!validateFields()) {
@@ -107,9 +155,15 @@ const EstadisticasScreen = () => {
       return 'Sin datos';
     }
 
-    const pesos = animalesEncontrado.map(animal => animal.peso);
+    const animalesParaPromedio = animalesEncontrado.filter((animal) => !animal.reciennacida && animal.peso !== null && animal.peso !== undefined);
+
+    if (animalesParaPromedio.length === 0) {
+      return 'Sin datos';
+    }
+
+    const pesos = animalesParaPromedio.map((animal) => animal.peso as number);
     const sumaPesos = pesos.reduce((acc, peso) => acc + peso, 0);
-    const promedio = sumaPesos / animalesEncontrado.length;
+    const promedio = sumaPesos / animalesParaPromedio.length;
     return `${promedio.toFixed(2)} kg`;
   };
 
@@ -122,7 +176,7 @@ const EstadisticasScreen = () => {
     labels: animalesEncontrado ? animalesEncontrado.map((_, index) => (index % Math.ceil(animalesEncontrado.length / 5) === 0 ? `${index + 1}` : '')) : [],
     datasets: [
       {
-        data: animalesEncontrado ? animalesEncontrado.map(animal => animal.peso) : []  // Asegúrate de manejar animalesEncontrado cuando es null o vacío
+        data: animalesEncontrado ? animalesEncontrado.map((animal) => animal.peso ?? 0) : []
       }
     ]
   };
@@ -153,6 +207,7 @@ const EstadisticasScreen = () => {
           <ThemedText type='title' style={styles.headerTitle}>Estadísticas</ThemedText>
           <View>
               <SelectDropdown
+                  key={selectedLoteKey}
                   data={opcionesLotes}
                   onSelect={(selectedItem, index) => {
                     setNumeroLote(selectedItem.title);
@@ -164,7 +219,7 @@ const EstadisticasScreen = () => {
                           <Icon name={selectedItem.icon} style={styles.dropdownButtonIconStyle} />
                         )}
                          <Text style={styles.dropdownButtonTxtStyle}>
-                          {selectedItem ? `Lote ${selectedItem.title}` : 'Número de lote'}
+                          {selectedItem ? `Lote ${selectedItem.title}` : numero_lote ? `Lote ${numero_lote}` : 'Número de lote'}
                         </Text>
                         <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
                       </View>
@@ -188,6 +243,13 @@ const EstadisticasScreen = () => {
 
         
         <View style={styles.body}>
+          <StatisticsCard title={`${tasaNatalidadNeta.toFixed(2)}%`} value="Natalidad neta" subTitle="Nacimientos menos muertes en el lote">
+            <View style={styles.summaryRow}>
+              <ThemedText style={styles.summaryText}>Nacidas: {cantidadCrias}</ThemedText>
+              <ThemedText style={styles.summaryText}>Muertas: {cantidadMuertas}</ThemedText>
+            </View>
+          </StatisticsCard>
+
           <StatisticsCard title={`${cantidadCrias} crías`} value="En el último mes" subTitle="Cantidad de Crías Recién Nacidas">
             <PieChart
               data={pieChartDataCrias}
@@ -232,6 +294,11 @@ const EstadisticasScreen = () => {
               <ThemedText>No hay datos disponibles para mostrar el gráfico.</ThemedText>
             )}
           </StatisticsCard>
+
+          <View style={styles.summaryCardsRow}>
+            <StatisticsCard title={`${cantidadMuertas}`} value="Animales" subTitle="Murieron en este lote" />
+            <StatisticsCard title={`${cantidadVendidas}`} value="Animales" subTitle="Se vendieron" />
+          </View>
         </View>
         <View style={{height: 65}}></View>
       </ScrollView>
@@ -358,6 +425,18 @@ const styles = StyleSheet.create({
   },
   body: {
     paddingHorizontal: 10
+  },
+  summaryRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 12,
+  },
+  summaryText: {
+    color: '#4C6356',
+    fontSize: 14,
+  },
+  summaryCardsRow: {
+    gap: 4,
   },
   dropdownButtonStyle: {
     width: '100%',

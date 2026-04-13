@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import { ThemedText } from '@/components/ThemedText';
 
 //Iconos
@@ -13,7 +13,7 @@ import { loginUser } from '../../api/api';
 //Para el dato del id del usuario
 import { UserContext } from '../../api/UserContext'; 
 
-const ErrorIcon = ({ onPress }) => (
+const ErrorIcon = ({ onPress }: { onPress: () => void }) => (
   <TouchableOpacity onPress={onPress} style={styles.errorIcon}>
     <FontAwesomeIcon icon={faTimesCircle} size={24} color="#d44648" />
   </TouchableOpacity>
@@ -24,7 +24,7 @@ const LoginScreen = () => {
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
-  const navigation = useNavigation();
+  const router = useRouter();
   const { setUserId } = useContext(UserContext); // Utiliza setUserId del contexto
 
   const validateFields = () => {
@@ -52,10 +52,17 @@ const LoginScreen = () => {
       const userData = await loginUser(email, password); // Llama a la función loginUser con email y password
       console.log('Inicio de sesión exitoso:', userData);
       await setUserId(userData.id); // Guarda el ID del usuario en el contexto y AsyncStorage
-      navigation.navigate('(tabs)'); // Navega a la pantalla Home
+      router.replace('/home'); // Navega a la pantalla principal de tabs
     } catch (error) {
-      console.error('Error al iniciar sesión:', error.message);
-      Alert.alert('Error', 'Inicio de sesión fallido');
+      const message = error instanceof Error ? error.message : 'Inicio de sesión fallido';
+
+      if (message === 'Credenciales inválidas') {
+        Alert.alert('Error', 'El correo o la contraseña son incorrectos');
+        return;
+      }
+
+      console.error('Error al iniciar sesión:', message);
+      Alert.alert('Error', 'No se pudo iniciar sesión. Inténtalo de nuevo.');
     }
   };
 
@@ -99,7 +106,7 @@ const LoginScreen = () => {
       <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
         <Text style={styles.loginButtonText}>Iniciar Sesión</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.registerButton} onPress={() => navigation.navigate('singup')}>
+      <TouchableOpacity style={styles.registerButton} onPress={() => router.push('/singup')}>
         <Text style={styles.registerButtonText}>Registrarse</Text>
       </TouchableOpacity>
       <ThemedText type="title" style={styles.logoText}>MiGanado</ThemedText>

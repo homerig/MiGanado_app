@@ -1,85 +1,152 @@
-# Instalación y uso Backend 
+# MiGanado App
 
-## Índice
-1. [Instalación](https://github.com/homerig/MiGanado_app/blob/main/README.md#pasos-para-instalaci%C3%B3n-django).
-2. [Agregado de datos IP](https://github.com/homerig/MiGanado_app/blob/main/README.md#pasos-para-instalaci%C3%B3n-django).
-3. [Iniciar App](https://github.com/homerig/MiGanado_app/blob/main/README.md#iniciar-aplicaci%C3%B3n).
-4. [Ver datos y tablas agregadas](https://github.com/homerig/MiGanado_app/blob/main/README.md#ver-datos-y-tablas-agregadas).
-5. [Si cambias el modelo de clases en models.py](https://github.com/homerig/MiGanado_app/blob/main/README.md#si-cambias-el-modelo-de-clases-en-modelspy).
-   
-___________________________________________________________________________________________
-### Pasos para instalación DJANGO
-1. Descargar [Python](https://www.python.org/). Asegurate de marcar la opción que diga: `Add Python to PATH`
-2. Abrir **CMD** y poner el siguiente comando reemplazando la palabra **RUTA** por la ruta donde hayas instalado el proyecto de MiGanado:
-   
-   ```bash
-   cd RUTA/backend
-   pip install django
-   pip install django djangorestframework
-   pip install django-cors-headers
-    ```
-### Agrega tus datos de ip para luego poder utilizar
-1. Hallar **IP**:
-   - poner en **CMD**:
-    ```bash
-    ipconfig
-     ```
-   - tenes que ver la variable que diga:
-     
-   Adaptador de Ethernet Ethernet o Adaptador de LAN inalámbrica Wi-Fi
+Aplicación mobile/web para gestión ganadera con frontend en Expo/React Native y backend en Django REST Framework.
 
-   Dirección **IPv4**. . . . . . . . . . . . . . : **192.168.X.XX** (las x son los numeros que cambian según la IP)
-3. En api.js en baseURL poner `http://(tu IP):8000/miGanado`
-   debería quedar algo así:
-   
-   ```bash
-   const baseURL = 'http://192.168.X.XX:8000/miGanado';
-   ```
-4. En `MiGanado_app\backend\mi_ganado_backend\settings.py` agregar tu **IP** en:
-   ```bash
-   CORS_ALLOWED_ORIGINS = [
-       "http://localhost:8081",
-       "http://192.168.X.XX:8081", 
-       (agregar aca) 
-   ]
-    ```
-___________________________________________________________________________________________
-### Iniciar Aplicación
-1. iniciar **Django** (2 opciones):
-   - En el CMD:
+## Stack
 
-    ```bash
-   cd  Ruta\backend
-   python manage.py runserver 0.0.0.0:8000
-   ```
-   - Desde Visual Studio:
+- Frontend: Expo, React Native, React, TypeScript/JavaScript
+- Backend: Python, Django, Django REST Framework
+- Base de datos: SQLite
 
-    ```bash
-   cd backend
-   python manage.py runserver 0.0.0.0:8000
-   ``` 
-3. Para **salir y cerrar django** presionar: `CTRL + FIN + PAUSA (boton re pag)`
+## Requisitos
 
-### Ver datos y tablas agregadas
-- si queres ver todas las **tablas**: `http://localhost:8000/miGanado/`
+- Node.js 18 o superior
+- npm
+- Python 3.10 o superior
+- pip
+- Expo Go si vas a probar desde un celular físico
 
-- si queres ver **datos** de una tabla en específico: `http://localhost:8000/miGanado/usuarios/`
+## Instalación
 
-###  Si cambias el modelo de clases en models.py
-1. Tocar guardar
-2. Luego poner:
-   
-   - En el CMD:
+### 1. Clonar el proyecto
 
-    ```bash
-   cd  Ruta\backend
-   python manage.py makemigrations
-   python manage.py migrate
-   ```
-   - Desde Visual Studio:
+```bash
+git clone <URL_DEL_REPOSITORIO>
+cd MiGanado_app
+```
 
-    ```bash
-   cd backend
-   python manage.py makemigrations
-   python manage.py migrate
-   ``` 
+### 2. Instalar dependencias del frontend
+
+```bash
+npm install
+```
+
+### 3. Crear entorno virtual e instalar dependencias del backend
+
+En macOS o Linux:
+
+```bash
+cd backend
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+En Windows:
+
+```bash
+cd backend
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+### 4. Aplicar migraciones
+
+```bash
+python manage.py migrate
+```
+
+### 5. Generar los datos mock
+
+Este proyecto incluye un comando versionado en GitHub para cargar un usuario demo y datos de prueba.
+
+```bash
+python manage.py seed_mock_data
+```
+
+El comando:
+
+- elimina el usuario mock anterior si ya existía
+- crea nuevamente la cuenta demo
+- crea lotes y animales de prueba
+- agrega animales vivos, muertos y vendidos
+- agrega un lote adicional con vacas
+
+## Cuenta mock incluida
+
+Después de correr `python manage.py seed_mock_data`, podés iniciar sesión con:
+
+- Email: `mock@mi-ganado.com`
+- Contraseña: `1234`
+
+## Levantar el backend
+
+Desde la carpeta `backend`:
+
+```bash
+python manage.py runserver 0.0.0.0:8000
+```
+
+La API queda disponible en:
+
+- `http://localhost:8000/miGanado/`
+
+Ejemplos:
+
+- usuarios: `http://localhost:8000/miGanado/usuarios/`
+- lotes: `http://localhost:8000/miGanado/lotes/`
+- animales: `http://localhost:8000/miGanado/animales/`
+
+## Levantar el frontend
+
+Volvé a la raíz del proyecto:
+
+```bash
+cd ..
+npm start
+```
+
+También podés usar:
+
+```bash
+npm run android
+npm run ios
+npm run web
+```
+
+## Conexión entre frontend y backend
+
+No hace falta editar manualmente la IP en `api/api.js`. El frontend intenta detectar automáticamente el host de Expo y construir la URL base del backend.
+
+Para que funcione correctamente:
+
+- el backend debe estar levantado en el puerto `8000`
+- el frontend y el backend deben estar en la misma red si usás un celular físico
+- si probás en web o simulador local, `localhost` o `127.0.0.1` suele alcanzar
+
+Si tu red usa una IP distinta y tenés problemas de CORS, revisá `backend/mi_ganado_backend/settings.py` y agregá tu origen en `CORS_ALLOWED_ORIGINS`.
+
+## Docker
+
+También podés levantar el backend con Docker:
+
+```bash
+docker compose up --build
+```
+
+## Desarrollo
+
+Si cambiás modelos del backend:
+
+```bash
+cd backend
+python manage.py makemigrations
+python manage.py migrate
+```
+
+Si querés regenerar los datos demo:
+
+```bash
+python manage.py seed_mock_data
+```

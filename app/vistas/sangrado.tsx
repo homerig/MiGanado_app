@@ -1,17 +1,33 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useDeferredValue, useState, useContext, useEffect } from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { UserContext } from '../../api/UserContext';
-import { createSangrado, buscarAnimal, buscarSan, actualizarSangrado, getUserLotes } from '../../api/api';
+import { createSangrado, buscarAnimal, buscarAnimalLote, buscarSan, actualizarSangrado, getUserLotes } from '../../api/api';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
+import { DateCarouselPicker } from '@/components/DateCarouselPicker';
 
 import SelectDropdown from 'react-native-select-dropdown'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { getNumeroCaravanaError, NUMERO_CARAVANA_MAX_LENGTH, sanitizeNumeroCaravana } from '@/utils/caravana';
+import { DismissKeyboardView } from '@/components/DismissKeyboardView';
 
-const ErrorIcon = ({ onPress }) => (
+type LoteOption = {
+  id: number;
+  numero: number;
+};
+
+type AnimalItem = {
+  numeroCaravana: string;
+  numero_lote: number | string;
+};
+
+const NUMERO_TUBO_MAX_LENGTH = 10;
+const sanitizeNumeroTubo = (text: string) => text.replace(/\D/g, '').slice(0, NUMERO_TUBO_MAX_LENGTH);
+
+const ErrorIcon = ({ onPress }: { onPress: () => void }) => (
   <TouchableOpacity onPress={onPress} style={styles.errorIcon}>
     <FontAwesomeIcon icon={faTimesCircle} size={24} color="#d44648" />
   </TouchableOpacity>
@@ -28,14 +44,19 @@ const SangradoScreen = () => {
   const [fecha, setFecha] = useState('');
   const { userId } = useContext(UserContext);
   
-  const [lotes, setLotes] = useState([]);
+  const [lotes, setLotes] = useState<LoteOption[]>([]);
+  const [animalesLote, setAnimalesLote] = useState<AnimalItem[]>([]);
+  const deferredNumeroCaravana = useDeferredValue(numeroCaravana);
   
-  const navigation = useNavigation();
+  const router = useRouter();
 
 
   const validateFields = () => {
     let isValid = true;
     if (!numeroCaravana) {
+      setNumeroCaravanaError(true);
+      isValid = false;
+    } else if (getNumeroCaravanaError(numeroCaravana)) {
       setNumeroCaravanaError(true);
       isValid = false;
     } else {
@@ -65,12 +86,12 @@ const SangradoScreen = () => {
   const validar = async () => {
     try {
       const animal = await buscarAnimal(userId, numeroCaravana);
-      if (animal && animal.numeroCaravana === numeroCaravana) {
+      if (animal && animal.numeroCaravana === numeroCaravana && String(animal.numero_lote) === String(numero_lote)) {
         return true;
       } else {
         Alert.alert(
           'Animal no encontrado',
-          'No se encontró un animal con ese número de caravana. Inténtelo de nuevo.',
+          'No se encontró un animal con ese número de caravana dentro del lote seleccionado.',
           [{ text: 'OK', onPress: () => setNumeroCaravana('') }]
         );
         return false;
@@ -114,7 +135,29 @@ const SangradoScreen = () => {
     fetchLotes();
   }, [userId]); // Re-run effect if userId changes
 
-  const opcionesLotes = Array.isArray(lotes) ? lotes.map(lote => ({ title: lote.numero })) : [];
+  const opcionesLotes = Array.isArray(lotes) ? lotes.map((lote) => ({ title: String(lote.numero) })) : [];
+  const filteredAnimals = deferredNumeroCaravana.length < 2
+    ? []
+    : animalesLote.filter((animal) => animal.numeroCaravana.includes(deferredNumeroCaravana));
+
+  useEffect(() => {
+    const fetchAnimalesLote = async () => {
+      if (!numero_lote) {
+        setAnimalesLote([]);
+        return;
+      }
+
+      try {
+        const animales = await buscarAnimalLote(userId, numero_lote);
+        setAnimalesLote(Array.isArray(animales) ? animales : []);
+      } catch (error) {
+        console.error('Error fetching animals by lote:', error);
+        setAnimalesLote([]);
+      }
+    };
+
+    fetchAnimalesLote();
+  }, [userId, numero_lote]);
 
 
   const handlesig = async () => {
@@ -124,10 +167,10 @@ const SangradoScreen = () => {
     try {
       const animalValido = await validar();
       if (animalValido) {
-        const lotes = await getUserLotes(userId);
+        const lotes: LoteOption[] = await getUserLotes(userId);
         console.log('Lotes:', lotes);
         const numeroLoteInt = parseInt(numero_lote, 10);
-        const loteExiste = lotes.some(lote => {
+        const loteExiste = lotes.some((lote) => {
           console.log(`Comparando ${lote.numero} con ${numeroLoteInt}`); 
           return lote.numero === numeroLoteInt;
         });
@@ -150,7 +193,7 @@ const SangradoScreen = () => {
         setNumeroTubo('');
         setFecha('');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error al registrar el sangrado:', error.message);
       Alert.alert('Error', 'No se pudo guardar el sangrado.');
     }
@@ -162,14 +205,15 @@ const SangradoScreen = () => {
     }
     try {
       await handlesig();
-      navigation.navigate('(tabs)');
-    } catch (error) {
+      router.replace('/home');
+    } catch (error: any) {
       console.error('Error al finalizar:', error.message);
       Alert.alert('Error', 'No se pudo completar la acción.');
     }
   };
 
   return (
+    <DismissKeyboardView>
     <ThemedView style={styles.container}>
       <ThemedText style={styles.title}>Sangrado</ThemedText>
 
@@ -210,9 +254,24 @@ const SangradoScreen = () => {
           placeholder="Número de caravana"
           placeholderTextColor='#565859'
           value={numeroCaravana}
-          onChangeText={setNumeroCaravana}
+          onChangeText={(text) => setNumeroCaravana(sanitizeNumeroCaravana(text))}
+          keyboardType="number-pad"
+          maxLength={NUMERO_CARAVANA_MAX_LENGTH}
         />
-        {numeroCaravanaError && <ErrorIcon onPress={() => Alert.alert('Error', 'El campo Número de caravana no puede estar vacío')} />}
+        {deferredNumeroCaravana.length >= 2 && filteredAnimals.length > 0 && (
+          <View style={styles.suggestionsContainer}>
+            {filteredAnimals.slice(0, 6).map((animal) => (
+              <TouchableOpacity
+                key={animal.numeroCaravana}
+                style={styles.suggestionChip}
+                onPress={() => setNumeroCaravana(animal.numeroCaravana)}
+              >
+                <ThemedText style={styles.suggestionText}>{animal.numeroCaravana}</ThemedText>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
+        {numeroCaravanaError && <ErrorIcon onPress={() => Alert.alert('Error', getNumeroCaravanaError(numeroCaravana) ?? 'El campo Número de caravana no puede estar vacío')} />}
       </View>
 
       <View style={styles.inputContainer}>
@@ -221,19 +280,15 @@ const SangradoScreen = () => {
           placeholder="Número del tubo de ensayo"
           placeholderTextColor='#565859'
           value={numero_tubo}
-          onChangeText={setNumeroTubo}
+          onChangeText={(text) => setNumeroTubo(sanitizeNumeroTubo(text))}
+          keyboardType="number-pad"
+          maxLength={NUMERO_TUBO_MAX_LENGTH}
         />
         {numeroTuboError && <ErrorIcon onPress={() => Alert.alert('Error', 'El campo Número del tubo de ensayo no puede estar vacío')} />}
       </View>
 
       <View style={styles.inputContainer}>
-        <TextInput
-          style={[styles.input, fechaError && styles.errorInput]}
-          placeholder="Fecha (YYYY-MM-DD)"
-          placeholderTextColor='#565859'
-          value={fecha}
-          onChangeText={setFecha}
-        />
+        <DateCarouselPicker value={fecha} onChange={setFecha} error={fechaError} />
         {fechaError && <ErrorIcon onPress={() => Alert.alert('Error', 'El campo Fecha no puede estar vacío')} />}
       </View>
 
@@ -246,6 +301,7 @@ const SangradoScreen = () => {
         </TouchableOpacity>
       </View>
     </ThemedView>
+    </DismissKeyboardView>
   );
 };
 
@@ -273,6 +329,22 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 20,
     paddingHorizontal: 20,
+  },
+  suggestionsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: 8,
+  },
+  suggestionChip: {
+    backgroundColor: '#E8F0EB',
+    borderRadius: 18,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    marginRight: 8,
+    marginBottom: 8,
+  },
+  suggestionText: {
+    color: '#407157',
   },
   errorInput: {
     borderColor: '#d44648',
