@@ -34,6 +34,7 @@ type Tratamiento = {
 };
 
 type Sangrado = {
+  numero_lote?: number | string;
   numero_tubo?: string | number;
 };
 
@@ -59,6 +60,7 @@ const AnimalSearchScreen = () => {
   const [tratamientoEncontrado, setTratamientoEncontrado] = useState<Tratamiento | null>(null);
   const [sangradoEncontrado, setSangradoEncontrado] = useState<Sangrado | null>(null);
   const [soloPreniadas, setSoloPreniadas] = useState(false);
+  const [soloRecienNacidos, setSoloRecienNacidos] = useState(false);
   const [estadoFiltro, setEstadoFiltro] = useState<'todos' | 'vivo' | 'murio' | 'vendido'>('todos');
   const deferredCaravanaNumber = useDeferredValue(caravanaNumber);
 
@@ -78,6 +80,10 @@ const AnimalSearchScreen = () => {
       nextAnimals = nextAnimals.filter((animal) => animal.preniada);
     }
 
+    if (soloRecienNacidos) {
+      nextAnimals = nextAnimals.filter((animal) => animal.reciennacida);
+    }
+
     if (estadoFiltro !== 'todos') {
       nextAnimals = nextAnimals.filter((animal) => animal.estado === estadoFiltro);
     }
@@ -87,7 +93,7 @@ const AnimalSearchScreen = () => {
     }
 
     return nextAnimals.filter((animal) => animal.numeroCaravana.includes(deferredCaravanaNumber));
-  }, [animals, deferredCaravanaNumber, estadoFiltro, soloPreniadas]);
+  }, [animals, deferredCaravanaNumber, estadoFiltro, soloPreniadas, soloRecienNacidos]);
 
   const abrirDetalleAnimal = async (numeroCaravana: string) => {
     const animal = await buscarAnimal(userId, numeroCaravana);
@@ -213,6 +219,14 @@ const AnimalSearchScreen = () => {
             >
               <ThemedText style={[styles.filterChipText, soloPreniadas && styles.filterChipTextActive]}>
                 Preñadas
+              </ThemedText>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.filterChip, soloRecienNacidos && styles.filterChipActive]}
+              onPress={() => setSoloRecienNacidos((prev) => !prev)}
+            >
+              <ThemedText style={[styles.filterChipText, soloRecienNacidos && styles.filterChipTextActive]}>
+                Recién nacidos
               </ThemedText>
             </TouchableOpacity>
             {[

@@ -60,14 +60,7 @@ LocaleConfig.locales['es'] = {
 LocaleConfig.defaultLocale = 'es';
 
 const getNotificationDate = (fecha: string | Date) => {
-  const fechaNotificacion = dayjs(fecha).startOf('day');
-  let notificacionDate = dayjs(fecha).format('YYYY-MM-DD');
-
-  if (fechaNotificacion.format("YYYY-MM-DD'T'HH:mm:ss'Z'") === dayjs(fecha).format("YYYY-MM-DD'T'HH:mm:ss'Z'")) {
-    notificacionDate = dayjs(fecha).startOf('day').add(-1, 'day').format('YYYY-MM-DD');
-  }
-
-  return notificacionDate;
+  return dayjs(fecha).format('YYYY-MM-DD');
 };
 
 const parseLocalDateString = (dateString: string) => {

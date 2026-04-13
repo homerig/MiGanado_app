@@ -1,10 +1,10 @@
-import React, { useState, useContext, useEffect} from 'react';
+import React, { useState, useContext, useEffect, useDeferredValue } from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { UserContext } from '../../api/UserContext';
-import { createTacto, buscarAnimal, actualizarPrenies, getUserLotes } from '../../api/api';
+import { createTacto, buscarAnimal, buscarAnimalLote, actualizarPrenies, getUserLotes } from '../../api/api';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { DateCarouselPicker } from '@/components/DateCarouselPicker';
@@ -20,6 +20,7 @@ type LoteOption = {
 };
 
 type AnimalData = {
+  numeroCaravana?: string;
   tipos?: string;
 };
 
@@ -41,6 +42,8 @@ const TactoScreen = () => {
   const [animalData, setAnimalData] = useState<AnimalData | null>(null);
   const { userId } = useContext(UserContext);
   const [lotes, setLotes] = useState<LoteOption[]>([]);
+  const [animalesLote, setAnimalesLote] = useState<AnimalData[]>([]);
+  const deferredNumeroCaravana = useDeferredValue(numeroCaravana);
 
   const router = useRouter();
 
@@ -62,6 +65,28 @@ const TactoScreen = () => {
   }, [userId]); // Re-run effect if userId changes
 
   const opcionesLotes = Array.isArray(lotes) ? lotes.map((lote) => ({ title: String(lote.numero) })) : [];
+  const filteredAnimals = deferredNumeroCaravana.length < 2
+    ? []
+    : animalesLote.filter((animal) => animal.numeroCaravana?.includes(deferredNumeroCaravana));
+
+  useEffect(() => {
+    const fetchAnimalesLote = async () => {
+      if (!numero_lote) {
+        setAnimalesLote([]);
+        return;
+      }
+
+      try {
+        const animales = await buscarAnimalLote(userId, numero_lote);
+        setAnimalesLote(Array.isArray(animales) ? animales : []);
+      } catch (error) {
+        console.error('Error fetching animals by lote:', error);
+        setAnimalesLote([]);
+      }
+    };
+
+    fetchAnimalesLote();
+  }, [numero_lote, userId]);
 
 
   const validateFields = () => {
@@ -219,6 +244,19 @@ const TactoScreen = () => {
           keyboardType="number-pad"
           maxLength={NUMERO_CARAVANA_MAX_LENGTH}
         />
+        {deferredNumeroCaravana.length >= 2 && filteredAnimals.length > 0 && (
+          <View style={styles.suggestionsContainer}>
+            {filteredAnimals.slice(0, 6).map((animal) => (
+              <TouchableOpacity
+                key={animal.numeroCaravana}
+                style={styles.suggestionChip}
+                onPress={() => setNumeroCaravana(animal.numeroCaravana ?? '')}
+              >
+                <ThemedText style={styles.suggestionText}>{animal.numeroCaravana}</ThemedText>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
         {numeroCaravanaError && (
           <ErrorIcon
             onPress={() =>
@@ -278,6 +316,22 @@ const styles = StyleSheet.create({
   inputContainer: {
     position: 'relative',
     marginBottom: 16,
+  },
+  suggestionsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: 8,
+  },
+  suggestionChip: {
+    backgroundColor: '#E8F0EB',
+    borderRadius: 20,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    marginRight: 8,
+    marginBottom: 8,
+  },
+  suggestionText: {
+    color: '#407157',
   },
   input: {
     height: 50,
